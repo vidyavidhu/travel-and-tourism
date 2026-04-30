@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero">
+    <div class="container">
+        <h1>Discover The World With Us</h1>
+        <p>Plan your perfect trip, manage expenses, and create unforgettable memories with Trip Weaver.</p>
+        <a href="#register" class="btn btn-outline" style="color: white; border-color: white;">Start Exploring</a>
+    </div>
+</section>
+
+<!-- List Section (e.g., Featured Trips) -->
+<section id="destinations" class="section list-section">
+    <div class="container">
+        <h2>Featured Destinations</h2>
+        <div class="card-grid">
+            <!-- Placeholder Card 1 -->
+            <div class="card">
+                <img src="https://images.unsplash.com/photo-1506929562872-bb421503ef21?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Destination" class="card-img">
+                <div class="card-content">
+                    <h3 class="card-title">Tropical Paradise</h3>
+                    <p class="text-secondary">Explore serene beaches and vibrant cultures.</p>
+                </div>
+            </div>
+            <!-- Placeholder Card 2 -->
+            <div class="card">
+                <img src="https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Destination" class="card-img">
+                <div class="card-content">
+                    <h3 class="card-title">Mountain Adventure</h3>
+                    <p class="text-secondary">Thrilling hikes and breathtaking views await.</p>
+                </div>
+            </div>
+            <!-- Placeholder Card 3 -->
+            <div class="card">
+                <img src="https://images.unsplash.com/photo-1480796927426-f609979314bd?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Destination" class="card-img">
+                <div class="card-content">
+                    <h3 class="card-title">City Lights</h3>
+                    <p class="text-secondary">Experience the bustling nightlife and architecture.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Registration CTA Section -->
+<section id="register" class="cta-section">
+    <div class="container">
+        <h2>Ready To Start Your Journey?</h2>
+        <p>Join thousands of travelers who use Trip Weaver to plan their adventures.</p>
+        <div class="cta-buttons">
+            <a href="{% url 'member_signup' %}" class="btn btn-primary">Sign Up</a>
+            <a href="{% url 'member_login' %}" class="btn btn-outline">Log In</a>
+        </div>
+    </div>
+</section>
+{% endblock %}
