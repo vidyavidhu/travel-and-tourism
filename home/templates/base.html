@@ -39,7 +39,7 @@
             <nav class="nav-links" id="navLinks">
                 <a href="/">Home</a>
                 <a href="#destinations">Destinations</a>
-                <a href="#trips">Trips</a>
+                <a href="{% url 'trip_list' %}">Trips</a>
                 <a href="#about">About</a>
                 {% if user.is_authenticated %}
                 <div class="nav-profile">

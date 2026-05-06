@@ -1,0 +1,170 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block extra_css %}
+<!-- Bootstrap 5 CSS -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<!-- Custom Trip CSS -->
+<link rel="stylesheet" href="{% static 'trip/css/trip.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="trip-container pb-5">
+    
+    <!-- Hero Image Area -->
+    <div class="trip-hero trip-fade-in">
+        {% if trip.image %}
+            <img src="{{ trip.image.url }}" alt="{{ trip.title }}">
+        {% else %}
+            <div class="trip-placeholder-bg" style="height: 100%; width: 100%;">
+                <i class="fas fa-mountain" style="font-size: 8rem; opacity: 0.3;"></i>
+            </div>
+        {% endif %}
+        <div class="trip-hero-overlay">
+            <div class="container trip-hero-content">
+                <span class="premium-badge bg-white text-primary mb-3 shadow-sm d-inline-block">
+                    <i class="fas fa-tag me-1"></i> {{ trip.category.name }}
+                </span>
+                <h1 class="mb-2">{{ trip.title }}</h1>
+                <div class="d-flex align-items-center gap-4 text-white-50">
+                    <span><i class="fas fa-map-marker-alt me-2 text-white"></i>{{ trip.location }}</span>
+                    <span>
+                        {% if trip.status == 1 %}
+                            <i class="fas fa-circle me-2 text-success" style="font-size: 0.5rem;"></i>
+                        {% else %}
+                            <i class="fas fa-circle me-2 text-danger" style="font-size: 0.5rem;"></i>
+                        {% endif %}
+                        {% if trip.status == 1 %}Active{% else %}Inactive{% endif %}
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content Area -->
+    <div class="container trip-detail-card trip-fade-in" style="animation-delay: 0.2s;">
+        <div class="row g-4">
+            
+            <!-- Left Column: Details & Details -->
+            <div class="col-lg-8">
+                <div class="card premium-card border-0 shadow-lg p-4 p-md-5 mb-4">
+                    
+                    <div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom">
+                        <h3 class="fw-bold m-0" style="font-family: 'Poppins', sans-serif;"><i class="fas fa-info-circle text-primary me-2"></i> About the Journey</h3>
+                        
+                        <div class="d-flex gap-2">
+                            <a href="{% url 'trip_update' trip.pk %}" class="btn btn-outline-warning action-btn rounded-circle" style="width: 45px; height: 45px; padding: 0; display: flex; align-items: center; justify-content: center;" title="Edit Trip">
+                                <i class="fas fa-pen"></i>
+                            </a>
+                            <a href="{% url 'trip_delete' trip.pk %}" class="btn btn-outline-danger action-btn rounded-circle" style="width: 45px; height: 45px; padding: 0; display: flex; align-items: center; justify-content: center;" title="Delete Trip">
+                                <i class="fas fa-trash-alt"></i>
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-5">
+                        <p class="text-secondary" style="font-size: 1.05rem; line-height: 1.8;">
+                            {% if trip.description %}
+                                {{ trip.description|linebreaksbr }}
+                            {% else %}
+                                <em>No description provided for this trip.</em>
+                            {% endif %}
+                        </p>
+                    </div>
+                    
+                    <h3 class="fw-bold m-0 mb-4 pb-3 border-bottom" style="font-family: 'Poppins', sans-serif;"><i class="fas fa-clipboard-list text-primary me-2"></i> Guidelines & Rules</h3>
+                    
+                    <div class="p-4 rounded-4" style="background-color: var(--bg-light);">
+                        <p class="text-secondary m-0" style="line-height: 1.8;">
+                            {% if trip.guidelines %}
+                                {{ trip.guidelines|linebreaksbr }}
+                            {% else %}
+                                <em>No guidelines provided.</em>
+                            {% endif %}
+                        </p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Right Column: Quick Stats -->
+            <div class="col-lg-4">
+                <div class="card premium-card border-0 shadow-lg p-4 sticky-top" style="top: 2rem;">
+                    <h4 class="fw-bold mb-4 pb-2 border-bottom" style="font-family: 'Poppins', sans-serif;">Trip Overview</h4>
+                    
+                    <ul class="list-unstyled m-0 d-flex flex-column gap-4">
+                        <li class="d-flex align-items-center">
+                            <div class="detail-icon-box shadow-sm">
+                                <i class="far fa-calendar-alt"></i>
+                            </div>
+                            <div>
+                                <small class="text-muted d-block text-uppercase fw-bold" style="font-size: 0.75rem;">Dates</small>
+                                <span class="fw-semibold text-dark">{{ trip.from_date|date:"M d" }} - {{ trip.to_date|date:"M d, Y" }}</span>
+                            </div>
+                        </li>
+                        
+                        <li class="d-flex align-items-center">
+                            <div class="detail-icon-box shadow-sm" style="color: #f72585;">
+                                <i class="far fa-clock"></i>
+                            </div>
+                            <div>
+                                <small class="text-muted d-block text-uppercase fw-bold" style="font-size: 0.75rem;">Duration</small>
+                                <span class="fw-semibold text-dark">{{ trip.duration }}</span>
+                            </div>
+                        </li>
+                        
+                        <li class="d-flex align-items-center">
+                            <div class="detail-icon-box shadow-sm" style="color: #4cc9f0;">
+                                <i class="fas fa-route"></i>
+                            </div>
+                            <div>
+                                <small class="text-muted d-block text-uppercase fw-bold" style="font-size: 0.75rem;">Distance</small>
+                                <span class="fw-semibold text-dark">{{ trip.distance }} km</span>
+                            </div>
+                        </li>
+
+                        <li class="d-flex align-items-center">
+                            <div class="detail-icon-box shadow-sm" style="color: #f8961e;">
+                                <i class="fas fa-hourglass-start"></i>
+                            </div>
+                            <div>
+                                <small class="text-muted d-block text-uppercase fw-bold" style="font-size: 0.75rem;">Departure Time</small>
+                                <span class="fw-semibold text-dark">{{ trip.from_time|time:"g:i A" }}</span>
+                            </div>
+                        </li>
+
+                        <li class="d-flex align-items-center">
+                            <div class="detail-icon-box shadow-sm" style="color: #f8961e;">
+                                <i class="fas fa-hourglass-end"></i>
+                            </div>
+                            <div>
+                                <small class="text-muted d-block text-uppercase fw-bold" style="font-size: 0.75rem;">Return Time</small>
+                                <span class="fw-semibold text-dark">{{ trip.to_time|time:"g:i A" }}</span>
+                            </div>
+                        </li>
+                        
+                        <li class="d-flex align-items-center pt-3 border-top mt-1">
+                            <div class="detail-icon-box shadow-sm" style="background: var(--gradient-start); color: white;">
+                                <i class="fas fa-user-tie"></i>
+                            </div>
+                            <div>
+                                <small class="text-muted d-block text-uppercase fw-bold" style="font-size: 0.75rem;">Coordinator</small>
+                                <span class="fw-semibold text-dark">{{ trip.coordinator.member.name|default:trip.coordinator }}</span>
+                            </div>
+                        </li>
+                    </ul>
+                    
+                    <a href="{% url 'trip_list' %}" class="btn btn-light action-btn cancel-btn w-100 mt-4 py-2 fw-semibold">
+                        <i class="fas fa-arrow-left me-2"></i> Back to Trips
+                    </a>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<!-- Bootstrap 5 JS Bundle -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+{% endblock %}
