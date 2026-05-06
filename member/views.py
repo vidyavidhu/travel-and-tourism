@@ -30,20 +30,20 @@ def signup_view(request):
             user = User.objects.create_user(first_name = first_name,last_name=last_name,username=username, email=email, password=password)
             user.save()
             #create member
-            approved = False
-            if(is_coordinator=="True" and request.user.is_superuser==True):
-               approved=True
-            else:  
-                approved=False
-            coordinator=Coordinator.objects.create(user=user, is_approved=approved)
-            coordinator.save()
+           
+            if(is_coordinator == "True"):
+                approved = False
+                if(request.user.is_superuser == True):
+                    approved = True
+                coordinator = Coordinator.objects.create(user = user, is_approved = approved)
+                coordinator.save()
 
-            if(request.user.is_superuser==True):
+            if(request.user.is_superuser == True):
                 return redirect('/home')
             else:
                 return redirect('/member/login')
         else:
-            return render(request, 'member/signup.html',{'messages': messages.get_messages(request)})
+            return render(request, 'member/signup.html')
     else:
         return render(request, 'member/signup.html')
   
@@ -59,10 +59,12 @@ def login_view(request):
             login(request, user)
             if not hasattr(user, 'member'):
                 return redirect('member_profile_edit')
-            return redirect('/home')
+            else:
+
+                return redirect('/home')
         else:
             messages.error(request, "Invalid username or password.")
-            return render(request, 'member/login.html', {'messages': messages.get_messages(request)})
+            return render(request, 'member/login.html')
             
     return render(request, 'member/login.html')
 
@@ -76,17 +78,28 @@ from django.contrib.auth.decorators import login_required
 @login_required
 def profile_view(request):
     member = getattr(request.user, 'member', None)
-    has_coordinator = hasattr(request.user, 'coordinator')
-    return render(request, 'member/profile_view.html', {
-        'member': member,
-        'has_coordinator': has_coordinator
-    })
+    print("member profile_view ",member)
+    if not member:
+        return redirect('/member/profile/edit')
+    else:
+        return render(request, 'member/profile_view.html')
+@login_required        
+def update_profile_image(request):
+    member = getattr(request.user, 'member', None)
+    print("member update_profile_image ",member)
+    if request.method == 'POST':
+        if 'image' in request.FILES:
+            member.image = request.FILES['image']
+        member.save()
+        return redirect('/member/profile')
 
 @login_required
 def profile_edit_view(request):
     member = getattr(request.user, 'member', None)
-    has_coordinator = hasattr(request.user, 'coordinator')
-    
+    coordinator = getattr(request.user, 'coordinator', None)
+    print("member profile_edit_view ",member)
+    print("coordinator profile_edit_view ",coordinator)
+
     if request.method == 'POST':
         # Update User data
         request.user.first_name = request.POST.get('first_name', request.user.first_name)
@@ -102,8 +115,18 @@ def profile_edit_view(request):
         emergency_contact = request.POST.get('emergency_contact')
         emergency_name = request.POST.get('emergency_name')
         description = request.POST.get('description')
+        
         if not member:
             member = Member(user=request.user)
+            # Sync coordinator status if they signed up as one
+        if coordinator:
+            member.is_coordinator = True
+            if 'authorised_pdf' in request.FILES:
+                coordinator.authorised_pdf = request.FILES['authorised_pdf']
+            coordinator.save()
+            print("coordinator",coordinator)
+        else:
+            member.is_coordinator = False
             
         if dob: member.dob = dob
         member.address = address
@@ -113,22 +136,16 @@ def profile_edit_view(request):
         member.emergency_contact = emergency_contact
         member.emergency_name = emergency_name
         member.description = description
-        
+       
         if 'image' in request.FILES:
             member.image = request.FILES['image']
-            
-        if has_coordinator and 'authorised_pdf' in request.FILES:
-            request.user.coordinator.authorised_pdf = request.FILES['authorised_pdf']
-            request.user.coordinator.save()
+       
+      
         
-        if hasattr(request.user, 'coordinator') and request.user.coordinator.is_approved == True:
-            member.is_coordinator=True
-            
         member.save()
-        messages.success(request, "Profile updated successfully.")
-        return redirect('member_profile')
+        print("member2",member)
         
-    return render(request, 'member/profile_edit.html', {
-        'member': member,
-        'has_coordinator': has_coordinator
-    })
+        messages.success(request, "Profile updated successfully.")
+        return redirect('/member/profile')
+        
+    return render(request, 'member/profile_edit.html')

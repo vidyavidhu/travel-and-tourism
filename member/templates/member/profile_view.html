@@ -1,19 +1,20 @@
-user.member.{% extends 'base.html' %}
+{% extends 'base.html' %}
 {% load static %}
 
 {% block title %}My Profile - Trip Weaver{% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'member/css/member.css' %}">
+
 <link rel="stylesheet" href="{% static 'member/css/profile_view.css' %}">
 {% endblock %}
 
 {% block content %}
 <section class="section">
-    <div class="container" style="max-width: 800px;">
+    <div class="container profile-container">
         <div class="profile-header text-center mb-4">
-            <h2 style="color: var(--color-primary); margin-bottom: 5px; font-weight: 600;">My Profile</h2>
-            <p class="text-secondary" style="margin-bottom: 30px;">View and manage your personal details, emergency contacts, and coordinator status.</p>
+            <h2>My Profile</h2>
+            <p class="text-secondary">View and manage your personal details, emergency
+                contacts, and coordinator status.</p>
         </div>
         <!-- {% if messages %}
             {% for message in messages %}
@@ -22,29 +23,27 @@ user.member.{% extends 'base.html' %}
         {% endif %} -->
 
         <!-- Header Section -->
-        <div class="profile-display-card" style="border-top: 5px solid var(--color-primary);">
+        <div class="profile-display-card card-primary-top">
             <a href="{% url 'member_profile_edit' %}" class="section-edit-btn" title="Edit Profile">
                 <i class="fa-solid fa-pen-to-square"></i>
             </a>
             <div class="profile-header-display">
                 {% if user.member.image and user.member.image.name %}
-                <img src="{{ user.member.image.url }}" alt="Profile" class="profile-avatar"
-                    style="width: 120px; height: 120px; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
+                <img src="{{ user.member.image.url }}" alt="Profile" class="profile-avatar">
                 {% else %}
-                <div class="profile-avatar placeholder-icon"
-                    style="width: 120px; height: 120px; display:flex; align-items:center; justify-content:center; font-size: 3rem; color: white; background: linear-gradient(135deg, var(--color-primary), #2a5298); box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
+                <div class="profile-avatar placeholder-icon">
                     {{ user.username|make_list|first|upper }}
                 </div>
                 {% endif %}
-                <div style="flex: 1;">
-                    <h3 style="margin: 0 0 10px 0; font-size: 1.8rem; color: var(--text-primary);">{{ user.first_name }}
+                <div class="profile-header-info">
+                    <h3 class="profile-name">{{ user.first_name }}
                         {{ user.last_name }}</h3>
-                    <div style="display: flex; flex-direction: column; gap: 8px;">
-                        <span class="text-secondary" style="display: flex; align-items: center; gap: 8px;">
+                    <div class="profile-contact-list">
+                        <span class="text-secondary profile-contact-item">
                             <i class="fa-solid fa-at"></i>
                             {{ user.username }}
                         </span>
-                        <span class="text-secondary" style="display: flex; align-items: center; gap: 8px;">
+                        <span class="text-secondary profile-contact-item">
                             <i class="fa-solid fa-envelope"></i>
                             {{ user.email }}
                         </span>
@@ -55,57 +54,56 @@ user.member.{% extends 'base.html' %}
 
         <!-- Personal Details Section -->
         <div class="profile-display-card">
-            <a href="{% url 'member_profile_edit' %}" class="section-edit-btn" title="Edit Details">
+            <!-- <a href="{% url 'member_profile_edit' %}" class="section-edit-btn" title="Edit Details">
                 <i class="fa-solid fa-pen-to-square"></i>
-            </a>
-            <h4 style="display: flex; align-items: center; gap: 10px; margin-bottom: 20px; color: var(--text-primary);">
-                <i class="fa-regular fa-address-card" style="color: var(--color-primary); font-size: 1.2rem;"></i>
+            </a> -->
+            <h4 class="section-header">
+                <i class="fa-regular fa-address-card icon-primary"></i>
                 Personal Information
             </h4>
             <hr class="section-divider">
             <div class="profile-info-grid">
                 <div class="info-group">
-                    <div class="info-label" style="display: flex; align-items: center; gap: 6px;">
+                    <div class="info-label">
                         <i class="fa-regular fa-calendar"></i>
                         Date of Birth
                     </div>
                     <div class="info-value">{{ user.member.dob|default:"Not specified" }}</div>
                 </div>
                 <div class="info-group">
-                    <div class="info-label" style="display: flex; align-items: center; gap: 6px;">
+                    <div class="info-label">
                         <i class="fa-solid fa-venus-mars"></i>
                         Gender
                     </div>
                     <div class="info-value">{{ user.member.gender|default:"Not specified" }}</div>
                 </div>
                 <div class="info-group">
-                    <div class="info-label" style="display: flex; align-items: center; gap: 6px;">
+                    <div class="info-label">
                         <i class="fa-solid fa-phone"></i>
                         Phone Number
                     </div>
                     <div class="info-value">{{ user.member.phone|default:"Not specified" }}</div>
                 </div>
                 <div class="info-group">
-                    <div class="info-label" style="display: flex; align-items: center; gap: 6px;">
+                    <div class="info-label">
                         <i class="fa-solid fa-droplet"></i>
                         Blood Group
                     </div>
                     <div class="info-value">{{ user.member.bgroup|default:"Not specified" }}</div>
                 </div>
-                <div class="info-group" style="grid-column: 1 / -1;">
-                    <div class="info-label" style="display: flex; align-items: center; gap: 6px;">
+                <div class="info-group info-group-full">
+                    <div class="info-label">
                         <i class="fa-solid fa-location-dot"></i>
                         Address
                     </div>
                     <div class="info-value">{{ user.member.address|default:"Not specified" }}</div>
                 </div>
-                <div class="info-group" style="grid-column: 1 / -1;">
-                    <div class="info-label" style="display: flex; align-items: center; gap: 6px;">
+                <div class="info-group info-group-full">
+                    <div class="info-label">
                         <i class="fa-solid fa-circle-info"></i>
                         About Me
                     </div>
-                    <div class="info-value"
-                        style="background: rgba(0,0,0,0.03); padding: 15px; border-radius: 8px; border-left: 3px solid var(--color-primary); line-height: 1.6;">
+                    <div class="info-value info-value-box">
                         {{ user.member.description|default:"No description provided." }}
                     </div>
                 </div>
@@ -114,24 +112,24 @@ user.member.{% extends 'base.html' %}
 
         <!-- Emergency Contact Section -->
         <div class="profile-display-card">
-            <a href="{% url 'member_profile_edit' %}" class="section-edit-btn" title="Edit Emergency Contact">
+            <!-- <a href="{% url 'member_profile_edit' %}" class="section-edit-btn" title="Edit Emergency Contact">
                 <i class="fa-solid fa-pen-to-square"></i>
-            </a>
-            <h4 style="display: flex; align-items: center; gap: 10px; margin-bottom: 20px; color: var(--text-primary);">
-                <i class="fa-solid fa-truck-medical" style="color: #e11d48; font-size: 1.2rem;"></i>
+            </a> -->
+            <h4 class="section-header">
+                <i class="fa-solid fa-truck-medical icon-danger"></i>
                 Emergency Contact
             </h4>
             <hr class="section-divider">
             <div class="profile-info-grid">
                 <div class="info-group">
-                    <div class="info-label" style="display: flex; align-items: center; gap: 6px;">
+                    <div class="info-label">
                         <i class="fa-solid fa-user-shield"></i>
                         Contact Name
                     </div>
                     <div class="info-value">{{ user.member.emergency_name|default:"Not specified" }}</div>
                 </div>
                 <div class="info-group">
-                    <div class="info-label" style="display: flex; align-items: center; gap: 6px;">
+                    <div class="info-label">
                         <i class="fa-solid fa-phone"></i>
                         Contact Phone
                     </div>
@@ -141,72 +139,68 @@ user.member.{% extends 'base.html' %}
         </div>
 
         <!-- Coordinator Section -->
-        {% if has_coordinator %}
-        <div class="profile-display-card" style="border-top: 5px solid #f59e0b;">
-            <a href="{% url 'member_profile_edit' %}" class="section-edit-btn" title="Edit Coordinator Details">
+        {% if user.coordinator %}
+        <div class="profile-display-card card-warning-top">
+            <!-- <a href="{% url 'member_profile_edit' %}" class="section-edit-btn" title="Edit Coordinator Details">
                 <i class="fa-solid fa-pen-to-square"></i>
-            </a>
-            <h4 style="display: flex; align-items: center; gap: 10px; margin-bottom: 20px; color: var(--text-primary);">
-                <i class="fa-solid fa-certificate" style="color: #f59e0b; font-size: 1.2rem;"></i>
+            </a> -->
+            <h4 class="section-header">
+                <i class="fa-solid fa-certificate icon-warning"></i>
                 Coordinator Status
             </h4>
             <hr class="section-divider">
 
             <div class="profile-info-grid">
                 <div class="info-group">
-                    <div class="info-label" style="display: flex; align-items: center; gap: 6px;">
+                    <div class="info-label">
                         <i class="fa-regular fa-circle-check"></i>
                         Approval Status
                     </div>
                     {% if user.coordinator.is_approved %}
-                    <span class="status-badge status-approved"
-                        style="display: inline-flex; align-items: center; gap: 4px;">
+                    <span class="status-badge status-approved">
                         <i class="fa-solid fa-check"></i>
                         Approved
                     </span>
                     {% else %}
-                    <span class="status-badge status-pending"
-                        style="display: inline-flex; align-items: center; gap: 4px;">
+                    <span class="status-badge status-pending">
                         <i class="fa-regular fa-clock"></i>
                         Pending Approval
                     </span>
                     {% endif %}
                 </div>
                 <div class="info-group">
-                    <div class="info-label" style="display: flex; align-items: center; gap: 6px;">
+                    <div class="info-label">
                         <i class="fa-solid fa-shield-halved"></i>
                         Verification Status
                     </div>
 
                     {% if user.coordinator.is_authorised %}
-                    <span class="status-badge status-approved"
-                        style="display: inline-flex; align-items: center; gap: 4px;">
+                    <span class="status-badge status-approved">
                         <i class="fa-solid fa-check"></i>
                         Verified
                     </span>
                     {% else %}
-                    <span class="status-badge status-pending"
-                        style="display: inline-flex; align-items: center; gap: 4px;">
+                    <span class="status-badge status-pending">
                         <i class="fa-solid fa-xmark"></i>
                         Not Verified
                     </span>
                     {% endif %}
                 </div>
-                <div class="info-group" style="grid-column: 1 / -1;">
-                    <div class="info-label" style="display: flex; align-items: center; gap: 6px;">
+                <div class="info-group info-group-full">
+                    <div class="info-label">
                         <i class="fa-solid fa-file-pdf"></i>
                         Authorisation PDF / Certificate
                     </div>
                     {% if user.coordinator.authorised_pdf and user.coordinator.authorised_pdf.name %}
-                    <div style="margin-top: 10px;">
+                    <div class="doc-container">
                         <a href="{{ user.coordinator.authorised_pdf.url }}" target="_blank"
-                            class="btn btn-sm btn-outline" style="display: inline-flex; align-items: center; gap: 6px;">
+                            class="btn btn-sm btn-outline btn-with-icon">
                             <i class="fa-solid fa-up-right-from-square"></i>
                             View Document
                         </a>
                     </div>
                     {% else %}
-                    <div class="info-value text-secondary" style="margin-top: 10px;">No document uploaded.</div>
+                    <div class="info-value text-secondary doc-container">No document uploaded.</div>
                     {% endif %}
                 </div>
             </div>

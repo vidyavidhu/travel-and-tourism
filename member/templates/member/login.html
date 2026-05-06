@@ -13,12 +13,12 @@
         <div class="auth-card">
             <h2>Welcome Back</h2>
             <p class="text-secondary">Log in to continue your journey.</p>
-            <form method="POST" action="{% url 'member_login' %}" class="auth-form">
+            <form method="POST" action="" class="auth-form">
                 {% csrf_token %}
                 {% if messages %}
-                    {% for message in messages %}
-                        <div class="alert alert-{{ message.tags }}">{{ message }}</div>
-                    {% endfor %}
+                {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+                {% endfor %}
                 {% endif %}
                 <div class="form-group">
                     <label for="username">Username</label>
