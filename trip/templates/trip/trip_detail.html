@@ -250,13 +250,12 @@
                                                             style="left: -1.6rem; top: 0.3rem;"></span>
                                                         <div class="d-flex justify-content-between align-items-start">
                                                             <div>
-                                                                <h6 class="fw-bold m-0 text-dark">{{
-                                                                    stop.time_start|time:"g:i A" }} - {{ stop.title }}
+                                                                <h6 class="fw-bold m-0 text-dark">{{ stop.time_start|time:"g:i A" }} - {{ stop.title }}
                                                                 </h6>
                                                                 <small class="text-muted"><i
-                                                                        class="fas fa-map-pin me-1 text-danger"></i> {{
-                                                                    stop.location_end_name|default:stop.location_end_geo
-                                                                    }}</small>
+                                                                        class="fas fa-map-pin me-1 text-danger"></i>
+                                                                        {{ stop.location_to_name|default:stop.location_to_lattitude }}
+                                                                    </small>
                                                             </div>
                                                             <span class="badge bg-secondary">{{ stop.spending_time }}
                                                                 hrs</span>

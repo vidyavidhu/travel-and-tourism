@@ -90,11 +90,17 @@ class TripDayForm(forms.ModelForm):
 class ItineraryForm(forms.ModelForm):
     class Meta:
         model = Itinerary
-        fields = ['title', 'vehicle', 'date_start', 'time_start', 'location_start_geo', 'location_start_name', 'date_end', 'time_end', 'distance', 'travel_time', 'location_end_geo', 'location_end_name', 'spending_time', 'location_image', 'guidelines', 'description']
+        fields = ['title', 'vehicle', 'time_start', 'location_from_name', 'location_from_lattitude', 'location_from_longitude', 'time_end', 'distance', 'duration', 'location_to_name', 'location_to_lattitude', 'location_to_longitude', 'spending_time', 'location_image', 'guidelines', 'description']
         widgets = {
-            'date_start': forms.DateInput(attrs={'type': 'date'}),
-            'time_start': forms.TimeInput(attrs={'type': 'time'}),
-            'date_end': forms.DateInput(attrs={'type': 'date'}),
-            'time_end': forms.TimeInput(attrs={'type': 'time'}),
+            'time_start': forms.TimeInput(attrs={'type': 'time', 'class': 'form-control'}),
+            'time_end': forms.TimeInput(attrs={'type': 'time', 'class': 'form-control'}),
+            'location_from_name': forms.TextInput(attrs={'class': 'form-control', 'id': 'id_location_from_name'}),
+            'location_to_name': forms.TextInput(attrs={'class': 'form-control', 'id': 'id_location_to_name'}),
+            'location_from_lattitude': forms.HiddenInput(attrs={'id': 'id_location_from_lattitude'}),
+            'location_from_longitude': forms.HiddenInput(attrs={'id': 'id_location_from_longitude'}),
+            'location_to_lattitude': forms.HiddenInput(attrs={'id': 'id_location_to_lattitude'}),
+            'location_to_longitude': forms.HiddenInput(attrs={'id': 'id_location_to_longitude'}),
+            'distance': forms.NumberInput(attrs={'class': 'form-control', 'id': 'id_distance', 'readonly': 'readonly'}),
+            'duration': forms.TextInput(attrs={'class': 'form-control', 'id': 'id_duration', 'readonly': 'readonly'}),
         }
 

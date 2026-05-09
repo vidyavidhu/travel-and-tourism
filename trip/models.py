@@ -106,20 +106,28 @@ class Itinerary(models.Model):
     trip_day = models.ForeignKey(Trip_Day, on_delete=models.CASCADE)
     title = models.CharField(max_length=100)
     vehicle=models.ForeignKey(VechicleType,models.SET_NULL,null=True, blank=True)    
-    date_start = models.DateField()
     time_start = models.TimeField()
-    location_start_geo = models.CharField(max_length=250,default='0.000')
-    location_start_name=models.CharField(max_length=250,default='')
-    date_end = models.DateField()
+    location_from_name=models.CharField(max_length=250,default='')
+    location_from_lattitude=models.CharField(max_length=250,default='0.000')
+    location_from_longitude=models.CharField(max_length=250,default='0.000')
     time_end = models.TimeField()
-    distance = models.FloatField(default=0.00) #in kms
-    travel_time = models.CharField(max_length=10,default='0.00') #in hrs
-    location_end_geo = models.CharField(max_length=250,default='0.000')
-    location_end_name=models.CharField(max_length=250,default='')
+    distance = models.FloatField(default=0.00, blank=True, null=True) #in kms
+    duration = models.CharField(max_length=10,default='0.00', blank=True, null=True) #in hrs
+    location_to_name=models.CharField(max_length=250,default='', blank=True, null=True)
+    location_to_lattitude=models.CharField(max_length=250,default='0.000', blank=True, null=True)
+    location_to_longitude=models.CharField(max_length=250,default='0.000', blank=True, null=True)
     spending_time = models.CharField(max_length=10,default='0.00') #in hrs
     location_image = models.ImageField(upload_to='location_images/',null=True, blank=True) 
     guidelines = models.TextField(null=True, blank=True) 
     description = models.TextField(null=True, blank=True) 
+    def save(self, *args, **kwargs):
+        if not self.location_to_name:
+            self.location_to_name = self.location_from_name
+            self.location_to_lattitude = self.location_from_lattitude
+            self.location_to_longitude = self.location_from_longitude
+            self.distance = 0.0
+            self.duration = '0'
+        super().save(*args, **kwargs)
     def __str__(self):
         return self.title
 

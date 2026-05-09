@@ -74,6 +74,7 @@
                                                             {% endif %}
                                                         </div>
                                                     </div>
+                                                    {% if form.from_date %}
                                                     <div class="col-md-3">
                                                         <div class="form-floating-custom position-relative">
                                                             <label for="{{ form.from_date.id_for_label }}" class="form-label fw-semibold text-dark mb-2">Date {% if form.from_date.field.required %}<span class="text-danger">*</span>{% endif %}</label>
@@ -83,6 +84,8 @@
                                                             {% endif %}
                                                         </div>
                                                     </div>
+                                                    {% endif %}
+                                                    {% if form.from_time %}
                                                     <div class="col-md-3">
                                                         <div class="form-floating-custom position-relative">
                                                             <label for="{{ form.from_time.id_for_label }}" class="form-label fw-semibold text-dark mb-2">Time {% if form.from_time.field.required %}<span class="text-danger">*</span>{% endif %}</label>
@@ -92,6 +95,17 @@
                                                             {% endif %}
                                                         </div>
                                                     </div>
+                                                    {% elif form.time_start %}
+                                                    <div class="col-md-6">
+                                                        <div class="form-floating-custom position-relative">
+                                                            <label for="{{ form.time_start.id_for_label }}" class="form-label fw-semibold text-dark mb-2">Time {% if form.time_start.field.required %}<span class="text-danger">*</span>{% endif %}</label>
+                                                            {% render_field form.time_start class="form-control premium-input" %}
+                                                            {% if form.time_start.errors %}
+                                                                <div class="invalid-feedback d-block fw-medium mt-1">{% for error in form.time_start.errors %}<i class="fas fa-info-circle me-1"></i>{{ error }}{% endfor %}</div>
+                                                            {% endif %}
+                                                        </div>
+                                                    </div>
+                                                    {% endif %}
                                                 </div>
 
                                                 <h5 class="mb-3 text-secondary fw-bold"><i class="fas fa-plane-arrival me-2"></i>To</h5>
@@ -105,6 +119,7 @@
                                                             {% endif %}
                                                         </div>
                                                     </div>
+                                                    {% if form.to_date %}
                                                     <div class="col-md-3">
                                                         <div class="form-floating-custom position-relative">
                                                             <label for="{{ form.to_date.id_for_label }}" class="form-label fw-semibold text-dark mb-2">Date {% if form.to_date.field.required %}<span class="text-danger">*</span>{% endif %}</label>
@@ -114,6 +129,8 @@
                                                             {% endif %}
                                                         </div>
                                                     </div>
+                                                    {% endif %}
+                                                    {% if form.to_time %}
                                                     <div class="col-md-3">
                                                         <div class="form-floating-custom position-relative">
                                                             <label for="{{ form.to_time.id_for_label }}" class="form-label fw-semibold text-dark mb-2">Time {% if form.to_time.field.required %}<span class="text-danger">*</span>{% endif %}</label>
@@ -123,21 +140,32 @@
                                                             {% endif %}
                                                         </div>
                                                     </div>
+                                                    {% elif form.time_end %}
+                                                    <div class="col-md-6">
+                                                        <div class="form-floating-custom position-relative">
+                                                            <label for="{{ form.time_end.id_for_label }}" class="form-label fw-semibold text-dark mb-2">Time {% if form.time_end.field.required %}<span class="text-danger">*</span>{% endif %}</label>
+                                                            {% render_field form.time_end class="form-control premium-input" %}
+                                                            {% if form.time_end.errors %}
+                                                                <div class="invalid-feedback d-block fw-medium mt-1">{% for error in form.time_end.errors %}<i class="fas fa-info-circle me-1"></i>{{ error }}{% endfor %}</div>
+                                                            {% endif %}
+                                                        </div>
+                                                    </div>
+                                                    {% endif %}
                                                 </div>
                                             </div>
                                         </div>
-                                    {% elif field.name == 'location_to_name' or field.name == 'from_date' or field.name == 'to_date' or field.name == 'from_time' or field.name == 'to_time' %}
+                                    {% elif field.name == 'location_to_name' or field.name == 'from_date' or field.name == 'to_date' or field.name == 'from_time' or field.name == 'to_time' or field.name == 'time_start' or field.name == 'time_end' or field.name == 'location_from_lattitude' or field.name == 'location_from_longitude' or field.name == 'location_to_lattitude' or field.name == 'location_to_longitude' %}
                                         {# Skip, already rendered #}
-                                    {% elif field.name == 'distance' %}
+                                    {% elif field.name == 'distance' or field.name == 'duration' %}
                                         <div class="col-md-6">
                                             <div class="form-floating-custom position-relative">
-                                                <label for="id_distance_display" class="form-label fw-semibold text-dark mb-2">Distance {% if field.field.required %}<span class="text-danger">*</span>{% endif %}</label>
+                                                <label for="id_{{ field.name }}_display" class="form-label fw-semibold text-dark mb-2">{{ field.label }} {% if field.field.required %}<span class="text-danger">*</span>{% endif %}</label>
                                                 
                                                 <div class="d-none">
-                                                    {% render_field field id="id_distance" %}
+                                                    {% render_field field id="id_"|add:field.name %}
                                                 </div>
                                                 
-                                                <input type="text" id="id_distance_display" class="form-control premium-input {% if field.errors %}is-invalid{% endif %}" placeholder="Distance" readonly value="{% if field.value %}{{ field.value }} km{% endif %}">
+                                                <input type="text" id="id_{{ field.name }}_display" class="form-control premium-input {% if field.errors %}is-invalid{% endif %}" placeholder="{{ field.label }}" readonly value="{% if field.value %}{{ field.value }}{% endif %}">
                                                 
                                                 {% if field.errors %}
                                                     <div class="invalid-feedback d-block fw-medium mt-1">
