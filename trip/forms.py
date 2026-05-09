@@ -75,14 +75,16 @@ class TripMembersForm(forms.ModelForm):
     class Meta:
         model = Trip_Members
         fields = ['member', 'status', 'payment_status', 'description']
+        widgets = {
+            'status': forms.HiddenInput(),
+        }
 
 class TripDayForm(forms.ModelForm):
     class Meta:
         model = Trip_Day
-        fields = ['activity_type', 'vehicle', 'date', 'time', 'location', 'location_image', 'guidelines', 'description']
+        fields = ['date']
         widgets = {
             'date': forms.DateInput(attrs={'type': 'date'}),
-            'time': forms.TimeInput(attrs={'type': 'time'}),
         }
 
 class ItineraryForm(forms.ModelForm):

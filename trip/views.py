@@ -97,6 +97,19 @@ class TripMembersCreateView(CreateView):
     form_class = TripMembersForm
     template_name = 'trip/trip_form.html'
     
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        trip = get_object_or_404(Trip, pk=self.kwargs['trip_id'])
+        try:
+            trip_details = Trip_Details.objects.get(trip=trip)
+            if trip_details.max_members > 0:
+                context['per_head_cost'] = trip_details.estimated_cost / trip_details.max_members
+            else:
+                context['per_head_cost'] = trip_details.estimated_cost
+        except Trip_Details.DoesNotExist:
+            context['per_head_cost'] = None
+        return context
+    
     def form_valid(self, form):
         trip = get_object_or_404(Trip, pk=self.kwargs['trip_id'])
         form.instance.trip = trip

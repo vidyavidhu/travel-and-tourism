@@ -42,6 +42,18 @@
                                 </div>
                             {% endif %}
 
+                            {% if per_head_cost is not None %}
+                                <div class="alert alert-info custom-alert shadow-sm rounded-3 mb-4" role="alert">
+                                    <div class="d-flex align-items-center">
+                                        <i class="fas fa-coins me-3 fs-4"></i>
+                                        <div>
+                                            <h5 class="mb-0 fw-bold">Per Head Cost: ₹{{ per_head_cost|floatformat:2 }}</h5>
+                                            <small>Estimated cost per member based on current trip details</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endif %}
+
                             <div class="row g-4">
                                 {% for field in form %}
                                     {% if field.is_hidden %}
