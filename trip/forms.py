@@ -64,7 +64,7 @@ class TripFilterForm(forms.Form):
     to_date = forms.DateField(required=False, label='To Date (<=)', widget=forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}))
     status = forms.ChoiceField(choices=[('', 'All'), (1, 'Active'), (0, 'Inactive')], required=False, widget=forms.Select(attrs={'class': 'form-control'}))
 
-from .models import Trip_Details, Trip_Members, Trip_Day, Itinerary
+from .models import Trip_Details, Trip_Members, Trip_Day, Itinerary, Gallery
 
 class TripDetailsForm(forms.ModelForm):
     class Meta:
@@ -104,3 +104,13 @@ class ItineraryForm(forms.ModelForm):
             'duration': forms.TextInput(attrs={'class': 'form-control', 'id': 'id_duration', 'readonly': 'readonly'}),
         }
 
+class GalleryForm(forms.ModelForm):
+    class Meta:
+        model = Gallery
+        fields = ['title', 'image', 'video', 'description']
+        widgets = {
+            'title': forms.TextInput(attrs={'class': 'form-control'}),
+            'image': forms.FileInput(attrs={'class': 'form-control'}),
+            'video': forms.FileInput(attrs={'class': 'form-control'}),
+            'description': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
+        }

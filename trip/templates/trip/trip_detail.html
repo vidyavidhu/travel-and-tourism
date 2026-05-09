@@ -250,7 +250,8 @@
                                                             style="left: -1.6rem; top: 0.3rem;"></span>
                                                         <div class="d-flex justify-content-between align-items-start">
                                                             <div>
-                                                                <h6 class="fw-bold m-0 text-dark">{{ stop.time_start|time:"g:i A" }} - {{ stop.title }}
+                                                                <h6 class="fw-bold m-0 text-dark">
+                                                                    {{ stop.time_start|time:"g:i A" }} - <a href="{% url 'itinerary_detail' stop.pk %}" class="text-primary text-decoration-none text-uppercase">{{ stop.title }}</a>
                                                                 </h6>
                                                                 <small class="text-muted"><i
                                                                         class="fas fa-map-pin me-1 text-danger"></i>

@@ -1,8 +1,9 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from django.urls import reverse_lazy
+from django.urls import reverse_lazy, reverse
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
-from .models import Trip
-from .forms import TripForm, TripFilterForm
+from django.db.models import Q
+from .models import Trip, Trip_Details, Trip_Members, Trip_Day, Itinerary, Gallery, Comments, Reply, Reaction, Rating
+from .forms import TripForm, TripFilterForm, TripDetailsForm, TripMembersForm, TripDayForm, ItineraryForm, GalleryForm
 
 class TripListView(ListView):
     model = Trip
@@ -160,3 +161,28 @@ class TripDeleteView(DeleteView):
     model = Trip
     template_name = 'trip/trip_confirm_delete.html'
     success_url = reverse_lazy('trip_list')
+
+class ItineraryDetailView(DetailView):
+    model = Itinerary
+    template_name = 'trip/itinerary_detail.html'
+    context_object_name = 'itinerary'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['gallery_items'] = Gallery.objects.filter(itinerary=self.object).order_by('-date_time')
+        context['comments'] = Comments.objects.filter(itinerary=self.object).order_by('-date_time')
+        from .forms import GalleryForm
+        context['gallery_form'] = GalleryForm()
+        return context
+
+class GalleryCreateView(CreateView):
+    model = Gallery
+    form_class = GalleryForm
+    
+    def form_valid(self, form):
+        itinerary = get_object_or_404(Itinerary, pk=self.kwargs['itinerary_id'])
+        form.instance.itinerary = itinerary
+        return super().form_valid(form)
+        
+    def get_success_url(self):
+        return reverse('itinerary_detail', kwargs={'pk': self.kwargs['itinerary_id']})

@@ -143,3 +143,55 @@ def auto_generate_trip_days(sender, instance, created, **kwargs):
             Trip_Day.objects.get_or_create(trip=instance, date=current_date)
             current_date += timedelta(days=1)
 
+class Gallery(models.Model):
+    itinerary = models.ForeignKey(Itinerary, on_delete=models.CASCADE)  
+    title = models.CharField(max_length=100)
+    image = models.ImageField(upload_to='gallery/images/',null=True, blank=True) 
+    video = models.FileField(upload_to='gallery/videos/',null=True, blank=True)
+    description = models.TextField(null=True, blank=True) 
+    date_time=models.DateTimeField(auto_now_add=True)
+    def __str__(self):
+        return self.title
+
+class Comments(models.Model):
+    itinerary = models.ForeignKey(Itinerary, on_delete=models.CASCADE)  
+    message_by=models.ForeignKey(Trip_Members, on_delete=models.CASCADE)  
+    text=models.TextField(null=True, blank=True) 
+    image=models.ImageField(upload_to='message_images/',null=True, blank=True) 
+    audio=models.FileField(upload_to='message_audio/',null=True, blank=True) 
+    video=models.FileField(upload_to='message_video/',null=True, blank=True) 
+    gif=models.FileField(upload_to='message_gif/',null=True, blank=True) 
+    date_time=models.DateTimeField(auto_now_add=True) 
+    def __str__(self):
+        return str(self.text)[:50]
+
+class Reply(models.Model):
+    comment = models.ForeignKey(Comments, on_delete=models.CASCADE, related_name='replies')  
+    reply_by=models.ForeignKey(Trip_Members, on_delete=models.CASCADE)  
+    text=models.TextField(null=True, blank=True) 
+    image=models.ImageField(upload_to='reply_images/',null=True, blank=True) 
+    audio=models.FileField(upload_to='reply_audio/',null=True, blank=True) 
+    video=models.FileField(upload_to='reply_video/',null=True, blank=True) 
+    gif=models.FileField(upload_to='reply_gif/',null=True, blank=True) 
+    emoji=models.CharField(max_length=10,null=True, blank=True) 
+    date_time=models.DateTimeField(auto_now_add=True)    
+    def __str__(self):
+        return str(self.text)[:50]
+
+class Reaction(models.Model):
+    comment=models.ForeignKey(Comments, on_delete=models.CASCADE,null=True, blank=True)  
+    is_reply=models.IntegerField(default=0) #0 for not reply, 1 for reply
+    reply=models.ForeignKey(Reply, on_delete=models.CASCADE,null=True, blank=True)  
+    member=models.ForeignKey(Trip_Members, on_delete=models.CASCADE)  
+    date_time=models.DateTimeField(auto_now_add=True) 
+    is_like=models.IntegerField(default=0) #0 for not liked, 1 for liked,2 for loved,3 for angry,4 for sad
+    def __str__(self):
+        return f"Reaction by {self.member}"
+        
+class Rating(models.Model):
+    itinerary = models.ForeignKey(Itinerary, on_delete=models.CASCADE)  
+    member=models.ForeignKey(Trip_Members, on_delete=models.CASCADE)  
+    rating=models.IntegerField() 
+    def __str__(self):
+        return str(self.rating)
+
