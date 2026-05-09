@@ -396,7 +396,7 @@ img {
 .main-footer {
   background-color: #121212;
   color: #adb5bd;
-  padding: 40px 0 20px;
+  padding: 15px 0;
   text-align: center;
 }
 
@@ -591,12 +591,12 @@ img {
 .main-footer {
   background-color: #121212;
   color: #adb5bd;
-  padding: 40px 0 20px;
+  padding: 15px 0;
   text-align: center;
 }
 
 .main-footer p {
-  margin-top: 20px;
+  margin: 0;
   font-size: 0.9rem;
 }
 

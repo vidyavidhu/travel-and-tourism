@@ -6,8 +6,30 @@ class TripForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(TripForm, self).__init__(*args, **kwargs)
         if 'coordinator' in self.fields:
-            self.fields['coordinator'].queryset = Coordinator.objects.filter(status=1)
-
+            qs = Coordinator.objects.filter(status=1)
+            
+            from_date = None
+            to_date = None
+            
+            if self.is_bound and self.data:
+                from_date = self.data.get('from_date')
+                to_date = self.data.get('to_date')
+            elif self.instance and self.instance.pk:
+                from_date = self.instance.from_date
+                to_date = self.instance.to_date
+                
+            if from_date and to_date:
+                from django.db.models import Q
+                overlapping_trips = Trip.objects.filter(
+                    Q(from_date__lte=to_date) & Q(to_date__gte=from_date)
+                )
+                if self.instance and self.instance.pk:
+                    overlapping_trips = overlapping_trips.exclude(pk=self.instance.pk)
+                    
+                busy_coordinator_ids = overlapping_trips.values_list('coordinator_id', flat=True)
+                qs = qs.exclude(id__in=busy_coordinator_ids)
+                
+            self.fields['coordinator'].queryset = qs
     class Meta:
         model = Trip
         fields = ['image', 'title', 'category', 'location_from_name', 'location_from_lattitude', 'location_from_longitude', 'location_to_name', 'location_to_lattitude', 'location_to_longitude', 'distance', 'from_date', 'from_time', 'to_date', 'to_time', 'duration', 'description', 'coordinator', 'guidelines', 'status']
