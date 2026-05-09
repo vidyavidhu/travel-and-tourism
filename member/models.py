@@ -23,7 +23,7 @@ class Coordinator(models.Model):
     is_authorised = models.BooleanField(default=False)
     authorised_pdf = models.FileField(upload_to='uploads/pdfs/',null=True, blank=True) 
     description = models.TextField(null=True, blank=True)  
-    status = models.IntegerField(default=1) #0 for not active, 1 for active
+    status = models.IntegerField(choices=[(0, '0'), (1, '1')], default=1) #0 for not active, 1 for active
     is_approved = models.BooleanField(default=False)
     def __str__(self):
         return self.user.username

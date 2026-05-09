@@ -38,14 +38,19 @@ class Trip(models.Model):
     image = models.ImageField(upload_to='trips/',null=True, blank=True)    
     title = models.CharField(max_length=100) 
     category = models.ForeignKey(TripCategory, on_delete=models.CASCADE)
-    location=models.CharField(max_length=250)
+    location_from_name=models.CharField(max_length=250,default='')
+    location_from_lattitude=models.CharField(max_length=250,default='0.000')
+    location_from_longitude=models.CharField(max_length=250,default='0.000')
+    location_to_name=models.CharField(max_length=250,default='')
+    location_to_lattitude=models.CharField(max_length=250,default='0.00')
+    location_to_longitude=models.CharField(max_length=250,default='0.000')
     distance=models.FloatField()
     from_date=models.DateField()
     from_time=models.TimeField()
     to_date=models.DateField()
     to_time=models.TimeField()
     duration=models.CharField(max_length=100)
-    description = models.TextField(null=True, blank=True) 
+    description = models.TextField(null=True, blank=True)  
     coordinator = models.ForeignKey(Coordinator, on_delete=models.CASCADE)
     guidelines = models.TextField(null=True, blank=True)
     status = models.IntegerField(default=1)  
@@ -64,7 +69,7 @@ class Vehicle(models.Model):
     description = models.TextField(null=True, blank=True) 
     status = models.IntegerField(default=1) #0 for not booked, 1 for booked
     def __str__(self):
-        return self.vehicle_type.name+" - "+self.vehicle_number+" - "+self.contact_name
+        return self.vehicle_number
 
 class Trip_Details(models.Model):
     trip=models.OneToOneField(Trip, on_delete=models.CASCADE) 
@@ -92,8 +97,8 @@ class ActivityType(models.Model):
     
 class Trip_Day(models.Model):
     trip = models.ForeignKey(Trip, on_delete=models.CASCADE)
-    activity_type=models.ForeignKey(ActivityType, on_delete=models.CASCADE)
-    vehicle=models.ForeignKey(Vehicle, on_delete=models.CASCADE)    
+    activity_type=models.ForeignKey(ActivityType, models.SET_NULL,null=True, blank=True)
+    vehicle=models.ForeignKey(Vehicle,models.SET_NULL,null=True, blank=True)    
     date = models.DateField()
     time = models.TimeField()
     location = models.CharField(max_length=250)
@@ -106,7 +111,7 @@ class Trip_Day(models.Model):
 class Itinerary(models.Model):
     trip_day = models.ForeignKey(Trip_Day, on_delete=models.CASCADE)
     title = models.CharField(max_length=100)
-    vehicle=models.ForeignKey(Vehicle, on_delete=models.CASCADE)    
+    vehicle=models.ForeignKey(Vehicle,models.SET_NULL,null=True, blank=True)    
     date_start = models.DateField()
     time_start = models.TimeField()
     location_start_geo = models.CharField(max_length=250)

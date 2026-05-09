@@ -44,35 +44,133 @@
 
                             <div class="row g-4">
                                 {% for field in form %}
-                                    {% if field.name == 'description' or field.name == 'guidelines' %}
-                                        <div class="col-12">
-                                    {% elif field.name == 'title' or field.name == 'location' or field.name == 'image' %}
-                                        <div class="col-12 col-md-12">
-                                    {% else %}
-                                        <div class="col-md-6">
-                                    {% endif %}
-                                    
-                                        <div class="form-floating-custom position-relative">
-                                            <label for="{{ field.id_for_label }}" class="form-label fw-semibold text-dark mb-2">
-                                                {{ field.label }} {% if field.field.required %}<span class="text-danger">*</span>{% endif %}
-                                            </label>
-                                            
-                                            {% if field.errors %}
-                                                {% render_field field class="form-control premium-input is-invalid" %}
-                                                <div class="invalid-feedback fw-medium mt-1">
-                                                    {% for error in field.errors %}
-                                                        <i class="fas fa-info-circle me-1"></i> {{ error }}
-                                                    {% endfor %}
+                                    {% if field.is_hidden %}
+                                        {{ field }}
+                                    {% elif field.name == 'location_from_name' %}
+                                        <div class="col-12 mt-4">
+                                            <div class="p-4 border border-2 rounded-4 bg-light shadow-sm">
+                                                <h4 class="mb-4 text-primary fw-bold"><i class="fas fa-map-marked-alt me-2"></i>Location Details</h4>
+                                                
+                                                <h5 class="mb-3 text-secondary fw-bold"><i class="fas fa-plane-departure me-2"></i>From</h5>
+                                                <div class="row g-3 mb-4">
+                                                    <div class="col-md-6">
+                                                        <div class="form-floating-custom position-relative">
+                                                            <label for="{{ form.location_from_name.id_for_label }}" class="form-label fw-semibold text-dark mb-2">Location {% if form.location_from_name.field.required %}<span class="text-danger">*</span>{% endif %}</label>
+                                                            {% render_field form.location_from_name class="form-control premium-input" placeholder="Location" %}
+                                                            {% if form.location_from_name.errors %}
+                                                                <div class="invalid-feedback d-block fw-medium mt-1">{% for error in form.location_from_name.errors %}<i class="fas fa-info-circle me-1"></i>{{ error }}{% endfor %}</div>
+                                                            {% endif %}
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-3">
+                                                        <div class="form-floating-custom position-relative">
+                                                            <label for="{{ form.from_date.id_for_label }}" class="form-label fw-semibold text-dark mb-2">Date {% if form.from_date.field.required %}<span class="text-danger">*</span>{% endif %}</label>
+                                                            {% render_field form.from_date class="form-control premium-input" %}
+                                                            {% if form.from_date.errors %}
+                                                                <div class="invalid-feedback d-block fw-medium mt-1">{% for error in form.from_date.errors %}<i class="fas fa-info-circle me-1"></i>{{ error }}{% endfor %}</div>
+                                                            {% endif %}
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-3">
+                                                        <div class="form-floating-custom position-relative">
+                                                            <label for="{{ form.from_time.id_for_label }}" class="form-label fw-semibold text-dark mb-2">Time {% if form.from_time.field.required %}<span class="text-danger">*</span>{% endif %}</label>
+                                                            {% render_field form.from_time class="form-control premium-input" %}
+                                                            {% if form.from_time.errors %}
+                                                                <div class="invalid-feedback d-block fw-medium mt-1">{% for error in form.from_time.errors %}<i class="fas fa-info-circle me-1"></i>{{ error }}{% endfor %}</div>
+                                                            {% endif %}
+                                                        </div>
+                                                    </div>
                                                 </div>
-                                            {% else %}
-                                                {% render_field field class="form-control premium-input" placeholder=field.label %}
-                                            {% endif %}
-                                            
-                                            {% if field.help_text %}
-                                                <div class="form-text text-muted mt-1"><small>{{ field.help_text }}</small></div>
-                                            {% endif %}
+
+                                                <h5 class="mb-3 text-secondary fw-bold"><i class="fas fa-plane-arrival me-2"></i>To</h5>
+                                                <div class="row g-3">
+                                                    <div class="col-md-6">
+                                                        <div class="form-floating-custom position-relative">
+                                                            <label for="{{ form.location_to_name.id_for_label }}" class="form-label fw-semibold text-dark mb-2">Location {% if form.location_to_name.field.required %}<span class="text-danger">*</span>{% endif %}</label>
+                                                            {% render_field form.location_to_name class="form-control premium-input" placeholder="Location" %}
+                                                            {% if form.location_to_name.errors %}
+                                                                <div class="invalid-feedback d-block fw-medium mt-1">{% for error in form.location_to_name.errors %}<i class="fas fa-info-circle me-1"></i>{{ error }}{% endfor %}</div>
+                                                            {% endif %}
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-3">
+                                                        <div class="form-floating-custom position-relative">
+                                                            <label for="{{ form.to_date.id_for_label }}" class="form-label fw-semibold text-dark mb-2">Date {% if form.to_date.field.required %}<span class="text-danger">*</span>{% endif %}</label>
+                                                            {% render_field form.to_date class="form-control premium-input" %}
+                                                            {% if form.to_date.errors %}
+                                                                <div class="invalid-feedback d-block fw-medium mt-1">{% for error in form.to_date.errors %}<i class="fas fa-info-circle me-1"></i>{{ error }}{% endfor %}</div>
+                                                            {% endif %}
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-3">
+                                                        <div class="form-floating-custom position-relative">
+                                                            <label for="{{ form.to_time.id_for_label }}" class="form-label fw-semibold text-dark mb-2">Time {% if form.to_time.field.required %}<span class="text-danger">*</span>{% endif %}</label>
+                                                            {% render_field form.to_time class="form-control premium-input" %}
+                                                            {% if form.to_time.errors %}
+                                                                <div class="invalid-feedback d-block fw-medium mt-1">{% for error in form.to_time.errors %}<i class="fas fa-info-circle me-1"></i>{{ error }}{% endfor %}</div>
+                                                            {% endif %}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
-                                    </div>
+                                    {% elif field.name == 'location_to_name' or field.name == 'from_date' or field.name == 'to_date' or field.name == 'from_time' or field.name == 'to_time' %}
+                                        {# Skip, already rendered #}
+                                    {% elif field.name == 'distance' %}
+                                        <div class="col-md-6">
+                                            <div class="form-floating-custom position-relative">
+                                                <label for="id_distance_display" class="form-label fw-semibold text-dark mb-2">Distance {% if field.field.required %}<span class="text-danger">*</span>{% endif %}</label>
+                                                
+                                                <div class="d-none">
+                                                    {% render_field field id="id_distance" %}
+                                                </div>
+                                                
+                                                <input type="text" id="id_distance_display" class="form-control premium-input {% if field.errors %}is-invalid{% endif %}" placeholder="Distance" readonly value="{% if field.value %}{{ field.value }} km{% endif %}">
+                                                
+                                                {% if field.errors %}
+                                                    <div class="invalid-feedback d-block fw-medium mt-1">
+                                                        {% for error in field.errors %}
+                                                            <i class="fas fa-info-circle me-1"></i> {{ error }}
+                                                        {% endfor %}
+                                                    </div>
+                                                {% endif %}
+                                                
+                                                {% if field.help_text %}
+                                                    <div class="form-text text-muted mt-1"><small>{{ field.help_text }}</small></div>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    {% else %}
+                                        {% if field.name == 'description' or field.name == 'guidelines' %}
+                                            <div class="col-12">
+                                        {% elif field.name == 'title' or field.name == 'location' or field.name == 'image' %}
+                                            <div class="col-12 col-md-12">
+                                        {% else %}
+                                            <div class="col-md-6">
+                                        {% endif %}
+                                        
+                                            <div class="form-floating-custom position-relative">
+                                                <label for="{{ field.id_for_label }}" class="form-label fw-semibold text-dark mb-2">
+                                                    {{ field.label }} {% if field.field.required %}<span class="text-danger">*</span>{% endif %}
+                                                </label>
+                                                
+                                                {% if field.errors %}
+                                                    {% render_field field class="form-control premium-input is-invalid" %}
+                                                    <div class="invalid-feedback fw-medium mt-1">
+                                                        {% for error in field.errors %}
+                                                            <i class="fas fa-info-circle me-1"></i> {{ error }}
+                                                        {% endfor %}
+                                                    </div>
+                                                {% else %}
+                                                    {% render_field field class="form-control premium-input" placeholder=field.label %}
+                                                {% endif %}
+                                                
+                                                {% if field.help_text %}
+                                                    <div class="form-text text-muted mt-1"><small>{{ field.help_text }}</small></div>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    {% endif %}
                                 {% endfor %}
                             </div>
 
@@ -103,21 +201,86 @@
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAjDxjhF5QmTBloP61Uqh44InCyIJFAgww&libraries=places"></script>
 <script>
     document.addEventListener("DOMContentLoaded", function() {
-        // The ID of the location input field generated by Django forms is typically 'id_location'
-        const locationInput = document.getElementById('id_location');
-        
-        if (locationInput) {
-            // Initialize Google Places Autocomplete
-            const autocomplete = new google.maps.places.Autocomplete(locationInput, {
-                // You can restrict to certain types like '(cities)' or 'geocode'
+        const fromInput = document.getElementById('id_location_from_name');
+        const toInput = document.getElementById('id_location_to_name');
+        const fromLatInput = document.getElementById('id_location_from_lattitude');
+        const fromLngInput = document.getElementById('id_location_from_longitude');
+        const toLatInput = document.getElementById('id_location_to_lattitude');
+        const toLngInput = document.getElementById('id_location_to_longitude');
+        const distanceInput = document.getElementById('id_distance');
+        const distanceDisplay = document.getElementById('id_distance_display');
+        const durationInput = document.getElementById('id_duration');
+
+        function calculateDistance() {
+            if (fromLatInput.value && fromLngInput.value && toLatInput.value && toLngInput.value) {
+                const origin = new google.maps.LatLng(fromLatInput.value, fromLngInput.value);
+                const destination = new google.maps.LatLng(toLatInput.value, toLngInput.value);
+                
+                const service = new google.maps.DistanceMatrixService();
+                service.getDistanceMatrix(
+                  {
+                    origins: [origin],
+                    destinations: [destination],
+                    travelMode: 'DRIVING',
+                  }, callback);
+
+                function callback(response, status) {
+                    if (status == 'OK') {
+                        const origins = response.originAddresses;
+                        const destinations = response.destinationAddresses;
+
+                        for (let i = 0; i < origins.length; i++) {
+                            let results = response.rows[i].elements;
+                            for (let j = 0; j < results.length; j++) {
+                                let element = results[j];
+                                if(element.status === "OK") {
+                                    let distance = element.distance.value; // in meters
+                                    let duration = element.duration.text;
+                                    let distKm = (distance / 1000).toFixed(2);
+                                    if (distanceInput) distanceInput.value = distKm; 
+                                    if (distanceDisplay) distanceDisplay.value = distKm + " km";
+                                    if (durationInput) durationInput.value = duration;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        if (fromInput) {
+            const fromAutocomplete = new google.maps.places.Autocomplete(fromInput, {
                 types: ['geocode'],
             });
+            
+            fromAutocomplete.addListener('place_changed', function() {
+                const place = fromAutocomplete.getPlace();
+                if (!place.geometry) return;
+                fromLatInput.value = place.geometry.location.lat();
+                fromLngInput.value = place.geometry.location.lng();
+                calculateDistance();
+            });
 
-            // Prevent form submission when pressing Enter to select a place from the dropdown
-            locationInput.addEventListener('keydown', function(e) {
-                if (e.keyCode === 13) {
-                    e.preventDefault();
-                }
+            fromInput.addEventListener('keydown', function(e) {
+                if (e.keyCode === 13) e.preventDefault();
+            });
+        }
+
+        if (toInput) {
+            const toAutocomplete = new google.maps.places.Autocomplete(toInput, {
+                types: ['geocode'],
+            });
+            
+            toAutocomplete.addListener('place_changed', function() {
+                const place = toAutocomplete.getPlace();
+                if (!place.geometry) return;
+                toLatInput.value = place.geometry.location.lat();
+                toLngInput.value = place.geometry.location.lng();
+                calculateDistance();
+            });
+
+            toInput.addEventListener('keydown', function(e) {
+                if (e.keyCode === 13) e.preventDefault();
             });
         }
     });

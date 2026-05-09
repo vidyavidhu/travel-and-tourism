@@ -72,10 +72,10 @@
                         <label for="gender"><i class="fa-solid fa-venus-mars"></i> Gender</label>
                         <select id="gender" name="gender" class="form-control" required>
                             <option value="">Select Gender</option>
-                            <option value="Female" {% if user.member.gender == 'Female' %}selected{% endif %}>Female
+                            <option value="Female" {% if user.member.gender=='Female' %}selected{% endif %}>Female
                             </option>
-                            <option value="Male" {% if user.member.gender == 'Male' %}selected{% endif %}>Male</option>
-                            <option value="Transgender" {% if user.member.gender == 'Transgender' %}selected{% endif %}>
+                            <option value="Male" {% if user.member.gender=='Male' %}selected{% endif %}>Male</option>
+                            <option value="Transgender" {% if user.member.gender=='Transgender' %}selected{% endif %}>
                                 Transgender</option>
                         </select>
                     </div>
@@ -85,7 +85,7 @@
                     <div class="form-group">
                         <label for="phone"><i class="fa-solid fa-phone"></i> Phone Number</label>
                         <input type="tel" id="phone" name="phone" class="form-control" value="{{ user.member.phone }}"
-                            required>
+                            pattern="[0-9]{10}" required>
                     </div>
                     <div class="form-group">
                         <label for="bgroup"><i class="fa-solid fa-droplet"></i> Blood Group</label>

@@ -44,6 +44,89 @@ class TripDetailView(DetailView):
     template_name = 'trip/trip_detail.html'
     context_object_name = 'trip'
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        trip = self.object
+        
+        # Details
+        from .models import Trip_Details, Trip_Members, Trip_Day
+        try:
+            context['trip_details'] = Trip_Details.objects.get(trip=trip)
+        except Trip_Details.DoesNotExist:
+            context['trip_details'] = None
+            
+        # Members
+        context['trip_members'] = Trip_Members.objects.filter(trip=trip)
+        
+        # Days
+        context['trip_days'] = Trip_Day.objects.filter(trip=trip).prefetch_related('itinerary_set')
+        
+        return context
+
+from .models import Trip_Details, Trip_Members, Trip_Day, Itinerary
+from .forms import TripDetailsForm, TripMembersForm, TripDayForm, ItineraryForm
+from django.urls import reverse
+
+class TripDetailsCreateView(CreateView):
+    model = Trip_Details
+    form_class = TripDetailsForm
+    template_name = 'trip/trip_form.html'
+    
+    def form_valid(self, form):
+        trip = get_object_or_404(Trip, pk=self.kwargs['trip_id'])
+        form.instance.trip = trip
+        return super().form_valid(form)
+        
+    def get_success_url(self):
+        return reverse('trip_detail', kwargs={'pk': self.kwargs['trip_id']})
+
+class TripDetailsUpdateView(UpdateView):
+    model = Trip_Details
+    form_class = TripDetailsForm
+    template_name = 'trip/trip_form.html'
+    
+    def get_success_url(self):
+        return reverse('trip_detail', kwargs={'pk': self.object.trip.pk})
+
+class TripMembersCreateView(CreateView):
+    model = Trip_Members
+    form_class = TripMembersForm
+    template_name = 'trip/trip_form.html'
+    
+    def form_valid(self, form):
+        trip = get_object_or_404(Trip, pk=self.kwargs['trip_id'])
+        form.instance.trip = trip
+        return super().form_valid(form)
+        
+    def get_success_url(self):
+        return reverse('trip_detail', kwargs={'pk': self.kwargs['trip_id']})
+
+class TripDayCreateView(CreateView):
+    model = Trip_Day
+    form_class = TripDayForm
+    template_name = 'trip/trip_form.html'
+    
+    def form_valid(self, form):
+        trip = get_object_or_404(Trip, pk=self.kwargs['trip_id'])
+        form.instance.trip = trip
+        return super().form_valid(form)
+        
+    def get_success_url(self):
+        return reverse('trip_detail', kwargs={'pk': self.kwargs['trip_id']})
+
+class ItineraryCreateView(CreateView):
+    model = Itinerary
+    form_class = ItineraryForm
+    template_name = 'trip/trip_form.html'
+    
+    def form_valid(self, form):
+        day = get_object_or_404(Trip_Day, pk=self.kwargs['day_id'])
+        form.instance.trip_day = day
+        return super().form_valid(form)
+        
+    def get_success_url(self):
+        return reverse('trip_detail', kwargs={'pk': self.object.trip_day.trip.pk})
+
 class TripCreateView(CreateView):
     model = Trip
     form_class = TripForm

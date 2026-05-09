@@ -1,0 +1,15 @@
+    .nav-tabs .nav-link {
+        color: var(--text-color);
+        font-weight: 500;
+        border: none;
+        border-bottom: 3px solid transparent;
+        padding: 1rem 1.5rem;
+    }
+    .nav-tabs .nav-link.active {
+        color: var(--primary-color);
+        background-color: transparent;
+        border-color: transparent transparent var(--primary-color) transparent;
+    }
+    .nav-tabs .nav-link:hover {
+        border-color: transparent transparent var(--input-border) transparent;
+    }
