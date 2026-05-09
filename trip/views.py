@@ -16,17 +16,21 @@ class TripListView(ListView):
         
         if self.filter_form.is_valid():
             title = self.filter_form.cleaned_data.get('title')
-            location = self.filter_form.cleaned_data.get('location')
+            location_from_name = self.filter_form.cleaned_data.get('location_from_name')
+            location_to_name = self.filter_form.cleaned_data.get('location_to_name')
             from_date = self.filter_form.cleaned_data.get('from_date')
             to_date = self.filter_form.cleaned_data.get('to_date')
             status = self.filter_form.cleaned_data.get('status')
             
             if title:
                 queryset = queryset.filter(title__icontains=title)
-            if location:
-                queryset = queryset.filter(location__icontains=location)
+            if location_from_name:
+                queryset = queryset.filter(location_from_name__icontains=location_from_name)
+            if location_to_name:
+                queryset = queryset.filter(location_to_name__icontains=location_to_name)
             if from_date:
-                queryset = queryset.filter(from_date__gte=from_date)
+                from django.db.models import Q
+                queryset = queryset.filter(Q(from_date=from_date) | Q(to_date=from_date))
             if to_date:
                 queryset = queryset.filter(to_date__lte=to_date)
             if status:
