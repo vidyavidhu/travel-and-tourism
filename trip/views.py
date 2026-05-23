@@ -282,3 +282,25 @@ class ReplyCreateView(LoginRequiredMixin, CreateView):
     def get_success_url(self):
         comment = get_object_or_404(Comments, pk=self.kwargs['comment_id'])
         return reverse('itinerary_detail', kwargs={'pk': comment.itinerary.pk})
+
+class MyTripsView(LoginRequiredMixin, ListView):
+    model = Trip
+    template_name = 'trip/trip_list.html'
+    context_object_name = 'trips'
+    paginate_by = 10
+
+    def get_queryset(self):
+        from member.models import Member, Coordinator
+        try:
+            member = self.request.user.member
+        except Member.DoesNotExist:
+            member = None
+            
+        try:
+            coordinator = self.request.user.coordinator
+        except Coordinator.DoesNotExist:
+            coordinator = None
+            
+        return Trip.objects.filter(
+            Q(trip_members__member=member) | Q(coordinator=coordinator)
+        ).distinct().order_by('-id')

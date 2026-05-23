@@ -253,8 +253,8 @@
                                                                 <h6 class="fw-bold m-0 text-dark">
                                                                     {{ stop.time_start|time:"g:i A" }} - <a
                                                                         href="{% url 'itinerary_detail' stop.pk %}"
-                                                                        class="text-primary text-decoration-none text-uppercase">{{
-                                                                        stop.title }}</a>
+                                                                        class="text-primary text-decoration-none text-uppercase">
+                                                                        {{stop.title }}</a>
                                                                 </h6>
                                                                 <small class="text-muted"><i
                                                                         class="fas fa-map-pin me-1 text-danger"></i>
@@ -321,7 +321,7 @@
                             <div>
                                 <small class="text-muted d-block text-uppercase fw-bold"
                                     style="font-size: 0.75rem;">Duration</small>
-                                <span class="fw-semibold text-dark">{{ trip.duration }}</span>
+                                <span class="fw-semibold text-dark">{{ trip.total_duration_days }} Day{{ trip.total_duration_days|pluralize }}</span>
                             </div>
                         </li>
 

@@ -21,6 +21,16 @@
     <!-- App Specific CSS -->
     <link rel="stylesheet" href="{% static 'home/css/home.css' %}">
     
+    <style>
+        .nav-links a {
+            text-decoration: none !important;
+        }
+        .nav-links a.active {
+            color: var(--color-primary) !important;
+            font-weight: 700 !important;
+            text-decoration: underline !important;
+        }
+    </style>
     {% block extra_css %}{% endblock %}
 </head>
 
@@ -37,14 +47,21 @@
             <button class="mobile-menu-btn" id="mobileMenuBtn">☰</button>
             
             <nav class="nav-links" id="navLinks">
-                <a href="/">Home</a>
+                <a href="/" class="{% if request.path == '/' or request.path == '/home/' %}active{% endif %}">Home</a>
                 <a href="#destinations">Destinations</a>
-                <a href="{% url 'trip_list' %}">Trips</a>
+                <a href="{% url 'trip_list' %}" class="{% if '/trip/' in request.path and '/trip/my-trips/' not in request.path %}active{% endif %}">Trips</a>
+                {% if user.is_authenticated %}
+                <a href="{% url 'my_trips' %}" class="{% if '/trip/my-trips/' in request.path %}active{% endif %}">My Trips</a>
+                {% endif %}
                 <a href="#about">About</a>
                 {% if user.is_authenticated %}
                 <div class="nav-profile">
-                    <a href="{% url 'member_profile' %}" class="profile-icon" style="text-decoration:none; color:white;">
+                    <a href="{% url 'member_profile' %}" class="profile-icon" style="text-decoration:none; color:white; padding:0; overflow:hidden; display:flex; align-items:center; justify-content:center;">
+                        {% if user.member.image and user.member.image.name %}
+                        <img src="{{ user.member.image.url }}" alt="Profile" style="width:100%; height:100%; object-fit:cover;">
+                        {% else %}
                         {{ user.username|make_list|first|upper }}
+                        {% endif %}
                     </a>
                     <a href="{% url 'member_profile' %}" class="profile-name" style="text-decoration:none;">{{ user.username }}</a>
                     <a href="{% url 'member_logout' %}" class="btn btn-sm btn-outline nav-logout">Logout</a>
