@@ -1,9 +1,10 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse_lazy, reverse
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Q
 from .models import Trip, Trip_Details, Trip_Members, Trip_Day, Itinerary, Gallery, Comments, Reply, Reaction, Rating
-from .forms import TripForm, TripFilterForm, TripDetailsForm, TripMembersForm, TripDayForm, ItineraryForm, GalleryForm
+from .forms import TripForm, TripFilterForm, TripDetailsForm, TripMembersForm, TripDayForm, ItineraryForm, GalleryForm, CommentsForm
 
 class TripListView(ListView):
     model = Trip
@@ -175,14 +176,109 @@ class ItineraryDetailView(DetailView):
         context['gallery_form'] = GalleryForm()
         return context
 
-class GalleryCreateView(CreateView):
+class GalleryCreateView(LoginRequiredMixin, CreateView):
     model = Gallery
     form_class = GalleryForm
     
     def form_valid(self, form):
         itinerary = get_object_or_404(Itinerary, pk=self.kwargs['itinerary_id'])
+        
+        # Get or create Member profile for logged in user
+        from member.models import Member
+        member, created = Member.objects.get_or_create(user=self.request.user)
+        
+        # Get or create Trip_Members for this member and trip
+        trip = itinerary.trip_day.trip
+        trip_member, tm_created = Trip_Members.objects.get_or_create(
+            trip=trip,
+            member=member,
+            defaults={'status': 1}
+        )
+        
         form.instance.itinerary = itinerary
+        form.instance.uploaded_by = trip_member
         return super().form_valid(form)
         
     def get_success_url(self):
         return reverse('itinerary_detail', kwargs={'pk': self.kwargs['itinerary_id']})
+
+
+class CommentCreateView(LoginRequiredMixin, CreateView):
+    model = Comments
+    form_class = CommentsForm
+    
+    def form_valid(self, form):
+        itinerary = get_object_or_404(Itinerary, pk=self.kwargs['itinerary_id'])
+        
+        # Get or create Member profile for logged in user
+        from member.models import Member
+        member, created = Member.objects.get_or_create(user=self.request.user)
+        
+        # Get or create Trip_Members for this member and trip
+        trip = itinerary.trip_day.trip
+        trip_member, tm_created = Trip_Members.objects.get_or_create(
+            trip=trip,
+            member=member,
+            defaults={'status': 1} # 1 is Joined
+        )
+        
+        form.instance.itinerary = itinerary
+        form.instance.message_by = trip_member
+        return super().form_valid(form)
+        
+    def get_success_url(self):
+        return reverse('itinerary_detail', kwargs={'pk': self.kwargs['itinerary_id']})
+
+from django.views import View
+
+class CommentLikeView(LoginRequiredMixin, View):
+    def post(self, request, comment_id):
+        comment = get_object_or_404(Comments, pk=comment_id)
+        
+        # Get or create Member profile for logged in user
+        from member.models import Member
+        member, created = Member.objects.get_or_create(user=request.user)
+        
+        # Get or create Trip_Members for this member and trip
+        trip = comment.itinerary.trip_day.trip
+        trip_member, tm_created = Trip_Members.objects.get_or_create(
+            trip=trip,
+            member=member,
+            defaults={'status': 1}
+        )
+        
+        # Check if reaction already exists
+        reaction = Reaction.objects.filter(comment=comment, member=trip_member).first()
+        if reaction:
+            reaction.delete() # Toggle off
+        else:
+            Reaction.objects.create(comment=comment, member=trip_member, is_like=1)
+            
+        return redirect(reverse('itinerary_detail', kwargs={'pk': comment.itinerary.pk}))
+
+class ReplyCreateView(LoginRequiredMixin, CreateView):
+    model = Reply
+    fields = ['text']
+    
+    def form_valid(self, form):
+        comment = get_object_or_404(Comments, pk=self.kwargs['comment_id'])
+        
+        # Get or create Member profile for logged in user
+        from member.models import Member
+        member, created = Member.objects.get_or_create(user=self.request.user)
+        
+        # Get or create Trip_Members for this member and trip
+        trip = comment.itinerary.trip_day.trip
+        trip_member, tm_created = Trip_Members.objects.get_or_create(
+            trip=trip,
+            member=member,
+            defaults={'status': 1}
+        )
+        
+        form.instance.comment = comment
+        form.instance.reply_by = trip_member
+        return super().form_valid(form)
+        
+    def get_success_url(self):
+        comment = get_object_or_404(Comments, pk=self.kwargs['comment_id'])
+        return reverse('itinerary_detail', kwargs={'pk': comment.itinerary.pk})

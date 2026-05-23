@@ -145,6 +145,7 @@ def auto_generate_trip_days(sender, instance, created, **kwargs):
 
 class Gallery(models.Model):
     itinerary = models.ForeignKey(Itinerary, on_delete=models.CASCADE)  
+    uploaded_by = models.ForeignKey(Trip_Members, on_delete=models.CASCADE, null=True, blank=True)  
     title = models.CharField(max_length=100)
     image = models.ImageField(upload_to='gallery/images/',null=True, blank=True) 
     video = models.FileField(upload_to='gallery/videos/',null=True, blank=True)
