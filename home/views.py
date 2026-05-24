@@ -4,7 +4,8 @@ from trip.models import Trip, Trip_Details, Trip_Members, Trip_Day
 
 # Create your views here.
 def home_view(request):
-    trips = Trip.objects.all().order_by('-id')
+    today = timezone.localdate()
+    trips = Trip.objects.filter(status=1, to_date__gte=today).order_by('-id')
     return render(request, 'home.html', {'trips': trips})
 
 def home_trip_details(request, pk):
