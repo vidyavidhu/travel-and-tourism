@@ -85,6 +85,13 @@ class Trip_Details(models.Model):
     no_of_members = models.IntegerField(default=1)
     estimated_cost=models.FloatField() 
     description=models.TextField(null=True, blank=True) 
+    
+    @property
+    def per_head_cost(self):
+        if self.max_members > 0:
+            return self.estimated_cost / self.max_members
+        return self.estimated_cost
+
     def __str__(self):
         return self.trip.title
 

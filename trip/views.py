@@ -104,10 +104,7 @@ class TripMembersCreateView(CreateView):
         trip = get_object_or_404(Trip, pk=self.kwargs['trip_id'])
         try:
             trip_details = Trip_Details.objects.get(trip=trip)
-            if trip_details.max_members > 0:
-                context['per_head_cost'] = trip_details.estimated_cost / trip_details.max_members
-            else:
-                context['per_head_cost'] = trip_details.estimated_cost
+            context['per_head_cost'] = trip_details.per_head_cost
         except Trip_Details.DoesNotExist:
             context['per_head_cost'] = None
         return context
