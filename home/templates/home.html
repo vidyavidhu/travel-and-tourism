@@ -92,7 +92,8 @@
 
                         {% if trip.image and trip.image.name %}
                         <img src="{{ trip.image.url }}" alt="{{ trip.title }}" class="trip-card-img"
-                            style="width: 100%; height: 100%; object-fit: cover;">
+                            style="width: 100%; height: 100%; object-fit: cover;"
+                            onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&w=1600&q=80';">
                         {% else %}
                         <div class="trip-placeholder-bg"
                             style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background: #e9ecef; color: #adb5bd;">
