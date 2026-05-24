@@ -65,6 +65,42 @@ class Trip(models.Model):
     def __str__(self):
         return self.title
 
+    def recalculate_finance(self):
+        try:
+            trip_details = self.trip_details
+            estimated_cost = trip_details.estimated_cost
+            per_head_cost = trip_details.per_head_cost
+        except Exception:
+            return
+
+        from finance.models import Expenses
+        from django.db.models import Sum
+        from .models import Trip_Members
+
+        total_expenses = Expenses.objects.filter(trip=self).aggregate(Sum('amount'))['amount__sum'] or 0.0
+
+        # joined_members status=1 means Joined
+        joined_members = Trip_Members.objects.filter(trip=self, status=1)
+        joined_count = joined_members.count()
+        if joined_count == 0:
+            joined_count = trip_details.no_of_members or trip_details.max_members or 1
+
+        additional_collection = max(0.0, total_expenses - estimated_cost)
+        additional_cost_per_head = additional_collection / joined_count
+
+        target_total = per_head_cost + additional_cost_per_head
+
+        for member in joined_members:
+            target_unpaid = max(0.0, target_total - member.paid_amount)
+            if target_unpaid > member.unpaid_amount:
+                member.unpaid_amount = target_unpaid
+                member.payment_status = 0 # reset to unpaid
+            else:
+                member.unpaid_amount = target_unpaid
+                if member.unpaid_amount == 0:
+                    member.payment_status = 1 # mark paid if no unpaid amount
+            member.save(update_fields=['unpaid_amount', 'payment_status'])
+
 # class Vehicle(models.Model):
 #     trip = models.ForeignKey(Trip, on_delete=models.CASCADE)
 #     type = models.ForeignKey(VechicleType, on_delete=models.CASCADE)
@@ -100,9 +136,35 @@ class Trip_Members(models.Model):
     member=models.ForeignKey(Member, on_delete=models.CASCADE) 
     status = models.IntegerField(default=0) #0 for not Joined, 1 for  Joined, 2 for Cancelled
     payment_status = models.IntegerField(default=0) #0 for not paid, 1 for paid
+    paid_amount = models.FloatField(default=0.0)
+    unpaid_amount = models.FloatField(default=0.0)
     description = models.TextField(null=True, blank=True) 
+
+    def save(self, *args, **kwargs):
+        # Calculate per-head cost for a new member
+        if not self.pk:
+            try:
+                trip_details = self.trip.trip_details
+                per_head_cost = trip_details.per_head_cost
+            except Exception:
+                per_head_cost = 0.0
+            self.unpaid_amount = per_head_cost
+            self.paid_amount = 0.0
+
+        # When payment status is set to Paid (1), move unpaid to paid
+        if self.payment_status == 1 and self.unpaid_amount > 0:
+            self.paid_amount += self.unpaid_amount
+            self.unpaid_amount = 0.0
+
+        super().save(*args, **kwargs)
+
+        # Trigger trip finance recalculation if this is a general save
+        update_fields = kwargs.get('update_fields')
+        if not update_fields or ('unpaid_amount' not in update_fields and 'payment_status' not in update_fields):
+            self.trip.recalculate_finance()
+
     def __str__(self):
-        return self.trip.title+" - "+self.member.name
+        return self.trip.title+" - "+self.member.user.first_name
 
 class ActivityType(models.Model):
     name=models.CharField(max_length=100)

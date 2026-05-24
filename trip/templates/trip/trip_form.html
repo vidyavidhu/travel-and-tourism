@@ -16,7 +16,9 @@
                 <div class="card premium-card border-0 shadow-lg rounded-4 overflow-hidden">
                     <div class="card-header gradient-header text-white p-4">
                         <h2 class="mb-0 text-center fw-bold">
-                            {% if object %}
+                            {% if form_title %}
+                            <i class="fas fa-coins me-2"></i> {{ form_title }}
+                            {% elif object %}
                             <i class="fas fa-plane-departure me-2"></i> Update Trip Details
                             {% else %}
                             <i class="fas fa-globe-americas me-2"></i> Create a New Adventure

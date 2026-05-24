@@ -112,11 +112,10 @@
                                 </div>
                             </div>
 
-                            <!-- TAB 2: TRIP DETAILS -->
+                            <!-- TAB 2: FINANCE -->
                             <div class="tab-pane fade" id="details" role="tabpanel">
                                 <div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom">
-                                    <h3 class="fw-bold m-0" style="font-family: 'Poppins', sans-serif;">Cost & Capacity
-                                    </h3>
+                                    <h3 class="fw-bold m-0" style="font-family: 'Poppins', sans-serif;">Cost & Capacity</h3>
                                     {% if not trip_details %}
                                     <a href="{% url 'trip_details_create' trip.pk %}"
                                         class="btn btn-primary action-btn save-btn btn-sm"><i
@@ -129,28 +128,129 @@
                                 </div>
 
                                 {% if trip_details %}
-                                <div class="row g-4 mb-4">
-                                    <div class="col-sm-6">
-                                        <div class="p-3 border rounded-3 bg-light">
-                                            <small class="text-muted text-uppercase fw-bold">Max Members</small>
-                                            <h4 class="mb-0 text-primary">{{ trip_details.max_members }}</h4>
+                                <div class="row g-4 mb-5">
+                                    <div class="col-md-4">
+                                        <div class="p-3 border rounded-4 bg-light shadow-sm">
+                                            <small class="text-muted text-uppercase fw-bold"><i class="fas fa-users me-1 text-primary"></i> Max Members</small>
+                                            <h4 class="mb-0 text-primary mt-1 fw-bold">{{ trip_details.max_members }}</h4>
                                         </div>
                                     </div>
-                                    <div class="col-sm-6">
-                                        <div class="p-3 border rounded-3 bg-light">
-                                            <small class="text-muted text-uppercase fw-bold">Currently Joined</small>
-                                            <h4 class="mb-0 text-primary">{{ trip_details.no_of_members }}</h4>
+                                    <div class="col-md-4">
+                                        <div class="p-3 border rounded-4 bg-light shadow-sm">
+                                            <small class="text-muted text-uppercase fw-bold"><i class="fas fa-user-check me-1 text-primary"></i> Currently Joined</small>
+                                            <h4 class="mb-0 text-primary mt-1 fw-bold">{{ trip_details.no_of_members }}</h4>
                                         </div>
                                     </div>
-                                    <div class="col-sm-12">
-                                        <div class="p-3 border rounded-3 bg-light">
-                                            <small class="text-muted text-uppercase fw-bold">Estimated Cost</small>
-                                            <h4 class="mb-0 text-success">₹{{ trip_details.estimated_cost }}</h4>
+                                    <div class="col-md-4">
+                                        <div class="p-3 border rounded-4 bg-light shadow-sm">
+                                            <small class="text-muted text-uppercase fw-bold"><i class="fas fa-tag me-1 text-success"></i> Estimated Cost</small>
+                                            <h4 class="mb-0 text-success mt-1 fw-bold">₹{{ trip_details.estimated_cost|floatformat:2 }}</h4>
                                         </div>
                                     </div>
                                 </div>
+
+                                <!-- Financial Metrics Dashboard -->
+                                <h3 class="fw-bold mb-4 pb-3 border-bottom" style="font-family: 'Poppins', sans-serif;"><i class="fas fa-chart-line me-2 text-primary"></i>Financial Details</h3>
+                                <div class="row g-4 mb-5">
+                                    <div class="col-md-6 col-lg-3">
+                                        <div class="p-3 border rounded-4 bg-white shadow-sm border-start border-4 border-primary">
+                                            <small class="text-muted text-uppercase fw-bold"><i class="fas fa-wallet me-1 text-primary"></i> Expected Collection</small>
+                                            <h4 class="mb-0 mt-1 fw-bold text-dark">₹{{ estimated_cost|floatformat:2 }}</h4>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 col-lg-3">
+                                        <div class="p-3 border rounded-4 bg-white shadow-sm border-start border-4 border-success">
+                                            <small class="text-muted text-uppercase fw-bold"><i class="fas fa-hand-holding-usd me-1 text-success"></i> Actual Collection</small>
+                                            <h4 class="mb-0 mt-1 fw-bold text-success">₹{{ actual_collection|floatformat:2 }}</h4>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 col-lg-3">
+                                        <div class="p-3 border rounded-4 bg-white shadow-sm border-start border-4 border-danger">
+                                            <small class="text-muted text-uppercase fw-bold"><i class="fas fa-file-invoice-dollar me-1 text-danger"></i> Total Expenses</small>
+                                            <h4 class="mb-0 mt-1 fw-bold text-danger">₹{{ total_expenses|floatformat:2 }}</h4>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 col-lg-3">
+                                        <div class="p-3 border rounded-4 bg-white shadow-sm border-start border-4 {% if pending_money >= 0 %}border-success{% else %}border-danger{% endif %}">
+                                            <small class="text-muted text-uppercase fw-bold"><i class="fas fa-piggy-bank me-1 {% if pending_money >= 0 %}text-success{% else %}text-danger{% endif %}"></i> Pending Money</small>
+                                            <h4 class="mb-0 mt-1 fw-bold {% if pending_money >= 0 %}text-success{% else %}text-danger{% endif %}">₹{{ pending_money|floatformat:2 }}</h4>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {% if total_expenses > estimated_cost %}
+                                <!-- Deficit warning & additional collections -->
+                                <div class="alert alert-warning shadow-sm rounded-4 mb-5 border-start border-4 border-warning" role="alert">
+                                    <div class="d-flex align-items-center mb-2">
+                                        <i class="fas fa-exclamation-circle text-warning me-3 fs-3"></i>
+                                        <div>
+                                            <h5 class="mb-0 fw-bold text-dark">Budget Deficit Detected</h5>
+                                            <small class="text-secondary">Expenses have exceeded the estimated cost of this trip.</small>
+                                        </div>
+                                    </div>
+                                    <hr class="my-3">
+                                    <div class="row g-3 text-dark">
+                                        <div class="col-sm-6">
+                                            <span class="d-block text-muted text-uppercase fw-bold" style="font-size: 0.8rem;">Additional Collection Required</span>
+                                            <span class="fs-4 fw-bold text-danger">₹{{ additional_collection|floatformat:2 }}</span>
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <span class="d-block text-muted text-uppercase fw-bold" style="font-size: 0.8rem;">Additional Cost Per Head</span>
+                                            <span class="fs-4 fw-bold text-danger">₹{{ additional_cost_per_head|floatformat:2 }}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endif %}
+
+                                <!-- Expenses List and Actions -->
+                                <div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom">
+                                    <h3 class="fw-bold m-0" style="font-family: 'Poppins', sans-serif;"><i class="fas fa-receipt me-2 text-primary"></i>Trip Expenses</h3>
+                                    <a href="{% url 'expense_create' trip.pk %}"
+                                        class="btn btn-primary action-btn save-btn btn-sm"><i
+                                            class="fas fa-plus me-1"></i> Add Expense</a>
+                                </div>
+
+                                {% if expenses %}
+                                <div class="table-responsive">
+                                    <table class="table table-hover align-middle">
+                                        <thead class="table-light">
+                                            <tr>
+                                                <th>Category</th>
+                                                <th>Amount</th>
+                                                <th>Description</th>
+                                                <th class="text-end">Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for expense in expenses %}
+                                            <tr>
+                                                <td class="fw-semibold">
+                                                    <span class="badge bg-secondary p-2"><i class="fas fa-tag me-1"></i> {{ expense.expense_category.name }}</span>
+                                                </td>
+                                                <td class="fw-bold text-danger">₹{{ expense.amount|floatformat:2 }}</td>
+                                                <td class="text-secondary small">{{ expense.description|default:"-" }}</td>
+                                                <td class="text-end">
+                                                    <a href="{% url 'expense_delete' expense.pk %}" 
+                                                       class="btn btn-outline-danger btn-sm rounded-circle shadow-sm"
+                                                       style="width: 32px; height: 32px; padding:0; display:inline-flex; align-items:center; justify-content:center;"
+                                                       title="Delete Expense">
+                                                        <i class="fas fa-trash-alt"></i>
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                                {% else %}
+                                <div class="text-center py-5 bg-light rounded-4 border border-dashed">
+                                    <i class="fas fa-receipt text-muted mb-3" style="font-size: 3rem; opacity: 0.5;"></i>
+                                    <p class="text-muted mb-0">No expenses have been recorded for this trip yet.</p>
+                                </div>
+                                {% endif %}
+
                                 {% if trip_details.description %}
-                                <h5 class="fw-bold mt-4">Extra Information</h5>
+                                <h5 class="fw-bold mt-5">Extra Information</h5>
                                 <p class="text-secondary">{{ trip_details.description|linebreaksbr }}</p>
                                 {% endif %}
                                 {% else %}
@@ -189,7 +289,9 @@
                                             <tr>
                                                 <th>Member</th>
                                                 <th>Join Status</th>
-                                                <th>Payment</th>
+                                                <th>Payment Status</th>
+                                                <th class="text-end">Paid Amount</th>
+                                                <th class="text-end">Unpaid Amount</th>
                                                 <th>Notes</th>
                                             </tr>
                                         </thead>
@@ -209,6 +311,8 @@
                                                     {% else %}<span class="badge bg-warning text-dark">Unpaid</span>
                                                     {% endif %}
                                                 </td>
+                                                <td class="text-end fw-bold text-success">₹{{ tm.paid_amount|floatformat:2 }}</td>
+                                                <td class="text-end fw-bold {% if tm.unpaid_amount > 0 %}text-danger{% else %}text-secondary{% endif %}">₹{{ tm.unpaid_amount|floatformat:2 }}</td>
                                                 <td class="text-muted small">{{ tm.description|truncatechars:30 }}</td>
                                             </tr>
                                             {% endfor %}

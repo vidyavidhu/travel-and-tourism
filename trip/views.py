@@ -67,6 +67,44 @@ class TripDetailView(DetailView):
         # Days
         context['trip_days'] = Trip_Day.objects.filter(trip=trip).prefetch_related('itinerary_set')
         
+        # Finance metrics calculations
+        trip_details = context['trip_details']
+        trip_members = context['trip_members']
+        
+        from finance.models import Expenses
+        from django.db.models import Sum
+        
+        # Total expected collection / Estimated Cost
+        estimated_cost = trip_details.estimated_cost if trip_details else 0.0
+        context['estimated_cost'] = estimated_cost
+        
+        # Actual collection = sum of paid_amount of all trip members
+        actual_collection = trip_members.aggregate(Sum('paid_amount'))['paid_amount__sum'] or 0.0
+        context['actual_collection'] = actual_collection
+        
+        # Total expenses = sum of amount of all expenses related to this trip
+        expenses = Expenses.objects.filter(trip=trip).order_by('-id')
+        total_expenses = expenses.aggregate(Sum('amount'))['amount__sum'] or 0.0
+        context['expenses'] = expenses
+        context['total_expenses'] = total_expenses
+        
+        # Pending money for trip = actual collection - total expenses
+        pending_money = actual_collection - total_expenses
+        context['pending_money'] = pending_money
+        
+        # Additional collection and per-head cost calculations
+        additional_collection = 0.0
+        additional_cost_per_head = 0.0
+        if total_expenses > estimated_cost:
+            additional_collection = total_expenses - estimated_cost
+            joined_count = trip_members.filter(status=1).count()
+            if joined_count == 0:
+                joined_count = trip_details.no_of_members or trip_details.max_members or 1
+            additional_cost_per_head = additional_collection / joined_count
+            
+        context['additional_collection'] = additional_collection
+        context['additional_cost_per_head'] = additional_cost_per_head
+        
         return context
 
 from .models import Trip_Details, Trip_Members, Trip_Day, Itinerary
