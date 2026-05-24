@@ -68,7 +68,7 @@
                             <span class="trip-card-badge text-danger"><i class="fas fa-times-circle me-1"></i> Inactive</span>
                         {% endif %}
                         
-                        {% if trip.image %}
+                        {% if trip.image and trip.image.name %}
                             <img src="{{ trip.image.url }}" alt="{{ trip.title }}" class="trip-card-img">
                         {% else %}
                             <div class="trip-placeholder-bg">

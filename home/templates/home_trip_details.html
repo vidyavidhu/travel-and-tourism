@@ -8,23 +8,7 @@
 <link rel="stylesheet" href="{% static 'trip/css/trip.css' %}">
 <link rel="stylesheet" href="{% static 'trip/css/trip_details.css' %}">
 <link rel="stylesheet" href="{% static 'css/home_trip_details.css' %}">
-<style>
-    .trip-hero-overlay {
-        z-index: 2;
-        pointer-events: none;
-    }
 
-    .trip-hero-content {
-        pointer-events: auto;
-    }
-
-    .carousel-control-prev,
-    .carousel-control-next,
-    .carousel-indicators {
-        z-index: 3;
-        pointer-events: auto;
-    }
-</style>
 {% endblock %}
 
 {% block content %}
@@ -32,24 +16,24 @@
 
     <!-- Hero Image Area -->
     <div class="trip-hero trip-fade-in">
-        <div id="heroCarousel" class="carousel slide carousel-fade" data-bs-ride="carousel" style="height: 100%; width: 100%; position: absolute; top: 0; left: 0; z-index: 1;">
-            <div class="carousel-indicators" id="carouselIndicators" style="z-index: 3;">
+        <div id="heroCarousel" class="carousel slide carousel-fade hero-carousel-container" data-bs-ride="carousel">
+            <div class="carousel-indicators hero-carousel-indicators" id="carouselIndicators">
                 <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
             </div>
-            <div class="carousel-inner" id="carouselInner" style="height: 100%;">
-                <div class="carousel-item active" style="height: 100%;">
-                    {% if trip.image %}
-                    <img src="{{ trip.image.url }}" alt="{{ trip.title }}" style="height: 100%; width: 100%; object-fit: cover; filter: brightness(0.7);">
+            <div class="carousel-inner hero-carousel-inner" id="carouselInner">
+                <div class="carousel-item active hero-carousel-item">
+                    {% if trip.image and trip.image.name %}
+                    <img src="{{ trip.image.url }}" alt="{{ trip.title }}" class="hero-carousel-img">
                     {% else %}
-                    <img src="https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&w=1600&q=80" alt="{{ trip.title }}" style="height: 100%; width: 100%; object-fit: cover; filter: brightness(0.7);">
+                    <img src="https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&w=1600&q=80" alt="{{ trip.title }}" class="hero-carousel-img">
                     {% endif %}
                 </div>
             </div>
-            <button class="carousel-control-prev" type="button" data-bs-target="#heroCarousel" data-bs-slide="prev" style="z-index: 3; width: 8%;">
+            <button class="carousel-control-prev hero-carousel-control" type="button" data-bs-target="#heroCarousel" data-bs-slide="prev">
                 <span class="carousel-control-prev-icon" aria-hidden="true"></span>
                 <span class="visually-hidden">Previous</span>
             </button>
-            <button class="carousel-control-next" type="button" data-bs-target="#heroCarousel" data-bs-slide="next" style="z-index: 3; width: 8%;">
+            <button class="carousel-control-next hero-carousel-control" type="button" data-bs-target="#heroCarousel" data-bs-slide="next">
                 <span class="carousel-control-next-icon" aria-hidden="true"></span>
                 <span class="visually-hidden">Next</span>
             </button>
@@ -57,42 +41,36 @@
     </div>
 
     <!-- Main Content Area -->
-    <div class="container trip-detail-card trip-fade-in" style="animation-delay: 0.2s; " >
+    <div class="container trip-detail-card trip-fade-in trip-detail-card-delay">
         <!-- Trip Details Summary Header Card -->
-        <div class="card premium-card border-0 shadow-lg mb-4 p-4 rounded-4" style="background: var(--surface-color);">
+        <div class="card premium-card border-0 shadow-lg mb-4 p-4 rounded-4 trip-summary-header">
             <div
                 class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-3">
                 <div>
                     <span
-                        class="badge bg-primary bg-opacity-10 text-primary px-3 py-2 rounded-3 text-uppercase fw-bold mb-2"
-                        style="font-size: 0.75rem;">
+                        class="badge bg-primary bg-opacity-10 text-primary px-3 py-2 rounded-3 text-uppercase fw-bold mb-2 category-badge">
                         <i class="fas fa-tag me-1"></i> {{ trip.category.name }}
                     </span>
-                    <h2 class="fw-bold m-0 text-dark" style="font-family: 'Poppins', sans-serif; font-size: 2rem;">{{ trip.title }}</h2>
-                    <p class="text-secondary m-0 mt-2" style="font-size: 1.05rem;">
+                    <h2 class="fw-bold m-0 text-dark trip-main-title">{{ trip.title }}</h2>
+                    <p class="text-secondary m-0 mt-2 trip-location-sub">
                         <i class="fas fa-map-marker-alt text-danger me-2"></i>From <strong>{{ trip.location_from_name}}</strong> to <strong>{{ trip.location_to_name }}</strong>
                     </p>
                 </div>
                 <div class="d-flex align-items-center gap-3">
                     {% if trip.status == 1 %}
                     <span
-                        class="badge bg-success bg-opacity-10 text-success px-3 py-2 rounded-3 fw-bold d-flex align-items-center gap-2"
-                        style="font-size: 0.85rem;">
-                        <span class="position-relative d-inline-flex" style="width: 8px; height: 8px;">
+                        class="badge bg-success bg-opacity-10 text-success px-3 py-2 rounded-3 fw-bold d-flex align-items-center gap-2 status-badge">
+                        <span class="position-relative d-inline-flex pulse-container">
                             <span
-                                class="animate-ping position-absolute inline-flex h-full w-full rounded-full bg-success opacity-75"
-                                style="animation: ping 1.5s cubic-bezier(0, 0, 0.2, 1) infinite; border-radius: 50%;"></span>
-                            <span class="relative inline-flex rounded-full h-2 w-2 bg-success"
-                                style="border-radius: 50%; width: 8px; height: 8px;"></span>
+                                class="animate-ping position-absolute inline-flex h-full w-full rounded-full bg-success opacity-75 pulse-ping"></span>
+                            <span class="relative inline-flex rounded-full h-2 w-2 bg-success pulse-dot"></span>
                         </span>
                         Active Adventure
                     </span>
                     {% else %}
                     <span
-                        class="badge bg-danger bg-opacity-10 text-danger px-3 py-2 rounded-3 fw-bold d-flex align-items-center gap-2"
-                        style="font-size: 0.85rem;">
-                        <span class="rounded-full h-2 w-2 bg-danger"
-                            style="border-radius: 50%; width: 8px; height: 8px;"></span>
+                        class="badge bg-danger bg-opacity-10 text-danger px-3 py-2 rounded-3 fw-bold d-flex align-items-center gap-2 status-badge">
+                        <span class="rounded-full h-2 w-2 bg-danger pulse-dot"></span>
                         Inactive
                     </span>
                     {% endif %}
@@ -113,7 +91,7 @@
                             <button class="nav-link {% if forloop.first %}active{% endif %} fw-semibold" id="day-{{ day.id }}-tab" data-bs-toggle="tab"
                                 data-bs-target="#day-{{ day.id }}" type="button" role="tab">
                                 <i class="far fa-calendar-alt me-2"></i>Day {{ forloop.counter }}
-                                <span class="small text-muted d-block" style="font-size: 0.75rem;">{{ day.date|date:"d M" }}</span>
+                                <span class="small text-muted d-block day-tab-subtext">{{ day.date|date:"d M" }}</span>
                             </button>
                         </li>
                         {% empty %}
@@ -128,8 +106,8 @@
                             {% for day in trip_days %}
                             <div class="tab-pane fade {% if forloop.first %}show active{% endif %}" id="day-{{ day.id }}" role="tabpanel">
                                 <div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom">
-                                    <h3 class="fw-bold m-0" style="font-family: 'Poppins', sans-serif;">Day {{ forloop.counter }} Stops</h3>
-                                    <span class="badge bg-primary bg-opacity-10 text-primary px-3 py-2 rounded-3 fw-bold" style="font-size: 0.85rem;">
+                                    <h3 class="fw-bold m-0 day-stops-title">Day {{ forloop.counter }} Stops</h3>
+                                    <span class="badge bg-primary bg-opacity-10 text-primary px-3 py-2 rounded-3 fw-bold status-badge">
                                         {{ day.date|date:"l, F d, Y" }}
                                     </span>
                                 </div>
@@ -137,21 +115,21 @@
                                 {% if day.itinerary_set.all %}
                                 <div class="itinerary-stops-list">
                                     {% for stop in day.itinerary_set.all %}
-                                    <div class="card border-0 bg-light rounded-4 p-4 mb-5 shadow-sm border-start border-primary border-4" style="background: var(--bg-light);">
+                                    <div class="card border-0 bg-light rounded-4 p-4 mb-5 shadow-sm border-start border-primary border-4 stop-card">
                                         
                                         <!-- Stop Header & Info -->
                                         <div class="d-flex flex-column flex-md-row justify-content-between align-items-start gap-3 mb-3 pb-3 border-bottom">
                                             <div>
-                                                <span class="badge bg-secondary mb-2 px-2 py-1" style="font-size: 0.75rem;">
+                                                <span class="badge bg-secondary mb-2 px-2 py-1 stop-time-badge">
                                                     <i class="far fa-clock me-1"></i> {{ stop.time_start|time:"g:i A" }} - {{ stop.time_end|time:"g:i A" }}
                                                 </span>
-                                                <h4 class="fw-bold text-dark m-0" style="font-family: 'Poppins', sans-serif;">{{ stop.title }}</h4>
+                                                <h4 class="fw-bold text-dark m-0 stop-title">{{ stop.title }}</h4>
                                                 <p class="text-secondary m-0 mt-2 small">
                                                     <i class="fas fa-map-marker-alt text-danger me-1"></i>From <strong>{{ stop.location_from_name }}</strong> to <strong>{{ stop.location_to_name }}</strong>
                                                 </p>
                                             </div>
-                                            {% if stop.location_image %}
-                                            <img src="{{ stop.location_image.url }}" alt="{{ stop.title }}" class="rounded-4 shadow-sm" style="width: 100px; height: 100px; object-fit: cover; border: 2px solid white;">
+                                            {% if stop.location_image and stop.location_image.name %}
+                                            <img src="{{ stop.location_image.url }}" alt="{{ stop.title }}" class="rounded-4 shadow-sm stop-location-img">
                                             {% endif %}
                                         </div>
 
@@ -161,7 +139,7 @@
                                                 <div class="bg-white p-3 rounded-3 shadow-sm d-flex align-items-center gap-2">
                                                     <i class="fas fa-route text-primary fs-5"></i>
                                                     <div>
-                                                        <small class="text-muted d-block" style="font-size: 0.7rem;">DISTANCE</small>
+                                                        <small class="text-muted d-block meta-label">DISTANCE</small>
                                                         <span class="fw-bold text-dark">{{ stop.distance|default:"0" }} km</span>
                                                     </div>
                                                 </div>
@@ -170,7 +148,7 @@
                                                 <div class="bg-white p-3 rounded-3 shadow-sm d-flex align-items-center gap-2">
                                                     <i class="fas fa-hourglass-half text-warning fs-5"></i>
                                                     <div>
-                                                        <small class="text-muted d-block" style="font-size: 0.7rem;">DURATION</small>
+                                                        <small class="text-muted d-block meta-label">DURATION</small>
                                                         <span class="fw-bold text-dark">{{ stop.duration|default:"0" }} hrs</span>
                                                     </div>
                                                 </div>
@@ -179,7 +157,7 @@
                                                 <div class="bg-white p-3 rounded-3 shadow-sm d-flex align-items-center gap-2">
                                                     <i class="fas fa-car text-info fs-5"></i>
                                                     <div>
-                                                        <small class="text-muted d-block" style="font-size: 0.7rem;">VEHICLE</small>
+                                                        <small class="text-muted d-block meta-label">VEHICLE</small>
                                                         <span class="fw-bold text-dark">{{ stop.vehicle.name|default:"Any" }}</span>
                                                     </div>
                                                 </div>
@@ -190,12 +168,12 @@
                                         {% if stop.description %}
                                         <div class="mb-4">
                                             <h6 class="fw-bold text-dark mb-2"><i class="fas fa-align-left text-primary me-2"></i>About Stop</h6>
-                                            <p class="text-secondary mb-0" style="line-height: 1.7; font-size: 0.95rem;">{{ stop.description|linebreaksbr }}</p>
+                                            <p class="text-secondary mb-0 stop-description-text">{{ stop.description|linebreaksbr }}</p>
                                         </div>
                                         {% endif %}
 
                                         {% if stop.guidelines %}
-                                        <div class="alert alert-warning border-0 rounded-3 p-3 mb-4 small d-flex align-items-start gap-2" style="background-color: #fff8eb; color: #b25e00;">
+                                        <div class="alert alert-warning border-0 rounded-3 p-3 mb-4 small d-flex align-items-start gap-2 guidelines-alert">
                                             <i class="fas fa-info-circle mt-1"></i>
                                             <div>
                                                 <strong>Stop Guidelines:</strong>
@@ -209,31 +187,13 @@
                                             <h6 class="fw-bold text-dark mb-3"><i class="far fa-images text-primary me-2"></i>Stop Gallery</h6>
                                             <div class="row g-2">
                                                 {% for gallery_item in stop.gallery_set.all %}
+                                                {% if gallery_item.image and gallery_item.image.name %}
                                                 <div class="col-4 col-sm-3 col-md-2">
                                                     <a href="#" data-bs-toggle="modal" data-bs-target="#galleryModal{{ gallery_item.id }}">
-                                                        <img src="{{ gallery_item.image.url }}" class="img-fluid rounded-3 shadow-sm gallery-img-hover" alt="{{ gallery_item.title }}" style="width: 100%; height: 80px; object-fit: cover; cursor: pointer; transition: transform 0.2s;">
+                                                        <img src="{{ gallery_item.image.url }}" class="img-fluid rounded-3 shadow-sm gallery-img-hover stop-gallery-img" alt="{{ gallery_item.title }}">
                                                     </a>
                                                 </div>
-
-                                                <!-- Gallery Image Lightbox Modal -->
-                                                <div class="modal fade" id="galleryModal{{ gallery_item.id }}" tabindex="-1" aria-hidden="true">
-                                                    <div class="modal-dialog modal-dialog-centered">
-                                                        <div class="modal-content border-0 bg-dark overflow-hidden rounded-4">
-                                                            <div class="modal-header border-0 position-absolute w-100 p-3" style="z-index: 10; background: linear-gradient(to bottom, rgba(0,0,0,0.8), transparent);">
-                                                                <h6 class="modal-title text-white fw-bold">{{ gallery_item.title }}</h6>
-                                                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-                                                            </div>
-                                                            <div class="modal-body p-0 text-center bg-black">
-                                                                <img src="{{ gallery_item.image.url }}" class="img-fluid w-100" style="max-height: 80vh; object-fit: contain;">
-                                                                {% if gallery_item.description %}
-                                                                <div class="p-3 text-white text-start bg-dark border-top border-secondary">
-                                                                    <p class="mb-0 small text-white-50">{{ gallery_item.description }}</p>
-                                                                </div>
-                                                                {% endif %}
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
+                                                {% endif %}
                                                 {% empty %}
                                                 <div class="col-12">
                                                     <p class="text-muted small italic m-0">No stop gallery photos uploaded yet.</p>
@@ -251,7 +211,7 @@
                                                 {% csrf_token %}
                                                 <input type="hidden" name="next" value="{{ request.path }}">
                                                 <div class="d-flex gap-2">
-                                                    <textarea name="text" class="form-control rounded-3 border-0 shadow-sm p-3 small" rows="2" placeholder="Share comments, rules, or questions about this stop..." required style="resize: none; background: white;"></textarea>
+                                                    <textarea name="text" class="form-control rounded-3 border-0 shadow-sm p-3 small comment-textarea" rows="2" placeholder="Share comments, rules, or questions about this stop..." required></textarea>
                                                     <button type="submit" class="btn btn-primary rounded-3 px-4 shadow-sm fw-semibold save-btn"><i class="fas fa-paper-plane"></i></button>
                                                 </div>
                                             </form>
@@ -263,43 +223,43 @@
 
                                             <div class="comments-list d-flex flex-column gap-3">
                                                 {% for comment in stop.comments_set.all %}
-                                                <div class="comment-item bg-white p-3 rounded-4 shadow-xs" style="border: 1px solid rgba(0,0,0,0.03);">
+                                                <div class="comment-item bg-white p-3 rounded-4 shadow-xs">
                                                     <div class="d-flex justify-content-between align-items-start mb-2">
                                                         <div class="d-flex align-items-center gap-2">
-                                                            <div class="bg-primary bg-opacity-10 text-primary rounded-circle d-flex justify-content-center align-items-center fw-bold text-uppercase" style="width: 36px; height: 36px; font-size: 0.9rem;">
+                                                            <div class="bg-primary bg-opacity-10 text-primary rounded-circle d-flex justify-content-center align-items-center fw-bold text-uppercase comment-avatar">
                                                                 {{ comment.message_by.member.name|default:comment.message_by.member.user.username|first }}
                                                             </div>
                                                             <div>
                                                                 <span class="fw-bold text-dark small">{{ comment.message_by.member.name|default:comment.message_by.member.user.username }}</span>
-                                                                <span class="text-muted d-block" style="font-size: 0.65rem;">{{ comment.date_time|date:"M d, g:i A" }}</span>
+                                                                <span class="text-muted d-block comment-timestamp">{{ comment.date_time|date:"M d, g:i A" }}</span>
                                                             </div>
                                                         </div>
                                                         
                                                         <form action="{% url 'comment_like' comment.id %}" method="POST">
                                                             {% csrf_token %}
                                                             <input type="hidden" name="next" value="{{ request.path }}">
-                                                            <button type="submit" class="btn btn-sm btn-outline-light text-secondary rounded-pill px-2 py-1" style="font-size: 0.7rem; border-color: #eee;">
+                                                            <button type="submit" class="btn btn-sm btn-outline-light text-secondary rounded-pill px-2 py-1 like-button">
                                                                 <i class="far fa-thumbs-up me-1 text-primary"></i> Like ({{ comment.reaction_set.count }})
                                                             </button>
                                                         </form>
                                                     </div>
                                                     
-                                                    <p class="text-secondary mb-3 small" style="line-height: 1.6; font-size: 0.9rem;">{{ comment.text }}</p>
+                                                    <p class="text-secondary mb-3 small comment-text">{{ comment.text }}</p>
 
                                                     <!-- Replies List -->
                                                     <div class="replies-list ms-4 ps-3 border-start border-2 border-light d-flex flex-column gap-2">
                                                         {% for reply in comment.replies.all %}
-                                                        <div class="reply-item bg-light p-2 rounded-3 small" style="background-color: #f8f9fa;">
+                                                        <div class="reply-item bg-light p-2 rounded-3 small">
                                                             <div class="d-flex align-items-center gap-2 mb-1">
-                                                                <div class="bg-secondary bg-opacity-10 text-secondary rounded-circle d-flex justify-content-center align-items-center fw-bold text-uppercase" style="width: 24px; height: 24px; font-size: 0.7rem;">
+                                                                <div class="bg-secondary bg-opacity-10 text-secondary rounded-circle d-flex justify-content-center align-items-center fw-bold text-uppercase reply-avatar">
                                                                     {{ reply.reply_by.member.name|default:reply.reply_by.member.user.username|first }}
                                                                 </div>
                                                                 <div>
-                                                                    <span class="fw-bold text-dark" style="font-size: 0.8rem;">{{ reply.reply_by.member.name|default:reply.reply_by.member.user.username }}</span>
-                                                                    <span class="text-muted" style="font-size: 0.65rem;">{{ reply.date_time|date:"M d, g:i A" }}</span>
+                                                                    <span class="fw-bold text-dark reply-author-name">{{ reply.reply_by.member.name|default:reply.reply_by.member.user.username }}</span>
+                                                                    <span class="text-muted reply-timestamp">{{ reply.date_time|date:"M d, g:i A" }}</span>
                                                                 </div>
                                                             </div>
-                                                            <p class="text-secondary mb-0 ps-1" style="font-size: 0.82rem;">{{ reply.text }}</p>
+                                                            <p class="text-secondary mb-0 ps-1 reply-text">{{ reply.text }}</p>
                                                         </div>
                                                         {% endfor %}
 
@@ -308,7 +268,7 @@
                                                             {% csrf_token %}
                                                             <input type="hidden" name="next" value="{{ request.path }}">
                                                             <div class="input-group input-group-sm">
-                                                                <input type="text" name="text" class="form-control rounded-start-3 border-light-subtle" placeholder="Reply to this comment..." required style="font-size: 0.8rem;">
+                                                                <input type="text" name="text" class="form-control rounded-start-3 border-light-subtle reply-input-text" placeholder="Reply to this comment..." required>
                                                                 <button type="submit" class="btn btn-outline-primary rounded-end-3"><i class="fas fa-reply"></i></button>
                                                             </div>
                                                         </form>
@@ -326,14 +286,14 @@
                                 </div>
                                 {% else %}
                                 <div class="text-center py-5">
-                                    <i class="fas fa-map-signs text-muted mb-3" style="font-size: 3rem; opacity: 0.5;"></i>
+                                    <i class="fas fa-map-signs text-muted mb-3 empty-itinerary-icon"></i>
                                     <p class="text-muted mb-0">No stops scheduled for this day yet.</p>
                                 </div>
                                 {% endif %}
                             </div>
                             {% empty %}
                             <div class="text-center py-5">
-                                <i class="fas fa-calendar-times text-muted mb-3" style="font-size: 3.5rem; opacity: 0.4;"></i>
+                                <i class="fas fa-calendar-times text-muted mb-3 empty-day-icon"></i>
                                 <h5 class="fw-bold text-secondary">No Schedule Available</h5>
                                 <p class="text-muted small mb-0">Itinerary days have not been planned for this trip yet.</p>
                             </div>
@@ -345,9 +305,8 @@
 
             <!-- Right Column: Quick Stats -->
             <div class="col-lg-4">
-                <div class="card premium-card border-0 shadow-lg p-4 sticky-top" style="top: 2rem;">
-                    <h4 class="fw-bold mb-4 pb-2 border-bottom" style="font-family: 'Poppins', sans-serif;">Trip
-                        Overview</h4>
+                <div class="card premium-card border-0 shadow-lg p-4 sticky-top sticky-sidebar">
+                    <h4 class="fw-bold mb-4 pb-2 border-bottom sidebar-title">Trip Overview</h4>
 
                     <ul class="list-unstyled m-0 d-flex flex-column gap-4">
                         <li class="d-flex align-items-center">
@@ -355,66 +314,59 @@
                                 <i class="far fa-calendar-alt"></i>
                             </div>
                             <div>
-                                <small class="text-muted d-block text-uppercase fw-bold"
-                                    style="font-size: 0.75rem;">Dates</small>
+                                <small class="text-muted d-block text-uppercase fw-bold sidebar-label">Dates</small>
                                 <span class="fw-semibold text-dark">{{ trip.from_date|date:"M d" }} -
                                     {{trip.to_date|date:"M d, Y" }}</span>
                             </div>
                         </li>
 
                         <li class="d-flex align-items-center">
-                            <div class="detail-icon-box shadow-sm" style="color: #f72585;">
+                            <div class="detail-icon-box shadow-sm text-accent">
                                 <i class="far fa-clock"></i>
                             </div>
                             <div>
-                                <small class="text-muted d-block text-uppercase fw-bold"
-                                    style="font-size: 0.75rem;">Duration</small>
+                                <small class="text-muted d-block text-uppercase fw-bold sidebar-label">Duration</small>
                                 <span class="fw-semibold text-dark">{{ trip.total_duration_days }} Day{{
                                     trip.total_duration_days|pluralize }}</span>
                             </div>
                         </li>
 
                         <li class="d-flex align-items-center">
-                            <div class="detail-icon-box shadow-sm" style="color: #4cc9f0;">
+                            <div class="detail-icon-box shadow-sm text-info-custom">
                                 <i class="fas fa-route"></i>
                             </div>
                             <div>
-                                <small class="text-muted d-block text-uppercase fw-bold"
-                                    style="font-size: 0.75rem;">Distance</small>
+                                <small class="text-muted d-block text-uppercase fw-bold sidebar-label">Distance</small>
                                 <span class="fw-semibold text-dark">{{ trip.distance }} km</span>
                             </div>
                         </li>
 
                         <li class="d-flex align-items-center">
-                            <div class="detail-icon-box shadow-sm" style="color: #f8961e;">
+                            <div class="detail-icon-box shadow-sm text-warning-custom">
                                 <i class="fas fa-hourglass-start"></i>
                             </div>
                             <div>
-                                <small class="text-muted d-block text-uppercase fw-bold"
-                                    style="font-size: 0.75rem;">Departure Time</small>
+                                <small class="text-muted d-block text-uppercase fw-bold sidebar-label">Departure Time</small>
                                 <span class="fw-semibold text-dark">{{ trip.from_time|time:"g:i A" }}</span>
                             </div>
                         </li>
 
                         <li class="d-flex align-items-center">
-                            <div class="detail-icon-box shadow-sm" style="color: #f8961e;">
+                            <div class="detail-icon-box shadow-sm text-warning-custom">
                                 <i class="fas fa-hourglass-end"></i>
                             </div>
                             <div>
-                                <small class="text-muted d-block text-uppercase fw-bold"
-                                    style="font-size: 0.75rem;">Return Time</small>
+                                <small class="text-muted d-block text-uppercase fw-bold sidebar-label">Return Time</small>
                                 <span class="fw-semibold text-dark">{{ trip.to_time|time:"g:i A" }}</span>
                             </div>
                         </li>
 
                         <li class="d-flex align-items-center pt-3 border-top mt-1">
-                            <div class="detail-icon-box shadow-sm"
-                                style="background: var(--gradient-start); color: white;">
+                            <div class="detail-icon-box shadow-sm bg-gradient-custom">
                                 <i class="fas fa-user-tie"></i>
                             </div>
                             <div>
-                                <small class="text-muted d-block text-uppercase fw-bold"
-                                    style="font-size: 0.75rem;">Coordinator</small>
+                                <small class="text-muted d-block text-uppercase fw-bold sidebar-label">Coordinator</small>
                                 <span class="fw-semibold text-dark">
                                     {{ trip.coordinator.member.name|default:trip.coordinator }}</span>
                             </div>
@@ -431,6 +383,35 @@
         </div>
     </div>
 </div>
+
+<!-- Root-Level Gallery Lightbox Modals to avoid CSS transformations stacking context centering issue -->
+{% for day in trip_days %}
+    {% for stop in day.itinerary_set.all %}
+        {% for gallery_item in stop.gallery_set.all %}
+            {% if gallery_item.image and gallery_item.image.name %}
+            <div class="modal fade root-gallery-modal" id="galleryModal{{ gallery_item.id }}" tabindex="-1" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content border-0 bg-dark overflow-hidden rounded-4">
+                        <div class="modal-header border-0 position-absolute w-100 p-3 lightbox-modal-header">
+                            <h6 class="modal-title text-white fw-bold">{{ gallery_item.title }}</h6>
+                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body p-0 text-center bg-black">
+                            <img src="{{ gallery_item.image.url }}" class="img-fluid w-100 lightbox-modal-img" alt="{{ gallery_item.title }}">
+                            {% if gallery_item.description %}
+                            <div class="p-3 text-white text-start bg-dark border-top border-secondary">
+                                <p class="mb-0 small text-white-50">{{ gallery_item.description }}</p>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        {% endfor %}
+    {% endfor %}
+{% endfor %}
+
 {% endblock %}
 
 {% block extra_js %}
@@ -439,12 +420,22 @@
 
 <!-- Google Maps Places API -->
 <script
-    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAjDxjhF5QmTBloP61Uqh44InCyIJFAgww&libraries=places"></script>
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAjDxjhF5QmTBloP61Uqh44InCyIJFAgww&libraries=places&loading=async&callback=initPlaces"
+    async defer></script>
 <script>
-    document.addEventListener("DOMContentLoaded", function () {
-        loadPlacesPhotos();
+    const tripImageUrl = "{% if trip.image and trip.image.name %}{{ trip.image.url }}{% endif %}";
+    const tripTitle = "{{ trip.title|escapejs }}";
 
-        function loadPlacesPhotos() {
+    // Global callback called by Google Maps API once loaded
+    function initPlaces() {
+        if (document.readyState === "complete" || document.readyState === "interactive") {
+            loadPlacesPhotos();
+        } else {
+            document.addEventListener("DOMContentLoaded", loadPlacesPhotos);
+        }
+    }
+
+    function loadPlacesPhotos() {
             const dummyDiv = document.createElement('div');
             const service = new google.maps.places.PlacesService(dummyDiv);
 
@@ -467,6 +458,15 @@
                     }, function (detailPlace, detailStatus) {
                         if (detailStatus === google.maps.places.PlacesServiceStatus.OK && detailPlace.photos && detailPlace.photos.length > 0) {
                             const photos = [];
+                            
+                            // If there is an uploaded trip image, include it as the first slide
+                            if (tripImageUrl) {
+                                photos.push({
+                                    url: tripImageUrl,
+                                    title: tripTitle
+                                });
+                            }
+
                             detailPlace.photos.forEach(photo => {
                                 if (typeof photo.getUrl === 'function') {
                                     // Use the authorized, origin-signed getUrl() method provided by Google Maps SDK
@@ -508,10 +508,10 @@
             photos.forEach((photo, index) => {
                 const activeClass = index === 0 ? 'active' : '';
                 innerContainer.innerHTML += `
-                    <div class="carousel-item ${activeClass}" style="height: 100%;">
-                        <img src="${photo.url}" alt="${photo.title}" style="height: 100%; width: 100%; object-fit: cover; filter: brightness(0.65);">
-                        <div class="carousel-caption d-none d-md-block" style="z-index: 3; background: rgba(0,0,0,0.55); border-radius: 30px; padding: 6px 20px; bottom: 85px; width: fit-content; margin: 0 auto; backdrop-filter: blur(5px); border: 1px solid rgba(255,255,255,0.15);">
-                            <h5 style="margin: 0; font-size: 0.9rem; font-weight: 500; font-family: 'Poppins', sans-serif;"><i class="fas fa-camera me-2 text-warning"></i>${photo.title}</h5>
+                    <div class="carousel-item ${activeClass} hero-carousel-item">
+                        <img src="${photo.url}" alt="${photo.title}" class="hero-carousel-dynamic-img">
+                        <div class="carousel-caption d-none d-md-block hero-carousel-caption">
+                            <h5 class="hero-carousel-caption-title"><i class="fas fa-camera me-2 text-warning"></i>${photo.title}</h5>
                         </div>
                     </div>
                 `;
@@ -529,6 +529,5 @@
                 wrap: true
             });
         }
-    });
 </script>
 {% endblock %}

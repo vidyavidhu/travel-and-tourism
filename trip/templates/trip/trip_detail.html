@@ -7,7 +7,12 @@
 <!-- Custom Trip CSS -->
 <link rel="stylesheet" href="{% static 'trip/css/trip.css' %}">
 <link rel="stylesheet" href="{% static 'trip/css/trip_details.css' %}">
-
+<style>
+    /* Prevent shivering/jittering on sticky overview cards on hover */
+    .sticky-top.premium-card:hover {
+        transform: none !important;
+    }
+</style>
 {% endblock %}
 
 {% block content %}
@@ -15,7 +20,7 @@
 
     <!-- Hero Image Area -->
     <div class="trip-hero trip-fade-in">
-        {% if trip.image %}
+        {% if trip.image and trip.image.name %}
         <img src="{{ trip.image.url }}" alt="{{ trip.title }}">
         {% else %}
         <div class="trip-placeholder-bg" style="height: 100%; width: 100%;">
