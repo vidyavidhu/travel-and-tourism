@@ -72,6 +72,13 @@ class TripDetailsForm(forms.ModelForm):
         fields = ['max_members', 'no_of_members', 'estimated_cost', 'description']
 
 class TripMembersForm(forms.ModelForm):
+    payment_status = forms.TypedChoiceField(
+        choices=[(0, 'Unpaid'), (1, 'Paid')],
+        coerce=int,
+        initial=0,
+        required=True,
+        label="Payment Status"
+    )
     class Meta:
         model = Trip_Members
         fields = ['member', 'status', 'payment_status', 'description']
