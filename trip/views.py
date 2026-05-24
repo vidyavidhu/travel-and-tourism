@@ -227,6 +227,9 @@ class CommentCreateView(LoginRequiredMixin, CreateView):
         return super().form_valid(form)
         
     def get_success_url(self):
+        next_url = self.request.POST.get('next')
+        if next_url:
+            return next_url
         return reverse('itinerary_detail', kwargs={'pk': self.kwargs['itinerary_id']})
 
 from django.views import View
@@ -254,6 +257,9 @@ class CommentLikeView(LoginRequiredMixin, View):
         else:
             Reaction.objects.create(comment=comment, member=trip_member, is_like=1)
             
+        next_url = request.POST.get('next') or request.GET.get('next')
+        if next_url:
+            return redirect(next_url)
         return redirect(reverse('itinerary_detail', kwargs={'pk': comment.itinerary.pk}))
 
 class ReplyCreateView(LoginRequiredMixin, CreateView):
@@ -280,6 +286,9 @@ class ReplyCreateView(LoginRequiredMixin, CreateView):
         return super().form_valid(form)
         
     def get_success_url(self):
+        next_url = self.request.POST.get('next')
+        if next_url:
+            return next_url
         comment = get_object_or_404(Comments, pk=self.kwargs['comment_id'])
         return reverse('itinerary_detail', kwargs={'pk': comment.itinerary.pk})
 
