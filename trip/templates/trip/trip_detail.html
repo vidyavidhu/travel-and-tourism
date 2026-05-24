@@ -65,7 +65,7 @@
                         </li>
                         <li class="nav-item" role="presentation">
                             <button class="nav-link" id="details-tab" data-bs-toggle="tab" data-bs-target="#details"
-                                type="button" role="tab"><i class="fas fa-list-alt me-2"></i> Trip Details</button>
+                                type="button" role="tab"><i class="fas fa-dollar-sign me-2"></i> Finance</button>
                         </li>
                         <li class="nav-item" role="presentation">
                             <button class="nav-link" id="members-tab" data-bs-toggle="tab" data-bs-target="#members"
@@ -164,13 +164,16 @@
 
                             <!-- TAB 3: MEMBERS -->
                             <div class="tab-pane fade" id="members" role="tabpanel">
-                                <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 pb-3 border-bottom gap-2">
+                                <div
+                                    class="d-flex flex-wrap justify-content-between align-items-center mb-4 pb-3 border-bottom gap-2">
                                     <div>
-                                        <h3 class="fw-bold m-0" style="font-family: 'Poppins', sans-serif;">Trip Members</h3>
+                                        <h3 class="fw-bold m-0" style="font-family: 'Poppins', sans-serif;">Trip Members
+                                        </h3>
                                         {% if trip_details %}
                                         <span class="text-muted small fw-semibold">
-                                            <i class="fas fa-coins me-1 text-warning"></i> Per Head Cost: 
-                                            <span class="text-success fw-bold">₹{{ trip_details.per_head_cost|floatformat:2 }}</span>
+                                            <i class="fas fa-coins me-1 text-warning"></i> Per Head Cost:
+                                            <span class="text-success fw-bold">₹{{
+                                                trip_details.per_head_cost|floatformat:2 }}</span>
                                         </span>
                                         {% endif %}
                                     </div>
@@ -333,7 +336,8 @@
                             <div>
                                 <small class="text-muted d-block text-uppercase fw-bold"
                                     style="font-size: 0.75rem;">Duration</small>
-                                <span class="fw-semibold text-dark">{{ trip.total_duration_days }} Day{{ trip.total_duration_days|pluralize }}</span>
+                                <span class="fw-semibold text-dark">{{ trip.total_duration_days }} Day{{
+                                    trip.total_duration_days|pluralize }}</span>
                             </div>
                         </li>
 
