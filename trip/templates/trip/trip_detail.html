@@ -293,6 +293,7 @@
                                                 <th class="text-end">Paid Amount</th>
                                                 <th class="text-end">Unpaid Amount</th>
                                                 <th>Notes</th>
+                                                <th class="text-end">Actions</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -314,6 +315,14 @@
                                                 <td class="text-end fw-bold text-success">₹{{ tm.paid_amount|floatformat:2 }}</td>
                                                 <td class="text-end fw-bold {% if tm.unpaid_amount > 0 %}text-danger{% else %}text-secondary{% endif %}">₹{{ tm.unpaid_amount|floatformat:2 }}</td>
                                                 <td class="text-muted small">{{ tm.description|truncatechars:30 }}</td>
+                                                <td class="text-end">
+                                                    <a href="{% url 'trip_members_update' tm.pk %}" 
+                                                       class="btn btn-outline-warning btn-sm rounded-circle shadow-sm"
+                                                       style="width: 32px; height: 32px; padding:0; display:inline-flex; align-items:center; justify-content:center;"
+                                                       title="Edit Member">
+                                                        <i class="fas fa-edit"></i>
+                                                    </a>
+                                                </td>
                                             </tr>
                                             {% endfor %}
                                         </tbody>

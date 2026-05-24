@@ -155,6 +155,19 @@ class TripMembersCreateView(CreateView):
     def get_success_url(self):
         return reverse('trip_detail', kwargs={'pk': self.kwargs['trip_id']})
 
+class TripMembersUpdateView(UpdateView):
+    model = Trip_Members
+    form_class = TripMembersForm
+    template_name = 'trip/trip_form.html'
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['form_title'] = "Update Trip Member Details"
+        return context
+        
+    def get_success_url(self):
+        return reverse('trip_detail', kwargs={'pk': self.object.trip.pk})
+
 class TripDayCreateView(CreateView):
     model = Trip_Day
     form_class = TripDayForm

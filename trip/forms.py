@@ -72,6 +72,13 @@ class TripDetailsForm(forms.ModelForm):
         fields = ['max_members', 'no_of_members', 'estimated_cost', 'description']
 
 class TripMembersForm(forms.ModelForm):
+    status = forms.TypedChoiceField(
+        choices=[(0, 'Pending'), (1, 'Joined'), (2, 'Cancelled')],
+        coerce=int,
+        initial=0,
+        required=True,
+        label="Join Status"
+    )
     payment_status = forms.TypedChoiceField(
         choices=[(0, 'Unpaid'), (1, 'Paid')],
         coerce=int,
@@ -81,9 +88,12 @@ class TripMembersForm(forms.ModelForm):
     )
     class Meta:
         model = Trip_Members
-        fields = ['member', 'status', 'payment_status', 'description']
+        fields = ['member', 'status', 'payment_status', 'paid_amount', 'unpaid_amount', 'description']
         widgets = {
-            'status': forms.HiddenInput(),
+            'member': forms.Select(attrs={'class': 'form-control'}),
+            'paid_amount': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01'}),
+            'unpaid_amount': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01'}),
+            'description': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
         }
 
 class TripDayForm(forms.ModelForm):
