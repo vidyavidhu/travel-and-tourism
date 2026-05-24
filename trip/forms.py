@@ -86,6 +86,37 @@ class TripMembersForm(forms.ModelForm):
         required=True,
         label="Payment Status"
     )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # If this is an update form, make unpaid_amount read-only
+        if self.instance and self.instance.pk:
+            self.fields['unpaid_amount'].widget.attrs['readonly'] = 'readonly'
+
+    def clean(self):
+        cleaned_data = super().clean()
+        paid_amount = cleaned_data.get('paid_amount', 0.0) or 0.0
+        unpaid_amount = cleaned_data.get('unpaid_amount', 0.0) or 0.0
+        
+        if self.instance and self.instance.pk:
+            # During updates, calculate payment increase
+            old_paid_amount = self.instance.paid_amount or 0.0
+            old_unpaid_amount = self.instance.unpaid_amount or 0.0
+            
+            payment_amount = paid_amount - old_paid_amount
+            if payment_amount > 0 and payment_amount > old_unpaid_amount:
+                raise forms.ValidationError(
+                    f"Payment amount (₹{payment_amount:.2f}) cannot be greater than the remaining unpaid amount (₹{old_unpaid_amount:.2f})."
+                )
+        else:
+            # During creation, paid amount cannot exceed unpaid amount
+            if paid_amount > unpaid_amount:
+                raise forms.ValidationError(
+                    f"Paid amount (₹{paid_amount:.2f}) cannot be greater than the unpaid amount (₹{unpaid_amount:.2f})."
+                )
+        
+        return cleaned_data
+
     class Meta:
         model = Trip_Members
         fields = ['member', 'status', 'payment_status', 'paid_amount', 'unpaid_amount', 'description']

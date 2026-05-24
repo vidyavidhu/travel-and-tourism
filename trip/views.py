@@ -137,6 +137,17 @@ class TripMembersCreateView(CreateView):
     form_class = TripMembersForm
     template_name = 'trip/trip_form.html'
     
+    def get_initial(self):
+        initial = super().get_initial()
+        trip = get_object_or_404(Trip, pk=self.kwargs['trip_id'])
+        try:
+            trip_details = Trip_Details.objects.get(trip=trip)
+            initial['unpaid_amount'] = trip_details.per_head_cost
+        except Trip_Details.DoesNotExist:
+            initial['unpaid_amount'] = 0.0
+        initial['paid_amount'] = 0.0
+        return initial
+        
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         trip = get_object_or_404(Trip, pk=self.kwargs['trip_id'])
