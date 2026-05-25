@@ -82,9 +82,14 @@ class Trip(models.Model):
 
         # joined_members status=1 means Joined
         joined_members = Trip_Members.objects.filter(trip=self, status=1)
-        joined_count = joined_members.count()
+        joined_count = sum(m.group_size for m in joined_members)
         if joined_count == 0:
             joined_count = trip_details.no_of_members or trip_details.max_members or 1
+
+        # Keep trip_details.no_of_members updated in the database
+        if trip_details.no_of_members != joined_count:
+            trip_details.no_of_members = joined_count
+            trip_details.save(update_fields=['no_of_members'])
 
         additional_collection = max(0.0, total_expenses - estimated_cost)
         additional_cost_per_head = additional_collection / joined_count
@@ -92,7 +97,8 @@ class Trip(models.Model):
         target_total = per_head_cost + additional_cost_per_head
 
         for member in joined_members:
-            target_unpaid = max(0.0, target_total - member.paid_amount)
+            member_target_total = target_total * member.group_size
+            target_unpaid = max(0.0, member_target_total - member.paid_amount)
             if target_unpaid > member.unpaid_amount:
                 member.unpaid_amount = target_unpaid
                 member.payment_status = 0 # reset to unpaid
@@ -140,6 +146,19 @@ class Trip_Members(models.Model):
     paid_amount = models.FloatField(default=0.0)
     unpaid_amount = models.FloatField(default=0.0)
     description = models.TextField(null=True, blank=True) 
+
+    @property
+    def group_size(self):
+        try:
+            adult_co_travellers = CoTraveller.objects.filter(
+                trip=self.trip,
+                user=self.member.user,
+                member_type__name__iexact='adult'
+            ).count()
+        except Exception:
+            adult_co_travellers = 0
+        return 1 + adult_co_travellers
+
     def save(self, *args, **kwargs):
         # Calculate per-head cost for a new member
         if not self.pk:
@@ -148,7 +167,7 @@ class Trip_Members(models.Model):
                 per_head_cost = trip_details.per_head_cost
             except Exception:
                 per_head_cost = 0.0
-            self.unpaid_amount = per_head_cost
+            self.unpaid_amount = per_head_cost * self.group_size
             self.paid_amount = 0.0
 
         # When payment status is set to Paid (1), move unpaid to paid

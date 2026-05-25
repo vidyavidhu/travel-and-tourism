@@ -287,6 +287,7 @@
                                         <thead class="table-light">
                                             <tr>
                                                 <th>Member</th>
+                                                <th class="text-center">Group Size</th>
                                                 <th>Join Status</th>
                                                 <th>Payment Status</th>
                                                 <th class="text-end">Paid Amount</th>
@@ -299,6 +300,9 @@
                                             {% for tm in trip_members %}
                                             <tr>
                                                 <td class="fw-semibold">{{ tm.member.name|default:tm.member }}</td>
+                                                <td class="text-center">
+                                                    <span class="badge bg-info text-dark fw-bold" style="font-size: 0.85rem; background-color: rgba(76, 201, 240, 0.15) !important; color: #0077b6 !important; border: 1px solid rgba(76, 201, 240, 0.3);"><i class="fas fa-users me-1"></i>{{ tm.group_size }}</span>
+                                                </td>
                                                 <td>
                                                     {% if tm.status == 1 %}<span class="badge bg-success">Joined</span>
                                                     {% elif tm.status == 2 %}<span

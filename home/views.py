@@ -83,10 +83,7 @@ def join_trip(request, trip_id):
     member_types = MemberType.objects.all()
     
     # Capacity calculations:
-    total_joined = Trip_Members.objects.filter(trip=trip, status=1).count()
-    # Exclude children from counting towards trip capacity/seats as they don't affect per-head cost
-    total_co_travellers = CoTraveller.objects.filter(trip=trip).exclude(member_type__name__iexact='child').count()
-    total_occupied = total_joined + total_co_travellers
+    total_occupied = sum(m.group_size for m in Trip_Members.objects.filter(trip=trip, status=1))
     
     max_members = trip_details.max_members if trip_details else 10
     remaining_slots = max(0, max_members - total_occupied)
@@ -161,6 +158,15 @@ def join_trip(request, trip_id):
                 bgroup=co_bgroups[i],
                 description=co_descriptions[i]
             )
+
+        # Recalculate unpaid_amount with the newly added co-travellers
+        try:
+            per_head_cost = trip.trip_details.per_head_cost
+        except Exception:
+            per_head_cost = 0.0
+        trip_member.unpaid_amount = per_head_cost * trip_member.group_size
+        trip_member.save()
+
         messages.success(request, f"Your request to join the '{trip.title}' adventure with {len(co_names)} co-traveller(s) has been successfully submitted and is pending coordinator approval!")
         return redirect('home_trip_details', pk=trip.id)
         

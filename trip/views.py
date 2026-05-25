@@ -99,7 +99,7 @@ class TripDetailView(DetailView):
         additional_cost_per_head = 0.0
         if total_expenses > estimated_cost:
             additional_collection = total_expenses - estimated_cost
-            joined_count = trip_members.filter(status=1).count()
+            joined_count = sum(m.group_size for m in trip_members.filter(status=1))
             if joined_count == 0:
                 joined_count = trip_details.no_of_members or trip_details.max_members or 1
             additional_cost_per_head = additional_collection / joined_count
