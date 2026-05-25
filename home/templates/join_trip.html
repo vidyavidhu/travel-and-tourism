@@ -1,0 +1,593 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Join {{ trip.title }} - Trip Weaver{% endblock %}
+
+{% block extra_css %}
+<!-- Bootstrap 5 CSS -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<!-- FontAwesome -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<style>
+    body {
+        font-family: 'Plus Jakarta Sans', 'Segoe UI', sans-serif;
+        background-color: #f8fafc;
+        color: #1e293b;
+    }
+    
+    .join-container {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 3rem 1.5rem;
+    }
+
+    .premium-card {
+        background: #ffffff;
+        border-radius: 24px;
+        border: none;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
+        overflow: hidden;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .join-header-gradient {
+        background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+        color: #ffffff;
+        padding: 3rem 2rem;
+        position: relative;
+    }
+
+    .join-header-gradient::before {
+        content: '';
+        position: absolute;
+        top: 0; left: 0; right: 0; bottom: 0;
+        background: radial-gradient(circle at 80% 20%, rgba(59, 130, 246, 0.15) 0%, transparent 50%);
+        pointer-events: none;
+    }
+
+    .trip-badge {
+        background: rgba(59, 130, 246, 0.15);
+        color: #60a5fa;
+        font-size: 0.85rem;
+        font-weight: 700;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        border-radius: 12px;
+        padding: 0.5rem 1rem;
+        display: inline-block;
+    }
+
+    .trip-mini-hero {
+        height: 180px;
+        background-size: cover;
+        background-position: center;
+        border-radius: 20px;
+        position: relative;
+        box-shadow: inset 0 0 0 2000px rgba(0, 0, 0, 0.35);
+        margin-bottom: 2rem;
+    }
+
+    .trip-mini-hero-details {
+        position: absolute;
+        bottom: 1.5rem;
+        left: 1.5rem;
+        right: 1.5rem;
+        color: #ffffff;
+    }
+
+    .meta-box {
+        background: #f1f5f9;
+        border-radius: 16px;
+        padding: 1.25rem;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        transition: background 0.2s ease;
+    }
+
+    .meta-box:hover {
+        background: #e2e8f0;
+    }
+
+    .meta-icon-box {
+        width: 48px;
+        height: 48px;
+        background: #ffffff;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #3b82f6;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.03);
+        font-size: 1.25rem;
+    }
+
+    .form-section-title {
+        font-family: 'Outfit', sans-serif;
+        font-weight: 700;
+        font-size: 1.25rem;
+        color: #0f172a;
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.75rem;
+    }
+
+    .form-section-title span i {
+        color: #3b82f6;
+    }
+
+    .form-label {
+        font-weight: 600;
+        font-size: 0.875rem;
+        color: #475569;
+        margin-bottom: 0.5rem;
+    }
+
+    .form-control {
+        border-radius: 12px;
+        border: 2px solid #e2e8f0;
+        padding: 0.75rem 1rem;
+        font-size: 0.95rem;
+        font-weight: 500;
+        color: #1e293b;
+        background-color: #ffffff;
+        transition: all 0.25s ease;
+    }
+
+    .form-control:focus {
+        border-color: #3b82f6;
+        box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+        background-color: #ffffff;
+    }
+
+    .form-control[readonly], .form-control:disabled {
+        background-color: #f8fafc;
+        border-color: #f1f5f9;
+        color: #64748b;
+    }
+
+    .btn-join-primary {
+        background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+        border: none;
+        color: #ffffff;
+        font-weight: 700;
+        font-size: 1rem;
+        padding: 1rem 2rem;
+        border-radius: 14px;
+        box-shadow: 0 10px 25px rgba(37, 99, 235, 0.2);
+        transition: all 0.3s ease;
+    }
+
+    .btn-join-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 15px 30px rgba(37, 99, 235, 0.35);
+        background: linear-gradient(135deg, #1d4ed8 0%, #1e40af 100%);
+    }
+
+    .btn-join-cancel {
+        background: #f1f5f9;
+        border: none;
+        color: #475569;
+        font-weight: 600;
+        font-size: 1rem;
+        padding: 1rem 2rem;
+        border-radius: 14px;
+        transition: all 0.3s ease;
+    }
+
+    .btn-join-cancel:hover {
+        background: #e2e8f0;
+        color: #0f172a;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="join-container">
+    <div class="card premium-card">
+        
+        <!-- Header Section -->
+        <div class="join-header-gradient">
+            <span class="trip-badge mb-3"><i class="fas fa-compass me-1"></i> {{ trip.category.name }}</span>
+            <h1 class="fw-bold m-0" style="font-family: 'Outfit', sans-serif; font-size: 2.25rem;">Join the Adventure</h1>
+            <p class="text-white-50 m-0 mt-2" style="font-size: 1.1rem; max-width: 600px;">
+                You are initiating a request to join <strong>{{ trip.title }}</strong>. Please complete the travel safety form below.
+            </p>
+        </div>
+
+        <div class="card-body p-4 p-md-5">
+            <form method="POST" action="" class="needs-validation" novalidate>
+                {% csrf_token %}
+
+                <!-- Trip Details Summary -->
+                <div class="form-section-title">
+                    <span><i class="fas fa-map-marked-alt"></i> Trip Details Overview</span>
+                </div>
+                
+                <!-- Mini Hero -->
+                {% if trip.image and trip.image.name %}
+                <div class="trip-mini-hero" style="background-image: url('{{ trip.image.url }}');">
+                {% else %}
+                <div class="trip-mini-hero" style="background-image: url('https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&w=1600&q=80');">
+                {% endif %}
+                    <div class="trip-mini-hero-details">
+                        <h3 class="fw-bold m-0">{{ trip.title }}</h3>
+                        <p class="m-0 mt-1 small opacity-75">
+                            <i class="fas fa-map-marker-alt text-danger me-1"></i>{{ trip.location_from_name }} &rarr; {{ trip.location_to_name }}
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Trip Meta Grid -->
+                <div class="row g-4 mb-5">
+                    <div class="col-6 col-md-3">
+                        <div class="meta-box">
+                            <div class="meta-icon-box text-primary">
+                                <i class="far fa-calendar-alt"></i>
+                            </div>
+                            <div>
+                                <small class="text-muted d-block fw-bold text-uppercase" style="font-size: 0.75rem; letter-spacing: 0.05em;">Dates</small>
+                                <span class="fw-bold">{{ trip.from_date|date:"M d" }} - {{ trip.to_date|date:"M d, Y" }}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-6 col-md-3">
+                        <div class="meta-box">
+                            <div class="meta-icon-box text-success">
+                                <i class="far fa-clock"></i>
+                            </div>
+                            <div>
+                                <small class="text-muted d-block fw-bold text-uppercase" style="font-size: 0.75rem; letter-spacing: 0.05em;">Duration</small>
+                                <span class="fw-bold">{{ trip.total_duration_days }} Day{{ trip.total_duration_days|pluralize }}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-6 col-md-3">
+                        <div class="meta-box">
+                            <div class="meta-icon-box text-warning">
+                                <i class="fas fa-indian-rupee-sign"></i>
+                            </div>
+                            <div>
+                                <small class="text-muted d-block fw-bold text-uppercase" style="font-size: 0.75rem; letter-spacing: 0.05em;">Per Head Cost</small>
+                                <span class="fw-bold text-dark">
+                                    {% if trip_details %}
+                                        ₹{{ trip_details.per_head_cost|floatformat:2 }}
+                                    {% else %}
+                                        ₹0.00
+                                    {% endif %}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-6 col-md-3">
+                        <div class="meta-box">
+                            <div class="meta-icon-box text-danger">
+                                <i class="fas fa-user-check"></i>
+                            </div>
+                            <div>
+                                <small class="text-muted d-block fw-bold text-uppercase" style="font-size: 0.75rem; letter-spacing: 0.05em;">Adult Slots Left</small>
+                                <span class="fw-bold text-danger">{{ remaining_slots }} / {{ max_members }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <hr class="my-5 opacity-10">
+
+                <!-- Account & Contact Information -->
+                <div class="form-section-title">
+                    <span><i class="fas fa-user-circle"></i> Member Information</span>
+                </div>
+                <div class="row g-4 mb-4">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="form-label" for="username">Username</label>
+                            <input type="text" id="username" class="form-control" value="{{ request.user.username }}" readonly disabled>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="form-label" for="email">Email Address</label>
+                            <input type="email" id="email" class="form-control" value="{{ request.user.email }}" readonly disabled>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="form-label" for="first_name">First Name</label>
+                            <input type="text" id="first_name" class="form-control" value="{{ request.user.first_name }}" readonly disabled>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="form-label" for="last_name">Last Name</label>
+                            <input type="text" id="last_name" class="form-control" value="{{ request.user.last_name }}" readonly disabled>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row g-4 mb-5">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="form-label" for="phone"><i class="fas fa-phone me-1 text-primary"></i> Phone Number</label>
+                            <input type="tel" id="phone" name="phone" class="form-control" value="{{ member.phone|default:'' }}" pattern="[0-9]{10}" placeholder="10-digit mobile number" required>
+                            <div class="invalid-feedback">Please provide a valid 10-digit phone number.</div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="form-label" for="bgroup"><i class="fas fa-droplet me-1 text-danger"></i> Blood Group</label>
+                            <select id="bgroup" name="bgroup" class="form-control">
+                                <option value="">Select Blood Group</option>
+                                <option value="A+" {% if member.bgroup == 'A+' %}selected{% endif %}>A+</option>
+                                <option value="A-" {% if member.bgroup == 'A-' %}selected{% endif %}>A-</option>
+                                <option value="B+" {% if member.bgroup == 'B+' %}selected{% endif %}>B+</option>
+                                <option value="B-" {% if member.bgroup == 'B-' %}selected{% endif %}>B-</option>
+                                <option value="AB+" {% if member.bgroup == 'AB+' %}selected{% endif %}>AB+</option>
+                                <option value="AB-" {% if member.bgroup == 'AB-' %}selected{% endif %}>AB-</option>
+                                <option value="O+" {% if member.bgroup == 'O+' %}selected{% endif %}>O+</option>
+                                <option value="O-" {% if member.bgroup == 'O-' %}selected{% endif %}>O-</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <hr class="my-5 opacity-10">
+
+                <!-- Emergency Contact Information -->
+                <div class="form-section-title">
+                    <span><i class="fas fa-shield-halved"></i> Emergency Travel Details</span>
+                </div>
+                <p class="text-secondary small mb-4">
+                    For your safety on the road, emergency contact information is highly recommended before joining any trip.
+                </p>
+                <div class="row g-4 mb-5">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="form-label" for="emergency_name">Emergency Contact Person Name</label>
+                            <input type="text" id="emergency_name" name="emergency_name" class="form-control" value="{{ member.emergency_name|default:'' }}" placeholder="Full Name of family or guardian" required>
+                            <div class="invalid-feedback">Please enter emergency contact name.</div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="form-label" for="emergency_contact">Emergency Phone Number</label>
+                            <input type="tel" id="emergency_contact" name="emergency_contact" class="form-control" value="{{ member.emergency_contact|default:'' }}" pattern="[0-9]{10}" placeholder="10-digit phone number" required>
+                            <div class="invalid-feedback">Please enter a valid 10-digit emergency phone number.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <hr class="my-5 opacity-10">
+
+                <!-- Co-Travellers Section -->
+                <div class="form-section-title">
+                    <span><i class="fas fa-users text-primary"></i> Co-Travellers (Companions)</span>
+                    <span class="badge bg-primary bg-opacity-10 text-primary rounded-3 px-3 py-2 text-uppercase fw-bold" style="font-size: 0.8rem;">
+                        Adults: <span id="co-traveller-slot-count">0</span> / {{ max_co_travellers }} Max
+                    </span>
+                </div>
+                
+                <p class="text-secondary small mb-4">
+                    Planning to travel with family or friends? You can register up to <strong>{{ max_co_travellers }}</strong> adult companions based on the remaining trip capacity (Total Available Adult Slots: <strong>{{ remaining_slots }}</strong>). Children do not count towards the seat limit and have no cost.
+                </p>
+
+                <div id="co-travellers-container">
+                    <!-- Dynamic Co-Traveller cards will be appended here -->
+                </div>
+
+                {% if remaining_slots >= 1 %}
+                <div class="text-start mb-5">
+                    <button type="button" id="add-co-traveller-btn" class="btn btn-outline-primary py-3 px-4 rounded-4 fw-bold d-inline-flex align-items-center gap-2" style="border: 2px dashed #0d6efd; transition: all 0.2s ease;">
+                        <i class="fas fa-plus"></i> Add Co-Traveller
+                    </button>
+                </div>
+                {% else %}
+                <div class="alert alert-warning border-0 rounded-4 p-3 mb-5 small">
+                    <i class="fas fa-circle-exclamation me-1"></i> No slots are available on this trip (it has reached maximum capacity).
+                </div>
+                {% endif %}
+
+                <hr class="my-5 opacity-10">
+
+                <!-- Travel Comments / Description -->
+                <div class="form-section-title">
+                    <span><i class="far fa-note-sticky"></i> Travel Notes & Guidelines</span>
+                </div>
+                <div class="form-group mb-5">
+                    <label class="form-label" for="description">Co-Traveler Details or Personal Travel Notes (Optional)</label>
+                    <textarea id="description" name="description" class="form-control" rows="4" placeholder="Mention any medical requests, food allergies, or special notes here...">{{ trip_member.description|default:'' }}</textarea>
+                </div>
+
+                <!-- Form Action Buttons -->
+                <div class="d-flex flex-column flex-sm-row align-items-center justify-content-end gap-3 pt-3 border-top mt-4">
+                    <a href="{% url 'home_trip_details' trip.id %}" class="btn btn-join-cancel w-100 w-sm-auto text-center">
+                        <i class="fas fa-arrow-left me-2"></i> Cancel
+                    </a>
+                    <button type="submit" class="btn btn-join-primary w-100 w-sm-auto">
+                        <i class="fas fa-check me-2"></i> Confirm and Join Trip
+                    </button>
+                </div>
+
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Dynamic Co-Travellers Logic
+    const maxCoTravellers = {{ max_co_travellers }};
+    const addBtn = document.getElementById('add-co-traveller-btn');
+    const container = document.getElementById('co-travellers-container');
+    const slotCountLabel = document.getElementById('co-traveller-slot-count');
+    let coTravellerCountGlobal = 0;
+
+    function calculateActiveAdults() {
+        let count = 0;
+        const selects = container.querySelectorAll('.co-type-select');
+        selects.forEach(sel => {
+            const name = sel.options[sel.selectedIndex].getAttribute('data-name');
+            if (name === 'adult') {
+                count++;
+            }
+        });
+        return count;
+    }
+
+    function updateActiveAdultsCount() {
+        const adultCount = calculateActiveAdults();
+        slotCountLabel.textContent = adultCount;
+        updateSelectsAndButton();
+    }
+
+    function updateSelectsAndButton() {
+        const adultCount = calculateActiveAdults();
+        const selects = container.querySelectorAll('.co-type-select');
+        selects.forEach(sel => {
+            const selectedName = sel.options[sel.selectedIndex].getAttribute('data-name');
+            const adultOption = sel.querySelector('option[data-name="adult"]');
+            
+            if (adultCount >= maxCoTravellers) {
+                if (selectedName !== 'adult') {
+                    if (adultOption) adultOption.disabled = true;
+                }
+            } else {
+                if (adultOption) adultOption.disabled = false;
+            }
+        });
+    }
+
+    if (addBtn) {
+        addBtn.addEventListener('click', () => {
+            const adultCount = calculateActiveAdults();
+            coTravellerCountGlobal++;
+
+            const card = document.createElement('div');
+            card.className = 'card bg-light border-0 rounded-4 p-4 mb-4 shadow-sm position-relative co-traveller-card';
+            
+            // Build options dynamically
+            let optionsHtml = '';
+            {% for mtype in member_types %}
+                {
+                    const isChildDefault = "{{ mtype.name|lower }}" === 'child';
+                    const isAdult = "{{ mtype.name|lower }}" === 'adult';
+                    // If adult limit is reached, disable adult choice
+                    const disabledAttr = (adultCount >= maxCoTravellers && isAdult) ? 'disabled' : '';
+                    // Default select to Child if adult limit is reached
+                    const selectedAttr = (adultCount >= maxCoTravellers && isChildDefault) ? 'selected' : (isAdult ? 'selected' : '');
+                    optionsHtml += `<option value="{{ mtype.id }}" data-name="{{ mtype.name|lower }}" ${disabledAttr} ${selectedAttr}>{{ mtype.name|capfirst }}</option>`;
+                }
+            {% endfor %}
+
+            card.innerHTML = `
+                <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom">
+                    <h6 class="fw-bold m-0 text-primary d-flex align-items-center gap-2">
+                        <i class="fas fa-user-plus text-primary"></i> Co-Traveller #<span class="co-traveller-index">${coTravellerCountGlobal}</span>
+                    </h6>
+                    <button type="button" class="btn btn-sm btn-outline-danger border-0 rounded-pill remove-co-traveller-btn px-3 py-1">
+                        <i class="fas fa-trash me-1"></i> Remove
+                    </button>
+                </div>
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label small fw-bold">Full Name</label>
+                        <input type="text" name="co_name[]" class="form-control form-control-sm" required>
+                        <div class="invalid-feedback">Please enter the co-traveller's full name.</div>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label small fw-bold">Age</label>
+                        <input type="number" name="co_age[]" class="form-control form-control-sm" min="1" max="120" required>
+                        <div class="invalid-feedback">Please enter a valid age (1-120).</div>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label small fw-bold">Gender</label>
+                        <select name="co_gender[]" class="form-control form-control-sm" required>
+                            <option value="">Select</option>
+                            <option value="Male">Male</option>
+                            <option value="Female">Female</option>
+                            <option value="Other">Other</option>
+                        </select>
+                        <div class="invalid-feedback">Select gender.</div>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label small fw-bold">Blood Group</label>
+                        <select name="co_bgroup[]" class="form-control form-control-sm" required>
+                            <option value="">Select</option>
+                            <option value="A+">A+</option>
+                            <option value="A-">A-</option>
+                            <option value="B+">B+</option>
+                            <option value="B-">B-</option>
+                            <option value="AB+">AB+</option>
+                            <option value="AB-">AB-</option>
+                            <option value="O+">O+</option>
+                            <option value="O-">O-</option>
+                        </select>
+                        <div class="invalid-feedback">Select blood group.</div>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label small fw-bold">Member Type</label>
+                        <select name="co_type[]" class="form-control form-control-sm co-type-select" required>
+                            ${optionsHtml}
+                        </select>
+                        <div class="invalid-feedback">Select type.</div>
+                    </div>
+                    <div class="col-md-12">
+                        <label class="form-label small fw-bold">Special Requests / Description (Optional)</label>
+                        <textarea name="co_description[]" class="form-control form-control-sm" rows="2" placeholder="Mention food preferences, medical conditions or requirements..."></textarea>
+                    </div>
+                </div>
+            `;
+
+            container.appendChild(card);
+
+            // Re-index dynamic headers
+            reindexCoTravellers();
+            // Recalculate
+            updateActiveAdultsCount();
+
+            // Bind change listener
+            const typeSelect = card.querySelector('.co-type-select');
+            typeSelect.addEventListener('change', () => {
+                updateActiveAdultsCount();
+            });
+
+            // Bind Remove Action
+            card.querySelector('.remove-co-traveller-btn').addEventListener('click', () => {
+                card.remove();
+                reindexCoTravellers();
+                updateActiveAdultsCount();
+            });
+        });
+    }
+
+    function reindexCoTravellers() {
+        const cards = container.querySelectorAll('.co-traveller-card');
+        cards.forEach((c, idx) => {
+            c.querySelector('.co-traveller-index').textContent = idx + 1;
+        });
+    }
+
+    // Bootstrap validation script for form styling
+    (() => {
+        'use strict'
+        const forms = document.querySelectorAll('.needs-validation')
+        Array.from(forms).forEach(form => {
+            form.addEventListener('submit', event => {
+                if (!form.checkValidity()) {
+                    event.preventDefault()
+                    event.stopPropagation()
+                }
+                form.classList.add('was-validated')
+            }, false)
+        })
+    })()
+</script>
+{% endblock %}

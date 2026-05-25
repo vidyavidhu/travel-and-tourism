@@ -50,6 +50,7 @@ def signup_view(request):
 from django.contrib.auth import authenticate, login
 
 def login_view(request):
+    next_url = request.POST.get('next') or request.GET.get('next') or ''
     if request.method == 'POST':
         username = request.POST.get('username')
         password = request.POST.get('password')
@@ -58,15 +59,18 @@ def login_view(request):
         if user is not None:
             login(request, user)
             if not hasattr(user, 'member'):
+                if next_url:
+                    return redirect(f"/member/profile/edit/?next={next_url}")
                 return redirect('member_profile_edit')
             else:
-
+                if next_url:
+                    return redirect(next_url)
                 return redirect('/home')
         else:
             messages.error(request, "Invalid username or password.")
-            return render(request, 'member/login.html')
+            return render(request, 'member/login.html', {'next': next_url})
             
-    return render(request, 'member/login.html')
+    return render(request, 'member/login.html', {'next': next_url})
 
 def logout_view(request):
     from django.contrib.auth import logout
@@ -99,6 +103,7 @@ def profile_edit_view(request):
     coordinator = getattr(request.user, 'coordinator', None)
     print("member profile_edit_view ",member)
     print("coordinator profile_edit_view ",coordinator)
+    next_url = request.POST.get('next') or request.GET.get('next') or ''
 
     if request.method == 'POST':
         # Update User data
@@ -146,6 +151,8 @@ def profile_edit_view(request):
         print("member2",member)
         
         messages.success(request, "Profile updated successfully.")
+        if next_url:
+            return redirect(next_url)
         return redirect('/member/profile')
         
-    return render(request, 'member/profile_edit.html')
+    return render(request, 'member/profile_edit.html', {'next': next_url})

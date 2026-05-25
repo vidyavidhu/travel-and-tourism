@@ -1,6 +1,7 @@
 from django.template.defaultfilters import default
 from django.db import models
 from member.models import Member,Coordinator
+from django.contrib.auth.models import User
 # Create your models here.
 
 class TripCategory(models.Model):
@@ -139,7 +140,6 @@ class Trip_Members(models.Model):
     paid_amount = models.FloatField(default=0.0)
     unpaid_amount = models.FloatField(default=0.0)
     description = models.TextField(null=True, blank=True) 
-
     def save(self, *args, **kwargs):
         # Calculate per-head cost for a new member
         if not self.pk:
@@ -280,4 +280,21 @@ class Join_Request(models.Model):
     status=models.IntegerField(default=0) #0 for not approved, 1 for approved, 2 for rejected
     def __str__(self):
         return self.trip.title+" - "+self.member.user.first_name
+class MemberType(models.Model):
+    name = models.CharField(max_length=10)   #adult,child
+    description = models.TextField(null=True, blank=True) 
+    def __str__(self):
+        return self.name 
+class CoTraveller(models.Model):
+    trip=models.ForeignKey(Trip,on_delete=models.CASCADE)
+    user=models.ForeignKey(User,on_delete=models.CASCADE)
+    member_type=models.ForeignKey(MemberType, on_delete=models.CASCADE,null=True, blank=True) #adult,child
+    name = models.CharField(max_length=100)
+    age=models.IntegerField(null=True, blank=True)
+    gender = models.CharField(max_length=10)
+    bgroup = models.CharField(max_length=10,null=True, blank=True)
+    description = models.TextField(null=True, blank=True) 
+    def __str__(self):
+        return self.name
+
 

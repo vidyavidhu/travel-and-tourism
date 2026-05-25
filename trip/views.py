@@ -6,6 +6,8 @@ from django.db.models import Q
 from .models import Trip, Trip_Details, Trip_Members, Trip_Day, Itinerary, Gallery, Comments, Reply, Reaction, Rating
 from .forms import TripForm, TripFilterForm, TripDetailsForm, TripMembersForm, TripDayForm, ItineraryForm, GalleryForm, CommentsForm
 
+
+
 class TripListView(ListView):
     model = Trip
     template_name = 'trip/trip_list.html'

@@ -18,6 +18,7 @@
 
             <form method="POST" action="" enctype="multipart/form-data" class="auth-form profile-form">
                 {% csrf_token %}
+                <input type="hidden" name="next" value="{{ next }}">
 
                 <div class="profile-image-upload text-center mb-4">
                     <div class="image-preview-container profile-edit-preview-container">

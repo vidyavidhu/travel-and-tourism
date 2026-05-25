@@ -1,6 +1,9 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from django.utils import timezone
-from trip.models import Trip, Trip_Details, Trip_Members, Trip_Day
+from django.contrib.auth.decorators import login_required
+from django.contrib import messages
+from trip.models import Trip, Trip_Details, Trip_Members, Trip_Day, CoTraveller, MemberType
+from member.models import Member
 
 # Create your views here.
 def home_view(request):
@@ -34,10 +37,131 @@ def home_trip_details(request, pk):
         'itinerary_set__rating_set',
     )
     
+    membership_status = None
+    if request.user.is_authenticated:
+        try:
+            member = request.user.member
+            tm = Trip_Members.objects.filter(trip=trip, member=member).first()
+            if tm:
+                membership_status = tm.status
+        except Member.DoesNotExist:
+            pass
+            
     context = {
         'trip': trip,
         'trip_details': trip_details,
         'trip_members': trip_members,
         'trip_days': trip_days,
+        'membership_status': membership_status,
     }
     return render(request, 'home_trip_details.html', context)
+
+@login_required
+def join_trip(request, trip_id):
+    trip = get_object_or_404(Trip, pk=trip_id)
+    
+    member, created = Member.objects.get_or_create(user=request.user)
+    trip_member = Trip_Members.objects.filter(trip=trip, member=member).first()
+    
+    if trip_member and trip_member.status in [0, 1]:
+        if trip_member.status == 1:
+            messages.info(request, "You are already a member of this trip!")
+        else:
+            messages.info(request, "Your request to join this trip is already pending approval.")
+        return redirect('home_trip_details', pk=trip.id)
+        
+    try:
+        trip_details = Trip_Details.objects.get(trip=trip)
+    except Trip_Details.DoesNotExist:
+        trip_details = None
+        
+    # Auto-seed standard MemberTypes if not populated
+    if not MemberType.objects.exists():
+        MemberType.objects.create(name="adult", description="Adult traveler")
+        MemberType.objects.create(name="child", description="Child traveler")
+        
+    member_types = MemberType.objects.all()
+    
+    # Capacity calculations:
+    total_joined = Trip_Members.objects.filter(trip=trip, status=1).count()
+    # Exclude children from counting towards trip capacity/seats as they don't affect per-head cost
+    total_co_travellers = CoTraveller.objects.filter(trip=trip).exclude(member_type__name__iexact='child').count()
+    total_occupied = total_joined + total_co_travellers
+    
+    max_members = trip_details.max_members if trip_details else 10
+    remaining_slots = max(0, max_members - total_occupied)
+    # The current user occupies 1 slot, so they can add up to (remaining_slots - 1) adult co-travellers
+    max_co_travellers = max(0, remaining_slots - 1)
+    
+    context = {
+        'trip': trip,
+        'trip_details': trip_details,
+        'member': member,
+        'trip_member': trip_member,
+        'member_types': member_types,
+        'remaining_slots': remaining_slots,
+        'max_co_travellers': max_co_travellers,
+        'max_members': max_members,
+    }
+    
+    if request.method == 'POST':
+        if remaining_slots < 1:
+            messages.error(request, "Sorry, this trip has already reached its maximum capacity of members.")
+            return redirect('home_trip_details', pk=trip.id)
+            
+        co_names = request.POST.getlist('co_name[]')
+        co_ages = request.POST.getlist('co_age[]')
+        co_genders = request.POST.getlist('co_gender[]')
+        co_bgroups = request.POST.getlist('co_bgroup[]')
+        co_types = request.POST.getlist('co_type[]')
+        co_descriptions = request.POST.getlist('co_description[]')
+        
+        # Validate adult co-traveller limit (Children do not count)
+        adult_count = 0
+        for i in range(len(co_names)):
+            mtype = get_object_or_404(MemberType, pk=co_types[i])
+            if mtype.name.lower() == 'adult':
+                adult_count += 1
+                
+        if adult_count > max_co_travellers:
+            messages.error(request, f"You can only add up to {max_co_travellers} adult co-travellers due to trip capacity.")
+            return render(request, 'join_trip.html', context)
+            
+        if not trip_member:
+            trip_member = Trip_Members(trip=trip, member=member)
+        
+        trip_member.status = 0  # 0 means Pending (Requested to Join)
+        
+        # Optionally update profile info directly from the form
+        phone = request.POST.get('phone')
+        bgroup = request.POST.get('bgroup')
+        emergency_name = request.POST.get('emergency_name')
+        emergency_contact = request.POST.get('emergency_contact')
+        notes = request.POST.get('description', '')
+        
+        if phone: member.phone = phone
+        if bgroup: member.bgroup = bgroup
+        if emergency_name: member.emergency_name = emergency_name
+        if emergency_contact: member.emergency_contact = emergency_contact
+        member.save()
+        
+        trip_member.description = notes
+        trip_member.save()
+        
+        # Save each CoTraveller
+        for i in range(len(co_names)):
+            mtype = get_object_or_404(MemberType, pk=co_types[i])
+            CoTraveller.objects.create(
+                trip=trip,
+                user=request.user,
+                member_type=mtype,
+                name=co_names[i],
+                age=int(co_ages[i]) if co_ages[i] else None,
+                gender=co_genders[i],
+                bgroup=co_bgroups[i],
+                description=co_descriptions[i]
+            )
+        messages.success(request, f"Your request to join the '{trip.title}' adventure with {len(co_names)} co-traveller(s) has been successfully submitted and is pending coordinator approval!")
+        return redirect('home_trip_details', pk=trip.id)
+        
+    return render(request, 'join_trip.html', context)
