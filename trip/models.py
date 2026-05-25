@@ -272,3 +272,12 @@ class Rating(models.Model):
     def __str__(self):
         return str(self.rating)
 
+
+class Join_Request(models.Model):
+    trip = models.ForeignKey(Trip, on_delete=models.CASCADE)  
+    member=models.ForeignKey(Trip_Members, on_delete=models.CASCADE)  
+    date_time=models.DateTimeField(auto_now_add=True) 
+    status=models.IntegerField(default=0) #0 for not approved, 1 for approved, 2 for rejected
+    def __str__(self):
+        return self.trip.title+" - "+self.member.user.first_name
+
