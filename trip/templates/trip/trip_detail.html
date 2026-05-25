@@ -315,6 +315,16 @@
                                                 <td class="text-end fw-bold {% if tm.unpaid_amount > 0 %}text-danger{% else %}text-secondary{% endif %}">₹{{ tm.unpaid_amount|floatformat:2 }}</td>
                                                 <td class="text-muted small">{{ tm.description|truncatechars:30 }}</td>
                                                 <td class="text-end">
+                                                    {% if tm.status == 0 %}
+                                                    <form action="{% url 'trip_member_approve' tm.pk %}" method="POST" class="d-inline">
+                                                        {% csrf_token %}
+                                                        <button type="submit" class="btn btn-outline-success btn-sm rounded-circle shadow-sm me-1"
+                                                                style="width: 32px; height: 32px; padding:0; display:inline-flex; align-items:center; justify-content:center;"
+                                                                title="Approve Member">
+                                                            <i class="fas fa-check"></i>
+                                                        </button>
+                                                    </form>
+                                                    {% endif %}
                                                     <a href="{% url 'trip_members_update' tm.pk %}" 
                                                        class="btn btn-outline-warning btn-sm rounded-circle shadow-sm"
                                                        style="width: 32px; height: 32px; padding:0; display:inline-flex; align-items:center; justify-content:center;"
@@ -448,8 +458,8 @@
                             <div>
                                 <small class="text-muted d-block text-uppercase fw-bold"
                                     style="font-size: 0.75rem;">Duration</small>
-                                <span class="fw-semibold text-dark">{{ trip.total_duration_days }} Day{{
-                                    trip.total_duration_days|pluralize }}</span>
+                                <span class="fw-semibold text-dark">
+                                    {{ trip.total_duration_days }} Day{{trip.total_duration_days|pluralize }}</span>
                             </div>
                         </li>
 

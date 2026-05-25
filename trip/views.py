@@ -374,3 +374,14 @@ class MyTripsView(LoginRequiredMixin, ListView):
         return Trip.objects.filter(
             Q(trip_members__member=member) | Q(coordinator=coordinator)
         ).distinct().order_by('-id')
+
+from django.contrib import messages
+from django.views import View
+
+class TripMemberApproveView(LoginRequiredMixin, View):
+    def post(self, request, pk):
+        tm = get_object_or_404(Trip_Members, pk=pk)
+        tm.status = 1  # 1 is Joined
+        tm.save()
+        messages.success(request, f"Successfully approved {tm.member.user.first_name}'s request to join.")
+        return redirect(reverse('trip_detail', kwargs={'pk': tm.trip.pk}))
