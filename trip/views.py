@@ -176,6 +176,13 @@ class TripMembersUpdateView(UpdateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['form_title'] = "Update Trip Member Details"
+        
+        # Inject co-travellers for the member of this trip
+        from .models import CoTraveller
+        context['co_travellers'] = CoTraveller.objects.filter(
+            trip=self.object.trip,
+            user=self.object.member.user
+        )
         return context
         
     def get_success_url(self):

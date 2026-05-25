@@ -217,7 +217,51 @@
                                 {% endfor %}
                             </div>
 
-                                    <hr class="my-5 custom-divider">
+                            {% if co_travellers %}
+                            <!-- Registered Co-Travellers information cards for Approver/Coordinator -->
+                            <div class="mt-5 p-4 rounded-4 border shadow-sm" style="background-color: var(--bg-light); border-color: rgba(0, 0, 0, 0.05) !important;">
+                                <h4 class="mb-4 text-primary fw-bold" style="font-family: 'Poppins', sans-serif;">
+                                    <i class="fas fa-user-friends me-2"></i> Registered Co-Travellers ({{ co_travellers|length }})
+                                </h4>
+                                <div class="row g-4">
+                                    {% for co in co_travellers %}
+                                    <div class="col-md-6">
+                                        <div class="card border-0 rounded-4 shadow-sm p-4 bg-white h-100 position-relative" style="transition: transform 0.2s ease, box-shadow 0.2s ease;">
+                                            <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom">
+                                                <h6 class="fw-bold mb-0 text-dark d-flex align-items-center gap-2">
+                                                    <i class="fas fa-id-card text-primary opacity-75"></i> {{ co.name }}
+                                                </h6>
+                                                <span class="badge rounded-pill px-3 py-1 fw-semibold {% if co.member_type.name|lower == 'adult' %}bg-primary-subtle text-primary border border-primary-subtle{% else %}bg-info-subtle text-info border border-info-subtle{% endif %}">
+                                                    {{ co.member_type.name|capfirst }}
+                                                </span>
+                                            </div>
+                                            <div class="row g-3 text-secondary" style="font-size: 0.9rem;">
+                                                <div class="col-6">
+                                                    <span class="text-muted d-block small text-uppercase fw-bold">Age</span>
+                                                    <span class="fw-semibold text-dark">{{ co.age|default:"-" }} yrs</span>
+                                                </div>
+                                                <div class="col-6">
+                                                    <span class="text-muted d-block small text-uppercase fw-bold">Gender</span>
+                                                    <span class="fw-semibold text-dark">{{ co.gender|default:"-" }}</span>
+                                                </div>
+                                                <div class="col-6">
+                                                    <span class="text-muted d-block small text-uppercase fw-bold">Blood Group</span>
+                                                    <span class="badge bg-danger-subtle text-danger fw-bold border border-danger-subtle px-2 py-1 mt-1">{{ co.bgroup|default:"-" }}</span>
+                                                </div>
+                                            </div>
+                                            {% if co.description %}
+                                            <div class="mt-3 pt-3 border-top text-muted small" style="font-style: italic;">
+                                                <i class="far fa-comment-dots text-primary me-2"></i>{{ co.description }}
+                                            </div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            {% endif %}
+
+                            <hr class="my-5 custom-divider">
 
                                     <div class="d-flex flex-column flex-md-row justify-content-end gap-3 mt-4">
                                         <a href="{% url 'trip_list' %}"
