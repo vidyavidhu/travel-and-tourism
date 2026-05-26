@@ -205,6 +205,57 @@ class Trip_Day(models.Model):
     def __str__(self):
         return f"{self.trip.title} - {self.date}"
 
+    @property
+    def google_maps_route_url(self):
+        # Retrieve active itineraries for this day, sorted chronologically by start time
+        itineraries = list(self.itinerary_set.filter(is_cancelled=False).order_by('time_start'))
+        if not itineraries:
+            # Fallback to all including cancelled if no active ones exist
+            itineraries = list(self.itinerary_set.all().order_by('time_start'))
+            if not itineraries:
+                return None
+
+        # Build consecutive list of all visited coordinates
+        points = []
+        for stop in itineraries:
+            if stop.location_from_lattitude and stop.location_from_longitude:
+                lat = stop.location_from_lattitude.strip()
+                lng = stop.location_from_longitude.strip()
+                if lat and lng and lat != '0.000' and lng != '0.000':
+                    points.append(f"{lat},{lng}")
+            if stop.location_to_lattitude and stop.location_to_longitude:
+                lat = stop.location_to_lattitude.strip()
+                lng = stop.location_to_longitude.strip()
+                if lat and lng and lat != '0.000' and lng != '0.000':
+                    points.append(f"{lat},{lng}")
+
+        # Filter out consecutive duplicates to keep the URL clean
+        unique_points = []
+        for p in points:
+            if not unique_points or unique_points[-1] != p:
+                unique_points.append(p)
+
+        if not unique_points:
+            return None
+
+        if len(unique_points) == 1:
+            origin = unique_points[0]
+            destination = unique_points[0]
+            waypoints = []
+        else:
+            origin = unique_points[0]
+            destination = unique_points[-1]
+            waypoints = unique_points[1:-1]
+
+        # Construct Google Maps Directions URL
+        base_url = "https://www.google.com/maps/dir/?api=1"
+        url = f"{base_url}&origin={origin}&destination={destination}"
+        if waypoints:
+            waypoints_str = "%7C".join(waypoints)
+            url += f"&waypoints={waypoints_str}"
+        return url
+
+
 class Itinerary(models.Model):
     trip_day = models.ForeignKey(Trip_Day, on_delete=models.CASCADE)
     title = models.CharField(max_length=100)

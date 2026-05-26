@@ -451,7 +451,14 @@
                                                 class="accordion-button {% if not forloop.first %}collapsed{% endif %} fw-bold"
                                                 type="button" data-bs-toggle="collapse"
                                                 data-bs-target="#collapseDay{{ day.pk }}">
-                                                Day {{ forloop.counter }}: {{ day.date|date:"M d, Y" }}
+                                                <span class="d-flex align-items-center gap-3 flex-wrap">
+                                                    <span>Day {{ forloop.counter }}: {{ day.date|date:"M d, Y" }}</span>
+                                                    {% if day.google_maps_route_url %}
+                                                    <span onclick="event.stopPropagation(); window.open('{{ day.google_maps_route_url|safe }}', '_blank');" class="btn btn-sm btn-outline-primary px-3 py-1 rounded-pill shadow-sm d-inline-flex align-items-center gap-1 animate-fade-in" style="font-size: 0.8rem; font-weight: 600; border-width: 2px; transition: all 0.2s ease-in-out;">
+                                                        <i class="fas fa-map-marked-alt"></i> Route of the Day
+                                                    </span>
+                                                    {% endif %}
+                                                </span>
                                             </button>
                                         </h2>
                                         <div id="collapseDay{{ day.pk }}"
