@@ -106,6 +106,17 @@ class TripDetailView(DetailView):
         context['additional_collection'] = additional_collection
         context['additional_cost_per_head'] = additional_cost_per_head
         
+        # Check if user is coordinator of this trip or admin
+        is_coordinator = False
+        if self.request.user.is_authenticated:
+            if self.request.user.is_superuser or self.request.user.is_staff or trip.coordinator.user == self.request.user:
+                is_coordinator = True
+        context['is_coordinator'] = is_coordinator
+        
+        # Fetch trip broadcast messages
+        from .models import TripBroadcastMessage
+        context['broadcast_messages'] = TripBroadcastMessage.objects.filter(trip=trip).order_by('-created_at')
+        
         return context
 
 from .models import Trip_Details, Trip_Members, Trip_Day, Itinerary
@@ -454,3 +465,26 @@ class TripFinishView(LoginRequiredMixin, View):
         
         messages.success(request, f"Trip '{trip.title}' has been successfully finished!")
         return redirect(reverse('trip_detail', kwargs={'pk': trip.pk}))
+
+class TripBroadcastCreateView(LoginRequiredMixin, View):
+    def post(self, request, trip_id):
+        trip = get_object_or_404(Trip, pk=trip_id)
+        
+        # Verify permissions: must be superuser, staff, or coordinator of this trip
+        if not (request.user.is_superuser or request.user.is_staff or trip.coordinator.user == request.user):
+            messages.error(request, "You do not have permission to send broadcast messages for this trip.")
+            return redirect(reverse('trip_detail', kwargs={'pk': trip_id}))
+            
+        message_text = request.POST.get('message', '').strip()
+        if not message_text:
+            messages.error(request, "Broadcast message cannot be empty.")
+            return redirect(reverse('trip_detail', kwargs={'pk': trip_id}))
+            
+        from .models import TripBroadcastMessage
+        TripBroadcastMessage.objects.create(
+            trip=trip,
+            sender=request.user,
+            message=message_text
+        )
+        messages.success(request, "Broadcast message sent to all trip members successfully!")
+        return redirect(reverse('trip_detail', kwargs={'pk': trip_id}))

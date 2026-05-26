@@ -317,4 +317,13 @@ class CoTraveller(models.Model):
     def __str__(self):
         return self.name
 
+class TripBroadcastMessage(models.Model):
+    trip = models.ForeignKey(Trip, on_delete=models.CASCADE, related_name='broadcasts')
+    sender = models.ForeignKey(User, on_delete=models.CASCADE)
+    message = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.trip.title} Alert: {self.message[:30]}"
+
 
