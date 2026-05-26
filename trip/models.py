@@ -215,7 +215,7 @@ class Itinerary(models.Model):
     location_from_longitude=models.CharField(max_length=250,default='0.000')
     time_end = models.TimeField()
     distance = models.FloatField(default=0.00, blank=True, null=True) #in kms
-    duration = models.CharField(max_length=10,default='0.00', blank=True, null=True) #in hrs
+    duration = models.CharField(max_length=100,default='0.00', blank=True, null=True) #in hrs
     location_to_name=models.CharField(max_length=250,default='', blank=True, null=True)
     location_to_lattitude=models.CharField(max_length=250,default='0.000', blank=True, null=True)
     location_to_longitude=models.CharField(max_length=250,default='0.000', blank=True, null=True)
