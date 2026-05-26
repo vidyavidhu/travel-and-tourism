@@ -254,12 +254,12 @@
     <!-- Dash Header -->
     <div class="dash-header d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
         <div>
-            <span class="badge bg-white text-primary px-3 py-2 mb-2 fw-semibold" style="border-radius: 30px;">ADMINISTRATIVE CONTROL</span>
+            <span class="badge bg-white  px-3 py-2 mb-2 fw-semibold" style="border-radius: 30px; color: #4a2234ff;border: 2px solid #4a2234ff;">ADMINISTRATIVE CONTROL</span>
             <h1 class="fw-bold mb-1" style="font-family: 'Poppins', sans-serif;">Management Dashboard</h1>
             <p class="mb-0 opacity-75">Oversee travel operations, verify trip coordinators, and analyze listing schedules.</p>
         </div>
         <div>
-            <a href="{% url 'admin_coordinators_list' %}" class="btn btn-light text-primary px-4 py-2 fw-semibold" style="border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.08);">
+            <a href="{% url 'admin_coordinators_list' %}" class="btn btn-light  px-4 py-2 fw-semibold" style="border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.08);">
                 <i class="fas fa-users-cog me-2"></i> Manage Coordinators
             </a>
         </div>
@@ -313,7 +313,7 @@
                         <h2 class="accordion-header" id="heading-{{ forloop.counter }}">
                             <button class="month-accordion-button {% if not forloop.first %}collapsed{% endif %}" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-{{ forloop.counter }}" aria-expanded="{% if forloop.first %}true{% endif %}" aria-controls="collapse-{{ forloop.counter }}">
                                 <span><i class="far fa-folder-open me-2"></i> {{ month }}</span>
-                                <span class="badge bg-primary bg-opacity-10 text-primary ms-3">{{ trips_list|length }} Trip{{ trips_list|length|pluralize }}</span>
+                                <span class="badge bg-primary bg-opacity-10  ms-3" style="color: #4a2234ff;">{{ trips_list|length }} Trip{{ trips_list|length|pluralize }}</span>
                             </button>
                         </h2>
                         <div id="collapse-{{ forloop.counter }}" class="accordion-collapse collapse {% if forloop.first %}show{% endif %}" aria-labelledby="heading-{{ forloop.counter }}" data-bs-parent="#monthlyTripsAccordion">
@@ -331,7 +331,7 @@
                                         <div class="trip-details">
                                             <h5>{{ trip.title }}</h5>
                                             <span>
-                                                <i class="fas fa-map-marker-alt me-1 text-primary"></i> 
+                                                <i class="fas fa-map-marker-alt me-1"></i> 
                                                 {{ trip.location_from_name }} &rarr; {{ trip.location_to_name }}
                                             </span>
                                         </div>

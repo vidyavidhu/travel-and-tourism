@@ -102,7 +102,7 @@
                     </div>
 
                     <div class="trip-card-body" style="padding: 24px;">
-                        <span class="premium-badge bg-primary bg-opacity-10 text-primary d-inline-block mb-2"
+                        <span class="premium-badge bg-primary bg-opacity-10 d-inline-block mb-2"
                             style="width:fit-content; padding: 4px 10px; font-size: 0.75rem; border-radius: 4px; font-weight: 600; text-transform: uppercase;">
                             {{ trip.category.name }}
                         </span>
@@ -113,7 +113,7 @@
 
                         <div class="trip-card-location"
                             style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 10px;">
-                            <i class="fas fa-map-marker-alt text-primary me-2"></i> 
+                            <i class="fas fa-map-marker-alt  me-2"></i> 
                             {{trip.location_from_name|truncatechars:20 }} to {{ trip.location_to_name|truncatechars:30 }}
                         </div>
 
