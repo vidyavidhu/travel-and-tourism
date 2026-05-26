@@ -2,12 +2,7 @@
  * Premium Custom CSS for Trip Weaver - Trip Details Page
  */
 
-:root {
-    --surface-color: #ffffff;
-    --bg-light: #fff6ec; /* Soft warm peach/sand background */
-    --gradient-start: #4a2234; /* Deep Burgundy/Plum */
-    --accent-color: #6e821f; /* Moss/Olive Green */
-}
+
 
 /* Hero Carousel Layout */
 .hero-carousel-container {
@@ -96,14 +91,7 @@
     font-size: 1.05rem !important;
 }
 
-/* Header bg transparent values */
-:root {
-    --header-bg: rgba(252, 249, 245, 0.85); /* Translucent linen/sand */
-}
 
-body[data-theme="dark"] {
-    --header-bg: rgba(26, 12, 19, 0.85); /* Translucent dark plum */
-}
 
 .trip-summary-header {
     background: var(--header-bg) !important;

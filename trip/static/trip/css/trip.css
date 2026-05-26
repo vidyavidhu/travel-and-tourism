@@ -3,23 +3,7 @@
  * Integrated with Bootstrap 5
  */
 
-:root {
-    --primary-color: #d46343; /* Sunset Terracotta Orange */
-    --primary-hover: #b94e30;
-    --secondary-color: #fcf9f5; /* Warm sand */
-    --accent-color: #6e821f; /* Moss/Olive Green */
-    --text-color: #2d121e; /* Deep Burgundy/Plum */
-    --text-muted: #8c737e;
-    --bg-light: #fff6ec;
-    --card-shadow: 0 10px 30px rgba(74, 34, 52, 0.06);
-    --hover-shadow: 0 15px 35px rgba(74, 34, 52, 0.1);
-    --input-border: #efe6e2;
-    --input-focus: rgba(212, 99, 67, 0.2);
-    --gradient-start: #4a2234; /* Sunset gradient */
-    --gradient-end: #d46343;
-    --danger-gradient-start: #8c3b53; /* Berry/Rose */
-    --danger-gradient-end: #6b2238;
-}
+
 
 /* Base Container Background */
 .trip-container {
