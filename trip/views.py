@@ -51,6 +51,23 @@ class TripDetailView(DetailView):
     template_name = 'trip/trip_detail.html'
     context_object_name = 'trip'
 
+    def get(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        trip = self.object
+        
+        if not request.user.is_authenticated:
+            return redirect('member_login')
+            
+        is_coordinator = False
+        if request.user.is_superuser or request.user.is_staff or trip.coordinator.user == request.user:
+            is_coordinator = True
+            
+        if not is_coordinator:
+            return redirect('home_trip_details', pk=trip.pk)
+            
+        context = self.get_context_data(object=self.object)
+        return self.render_to_response(context)
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         trip = self.object
