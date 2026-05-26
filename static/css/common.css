@@ -1,61 +1,88 @@
 /* CSS Variables for Light/Dark Mode */
 :root {
   /* Core Brand Colors (Warm Sunset Palette) */
-  --color-primary: #4a2234; /* Deep Burgundy/Plum (Brand Main) */
-  --color-primary-light: #8c3b53; /* Muted Berry/Rose */
-  --color-primary-dark: #2d121e; /* Darker eggplant/burgundy */
-  
+  --color-primary: #4a2234;
+  /* Deep Burgundy/Plum (Brand Main) */
+  --color-primary-light: #8c3b53;
+  /* Muted Berry/Rose */
+  --color-primary-dark: #2d121e;
+  /* Darker eggplant/burgundy */
+
   /* Portal Colors (Trip Weaver Specifics) */
-  --primary-color: #d46343; /* Sunset Terracotta Orange (Core Portal Action) */
-  --primary-hover: #b94e30; /* Darker Terracotta */
-  --accent-color: #6e821f; /* Moss/Olive Green (Destinations & Positive States) */
-  --bg-light: #fff6ec; /* Warm sand/peach card background tint */
-  
+  --primary-color: #d46343;
+  /* Sunset Terracotta Orange (Core Portal Action) */
+  --primary-hover: #b94e30;
+  /* Darker Terracotta */
+  --accent-color: #6e821f;
+  /* Moss/Olive Green (Destinations & Positive States) */
+  --bg-light: #fff6ec;
+  /* Warm sand/peach card background tint */
+
   /* Gradients */
   --gradient-start: var(--color-primary);
   --gradient-end: var(--primary-color);
   --danger-gradient-start: var(--color-primary-light);
   --danger-gradient-end: #6b2238;
-  
+
   /* Light Theme Specifics (Warm Linen/Sand) */
   --bg-color: #fcf9f5;
   --surface-color: #ffffff;
-  --text-primary: #2d121e; /* Dark Plum instead of generic dark grey */
-  --text-secondary: #8c737e; /* Muted warm rose-gray */
-  --border-color: #efe6e2; /* Soft warm sand border */
-  
+  --text-primary: #2d121e;
+  /* Dark Plum instead of generic dark grey */
+  --text-secondary: #8c737e;
+  /* Muted warm rose-gray */
+  --border-color: #efe6e2;
+  /* Soft warm sand border */
+
   /* Legacy/Common aliases to map beautifully */
   --secondary-color: var(--bg-color);
   --text-color: var(--text-primary);
   --text-muted: var(--text-secondary);
   --input-border: var(--border-color);
   --input-focus: rgba(212, 99, 67, 0.2);
-  
+
   /* Shadows & Dimensions */
   --border-radius: 8px;
   --transition: all 0.3s ease;
   --box-shadow: 0 4px 6px -1px rgba(74, 34, 52, 0.08), 0 2px 4px -1px rgba(74, 34, 52, 0.04);
   --card-shadow: 0 10px 30px rgba(74, 34, 52, 0.06);
   --hover-shadow: 0 15px 35px rgba(74, 34, 52, 0.1);
-  --header-bg: rgba(252, 249, 245, 0.85); /* Translucent linen/sand */
-  
+  --header-bg: rgba(252, 249, 245, 0.85);
+  /* Translucent linen/sand */
+
   /* Typography Variables */
   --font-primary: 'Inter', system-ui, -apple-system, sans-serif;
   --font-secondary: 'Poppins', system-ui, -apple-system, sans-serif;
+
+
+
+  --dash-primary: var(--color-primary);
+  --dash-teal: var(--color-primary-light);
+  --dash-bg: var(--bg-color);
+  --dash-surface: var(--surface-color);
+  --dash-text: var(--text-primary);
+  --dash-text-muted: var(--text-secondary);
+  --dash-border: var(--border-color);
+
+
+
 }
 
 /* Dark Theme (Eggplant Night) */
 [data-theme="dark"] {
   --bg-color: #1a0c13;
   --surface-color: #24141e;
-  --text-primary: #fee5c6; /* Soft warm sand text */
+  --text-primary: #fee5c6;
+  /* Soft warm sand text */
   --text-secondary: #bca8b0;
   --border-color: #3d1c2a;
   --box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.6), 0 2px 4px -1px rgba(0, 0, 0, 0.4);
-  
+
   /* Dark mode mappings for details / inputs */
-  --bg-light: #2b1723; /* Darker plum background */
-  --header-bg: rgba(26, 12, 19, 0.85); /* Translucent dark plum */
+  --bg-light: #2b1723;
+  /* Darker plum background */
+  --header-bg: rgba(26, 12, 19, 0.85);
+  /* Translucent dark plum */
   --secondary-color: var(--bg-color);
   --card-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
   --hover-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
