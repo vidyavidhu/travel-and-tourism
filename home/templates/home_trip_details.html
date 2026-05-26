@@ -67,8 +67,9 @@
                         <i class="fas fa-tag me-1"></i> {{ trip.category.name }}
                     </span>
                     <h2 class="fw-bold m-0 text-dark trip-main-title">{{ trip.title }}</h2>
-                    <p class="text-secondary m-0 mt-2 trip-location-sub">
-                        <i class="fas fa-map-marker-alt text-danger me-2"></i>From <strong>{{ trip.location_from_name}}</strong> to <strong>{{ trip.location_to_name }}</strong>
+                    <p class="text-secondary m-0 mt-2 trip-location-sub d-flex flex-wrap align-items-center gap-3">
+                        <span><i class="fas fa-map-marker-alt text-danger me-2"></i>From <strong>{{ trip.location_from_name}}</strong> to <strong>{{ trip.location_to_name }}</strong></span>
+                        <span id="weather-info" class="badge bg-light text-dark border shadow-sm px-3 py-2 rounded-pill d-none" style="font-size: 0.9rem;"></span>
                     </p>
                 </div>
                 <div class="d-flex align-items-center gap-3">
@@ -634,6 +635,60 @@
                     }
                 });
             }
+
+            // Fetch weather details for trip destination
+            const placeName = "{{ trip.location_to_name|escapejs }}";
+            if (placeName) {
+                fetchWeather(placeName);
+            }
         });
+
+        async function fetchWeather(placeName) {
+            try {
+                const response = await fetch('https://mapstools.googleapis.com/mcp', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Goog-Api-Key': 'AIzaSyAjDxjhF5QmTBloP61Uqh44InCyIJFAgww'
+                    },
+                    body: JSON.stringify({
+                        jsonrpc: '2.0',
+                        method: 'tools/call',
+                        params: {
+                            name: 'lookup_weather',
+                            arguments: {
+                                location: {
+                                    address: placeName
+                                }
+                            }
+                        },
+                        id: 1
+                    })
+                });
+                const data = await response.json();
+                if (data.result && data.result.structuredContent) {
+                    const weather = data.result.structuredContent;
+                    const temp = Math.round(weather.temperature.degrees);
+                    const condition = weather.weatherCondition.description.text;
+                    const iconBase = weather.weatherCondition.iconBaseUri;
+                    
+                    const weatherInfo = document.getElementById('weather-info');
+                    if (weatherInfo) {
+                        weatherInfo.classList.remove('d-none');
+                        let iconUrl = iconBase ? iconBase + '.png' : '';
+                        
+                        weatherInfo.innerHTML = `
+                            <div class="d-flex align-items-center gap-2">
+                                ${iconUrl ? `<img src="${iconUrl}" width="24" height="24" style="width: 24px !important; height: 24px !important; object-fit: contain !important; display: inline-block !important; vertical-align: middle !important;" onerror="this.src='https://maps.gstatic.com/weather/v1/partly_clear.png'; this.onerror=null;" alt="${condition}">` : '<i class="fas fa-cloud-sun text-warning"></i>'}
+                                <span class="fw-bold">${temp}°C</span>
+                                <span class="text-secondary" style="font-size: 0.8rem;">| ${condition}</span>
+                            </div>
+                        `;
+                    }
+                }
+            } catch (error) {
+                console.error('Error fetching weather:', error);
+            }
+        }
 </script>
 {% endblock %}
