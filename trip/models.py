@@ -216,6 +216,9 @@ class Itinerary(models.Model):
     location_image = models.ImageField(upload_to='location_images/',null=True, blank=True) 
     guidelines = models.TextField(null=True, blank=True) 
     description = models.TextField(null=True, blank=True) 
+    is_cancelled = models.BooleanField(default=False)
+    cancellation_reason = models.TextField(null=True, blank=True)
+
     def save(self, *args, **kwargs):
         if not self.location_to_name:
             self.location_to_name = self.location_from_name

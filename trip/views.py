@@ -505,3 +505,26 @@ class TripBroadcastCreateView(LoginRequiredMixin, View):
         )
         messages.success(request, "Broadcast message sent to all trip members successfully!")
         return redirect(reverse('trip_detail', kwargs={'pk': trip_id}))
+
+class ItineraryCancelView(LoginRequiredMixin, View):
+    def post(self, request, pk):
+        from .models import Itinerary
+        itinerary = get_object_or_404(Itinerary, pk=pk)
+        trip = itinerary.trip_day.trip
+        
+        # Verify permissions: must be superuser, staff, or coordinator of this trip
+        if not (request.user.is_superuser or request.user.is_staff or trip.coordinator.user == request.user):
+            messages.error(request, "You do not have permission to cancel stops for this trip.")
+            return redirect(reverse('itinerary_detail', kwargs={'pk': pk}))
+            
+        reason = request.POST.get('reason', '').strip()
+        if not reason:
+            messages.error(request, "Cancellation reason is mandatory.")
+            return redirect(reverse('itinerary_detail', kwargs={'pk': pk}))
+            
+        itinerary.is_cancelled = True
+        itinerary.cancellation_reason = reason
+        itinerary.save()
+        
+        messages.success(request, f"Stop '{itinerary.title}' has been successfully cancelled.")
+        return redirect(reverse('itinerary_detail', kwargs={'pk': pk}))
