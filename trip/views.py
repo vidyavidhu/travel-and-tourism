@@ -528,3 +528,22 @@ class ItineraryCancelView(LoginRequiredMixin, View):
         
         messages.success(request, f"Stop '{itinerary.title}' has been successfully cancelled.")
         return redirect(reverse('itinerary_detail', kwargs={'pk': pk}))
+
+class ItineraryDismissCancelView(LoginRequiredMixin, View):
+    def post(self, request, pk):
+        from .models import Itinerary
+        itinerary = get_object_or_404(Itinerary, pk=pk)
+        trip = itinerary.trip_day.trip
+        
+        # Verify permissions: must be superuser, staff, or coordinator of this trip
+        if not (request.user.is_superuser or request.user.is_staff or trip.coordinator.user == request.user):
+            messages.error(request, "You do not have permission to modify stops for this trip.")
+            return redirect(reverse('itinerary_detail', kwargs={'pk': pk}))
+            
+        itinerary.is_cancelled = False
+        itinerary.cancellation_reason = ""
+        itinerary.save()
+        
+        messages.success(request, f"Cancellation for stop '{itinerary.title}' has been dismissed and the stop is now active.")
+        return redirect(reverse('itinerary_detail', kwargs={'pk': pk}))
+

@@ -92,7 +92,7 @@
         <div class="iti-hero-overlay text-white">
             <div class="container">
                 <span class="badge bg-primary px-3 py-2 rounded-pill mb-3 shadow-sm" style="font-size: 1rem;">Day {{ itinerary.trip_day.date|date:"M d, Y" }}</span>
-                <h1 class="display-4 fw-bold mb-2 {% if itinerary.is_cancelled %}text-decoration-line-through opacity-75{% endif %}" {% if itinerary.is_cancelled %}title="Cancelled: {{ itinerary.cancellation_reason }}"{% endif %}>
+                <h1 class="display-4 fw-bold mb-2 {% if itinerary.is_cancelled %}text-decoration-line-through opacity-75{% endif %}">
                     {{ itinerary.title }}
                     {% if itinerary.is_cancelled %}
                     <span class="badge bg-danger rounded-pill fs-5 ms-2 align-middle">Cancelled</span>
@@ -377,7 +377,16 @@
                         {% endif %}
                     </div>
                     
-                    {% if not itinerary.is_cancelled %}
+                    {% if itinerary.is_cancelled %}
+                        {% if user.is_superuser or user.is_staff or itinerary.trip_day.trip.coordinator.user == user %}
+                        <form action="{% url 'itinerary_dismiss_cancel' itinerary.pk %}" method="POST" class="mt-4">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-success rounded-pill w-100 fw-semibold shadow-sm">
+                                <i class="fas fa-undo me-2"></i> Dismiss Cancellation
+                            </button>
+                        </form>
+                        {% endif %}
+                    {% else %}
                         {% if user.is_superuser or user.is_staff or itinerary.trip_day.trip.coordinator.user == user %}
                         <button class="btn btn-danger rounded-pill w-100 mt-4 fw-semibold shadow-sm" data-bs-toggle="modal" data-bs-target="#cancelItineraryModal">
                             <i class="fas fa-ban me-2"></i> Cancel Stop

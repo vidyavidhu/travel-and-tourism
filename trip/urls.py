@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import TripListView, TripDetailView, TripCreateView, TripUpdateView, TripDeleteView, TripDetailsCreateView, TripDetailsUpdateView, TripMembersCreateView, TripMembersUpdateView, TripDayCreateView, ItineraryCreateView, ItineraryDetailView, GalleryCreateView, CommentCreateView, CommentLikeView, ReplyCreateView, MyTripsView, TripMemberApproveView, TripFinishView, TripBroadcastCreateView, ItineraryCancelView
+from .views import TripListView, TripDetailView, TripCreateView, TripUpdateView, TripDeleteView, TripDetailsCreateView, TripDetailsUpdateView, TripMembersCreateView, TripMembersUpdateView, TripDayCreateView, ItineraryCreateView, ItineraryDetailView, GalleryCreateView, CommentCreateView, CommentLikeView, ReplyCreateView, MyTripsView, TripMemberApproveView, TripFinishView, TripBroadcastCreateView, ItineraryCancelView, ItineraryDismissCancelView
 from finance.views import ExpenseCreateView, ExpenseDeleteView
 
 urlpatterns = [
@@ -26,6 +26,7 @@ urlpatterns = [
     path('days/<int:day_id>/itinerary/add/', ItineraryCreateView.as_view(), name='itinerary_create'),
     path('itinerary/<int:pk>/', ItineraryDetailView.as_view(), name='itinerary_detail'),
     path('itinerary/<int:pk>/cancel/', ItineraryCancelView.as_view(), name='itinerary_cancel'),
+    path('itinerary/<int:pk>/dismiss-cancel/', ItineraryDismissCancelView.as_view(), name='itinerary_dismiss_cancel'),
     path('itinerary/<int:itinerary_id>/gallery/add/', GalleryCreateView.as_view(), name='gallery_create'),
     path('itinerary/<int:itinerary_id>/comment/add/', CommentCreateView.as_view(), name='comment_create'),
     path('comment/<int:comment_id>/like/', CommentLikeView.as_view(), name='comment_like'),

@@ -158,7 +158,7 @@
                                 {% if day.itinerary_set.all %}
                                 <div class="itinerary-stops-list">
                                     {% for stop in day.itinerary_set.all %}
-                                    <div class="card border-0 bg-light rounded-4 p-4 mb-5 shadow-sm border-start {% if stop.is_cancelled %}border-danger{% else %}border-primary{% endif %} border-4 stop-card" {% if stop.is_cancelled %}style="opacity: 0.88;" title="Cancelled: {{ stop.cancellation_reason }}"{% endif %}>
+                                    <div class="card border-0 bg-light rounded-4 p-4 mb-5 shadow-sm border-start {% if stop.is_cancelled %}border-danger{% else %}border-primary{% endif %} border-4 stop-card" {% if stop.is_cancelled %}style="opacity: 0.88;"{% endif %}>
                                         
                                         <!-- Stop Header & Info -->
                                         <div class="d-flex flex-column flex-md-row justify-content-between align-items-start gap-3 mb-3 pb-3 border-bottom">
@@ -166,7 +166,7 @@
                                                 <span class="badge bg-secondary mb-2 px-2 py-1 stop-time-badge">
                                                     <i class="far fa-clock me-1"></i> {{ stop.time_start|time:"g:i A" }} - {{ stop.time_end|time:"g:i A" }}
                                                 </span>
-                                                <h4 class="fw-bold {% if stop.is_cancelled %}text-danger text-decoration-line-through{% else %}text-dark{% endif %} m-0 stop-title" {% if stop.is_cancelled %}title="Cancelled: {{ stop.cancellation_reason }}"{% endif %}>
+                                                <h4 class="fw-bold {% if stop.is_cancelled %}text-danger text-decoration-line-through{% else %}text-dark{% endif %} m-0 stop-title">
                                                     {{ stop.title }}
                                                     {% if stop.is_cancelled %}
                                                     <span class="badge bg-danger rounded-pill fs-6 ms-2 align-middle" style="text-decoration: none !important;">Cancelled</span>
