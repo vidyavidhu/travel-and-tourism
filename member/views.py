@@ -156,3 +156,120 @@ def profile_edit_view(request):
         return redirect('/member/profile')
         
     return render(request, 'member/profile_edit.html', {'next': next_url})
+
+
+# --- Admin Dashboard & Coordinator Management Views ---
+from django.shortcuts import get_object_or_404
+from collections import defaultdict
+from trip.models import Trip
+from member.models import Coordinator, CoordinatorNotification
+
+def admin_required(view_func):
+    @login_required
+    def _wrapped_view(request, *args, **kwargs):
+        if not (request.user.is_staff or request.user.is_superuser):
+            messages.error(request, "Access denied. Administrator privileges required.")
+            return redirect('home')
+        return view_func(request, *args, **kwargs)
+    return _wrapped_view
+
+@admin_required
+def admin_dashboard_view(request):
+    trips = Trip.objects.all().order_by('from_date')
+    monthly_trips = defaultdict(list)
+    for trip in trips:
+        month_name = trip.from_date.strftime("%B %Y")
+        monthly_trips[month_name].append(trip)
+        
+    total_trips = trips.count()
+    total_coordinators = Coordinator.objects.count()
+    pending_coordinators = Coordinator.objects.filter(is_approved=False).count()
+    
+    context = {
+        'monthly_trips': dict(monthly_trips),
+        'total_trips': total_trips,
+        'total_coordinators': total_coordinators,
+        'pending_coordinators': pending_coordinators,
+    }
+    return render(request, 'member/admin_dashboard.html', context)
+
+@admin_required
+def admin_coordinators_list_view(request):
+    coordinators = Coordinator.objects.all().order_by('-id')
+    return render(request, 'member/admin_coordinators_list.html', {'coordinators': coordinators})
+
+@admin_required
+def admin_coordinator_detail_view(request, pk):
+    coordinator = get_object_or_404(Coordinator, pk=pk)
+    trips = Trip.objects.filter(coordinator=coordinator).order_by('-from_date')
+    notifications = CoordinatorNotification.objects.filter(coordinator=coordinator).order_by('-created_at')
+    
+    context = {
+        'coordinator': coordinator,
+        'trips': trips,
+        'notifications': notifications,
+    }
+    return render(request, 'member/admin_coordinator_detail.html', context)
+
+@admin_required
+def admin_coordinator_toggle_approve_view(request, pk):
+    if request.method == 'POST':
+        coordinator = get_object_or_404(Coordinator, pk=pk)
+        coordinator.is_approved = not coordinator.is_approved
+        coordinator.save()
+        status_str = "approved" if coordinator.is_approved else "disapproved"
+        messages.success(request, f"Coordinator '{coordinator.user.username}' has been successfully {status_str}.")
+        return redirect('admin_coordinator_detail', pk=pk)
+    return redirect('admin_coordinators_list')
+
+@admin_required
+def admin_coordinator_notify_view(request):
+    if request.method == 'POST':
+        message = request.POST.get('message', '').strip()
+        coordinator_id = request.POST.get('coordinator_id')
+        
+        if not message:
+            messages.error(request, "Notification message cannot be empty.")
+            return redirect(request.META.get('HTTP_REFERER', 'admin_dashboard'))
+            
+        if coordinator_id and coordinator_id != 'all':
+            coordinator = get_object_or_404(Coordinator, pk=coordinator_id)
+            CoordinatorNotification.objects.create(
+                coordinator=coordinator,
+                message=message,
+                send_to_all=False
+            )
+            messages.success(request, f"Notification successfully sent to coordinator {coordinator.user.username}.")
+            return redirect('admin_coordinator_detail', pk=coordinator.pk)
+        else:
+            CoordinatorNotification.objects.create(
+                message=message,
+                send_to_all=True
+            )
+            messages.success(request, "Broadcast notification successfully sent to all coordinators.")
+            return redirect('admin_dashboard')
+            
+    return redirect('admin_dashboard')
+
+@login_required
+def mark_notification_read_view(request, pk):
+    if request.method == 'POST':
+        notification = get_object_or_404(CoordinatorNotification, pk=pk)
+        
+        # Verify the user has access to mark it as read
+        is_owner = False
+        try:
+            if hasattr(request.user, 'coordinator') and notification.coordinator == request.user.coordinator:
+                is_owner = True
+        except Exception:
+            pass
+            
+        if notification.send_to_all or is_owner:
+            notification.is_read = True
+            notification.save()
+            messages.success(request, "Notification marked as read.")
+        else:
+            messages.error(request, "Access denied.")
+            
+    return redirect(request.META.get('HTTP_REFERER', '/'))
+

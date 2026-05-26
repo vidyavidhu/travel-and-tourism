@@ -406,6 +406,16 @@ class MyTripsView(LoginRequiredMixin, ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['filter_form'] = getattr(self, 'filter_form', TripFilterForm(self.request.GET))
+        
+        # If coordinator, fetch notifications
+        if hasattr(self.request.user, 'coordinator'):
+            from member.models import CoordinatorNotification
+            from django.db.models import Q
+            context['coordinator_notifications'] = CoordinatorNotification.objects.filter(
+                Q(coordinator=self.request.user.coordinator) | Q(send_to_all=True),
+                is_read=False
+            ).order_by('-created_at')
+            
         return context
 
 from django.contrib import messages

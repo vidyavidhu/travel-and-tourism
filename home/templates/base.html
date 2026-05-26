@@ -51,6 +51,9 @@
                 <a href="/" class="{% if request.path == '/' or request.path == '/home/' %}active{% endif %}">Home</a>
                 {% if user.is_authenticated %}
                 <a href="{% url 'my_trips' %}" class="{% if '/trip/my-trips/' in request.path %}active{% endif %}">My Trips</a>
+                {% if user.is_staff or user.is_superuser %}
+                <a href="{% url 'admin_dashboard' %}" class="{% if '/admin-dashboard/' in request.path %}active{% endif %}">Admin Dashboard</a>
+                {% endif %}
                 <div class="nav-profile">
                     <a href="{% url 'member_profile' %}" class="profile-icon" style="text-decoration:none; color:white; padding:0; overflow:hidden; display:flex; align-items:center; justify-content:center;">
                         {% if user.member.image and user.member.image.name %}

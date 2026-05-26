@@ -24,6 +24,33 @@
             {% endif %}
         </div>
         
+        <!-- Coordinator Alerts/Notifications Section -->
+        {% if coordinator_notifications %}
+        <div class="row mb-4 trip-fade-in">
+            <div class="col-12">
+                <div class="p-4 bg-light border border-primary border-opacity-25 rounded-4 shadow-sm" style="background: rgba(22, 127, 183, 0.03) !important;">
+                    <h5 class="fw-bold text-primary mb-3"><i class="fas fa-bell me-2 text-warning animate-bounce"></i> System Alerts & Notifications</h5>
+                    <div class="d-flex flex-column gap-3">
+                        {% for notification in coordinator_notifications %}
+                        <div class="p-3 bg-white rounded-3 shadow-xs border d-flex justify-content-between align-items-center gap-3">
+                            <div class="flex-grow-1">
+                                <div class="small text-muted mb-1"><i class="far fa-clock"></i> {{ notification.created_at|date:"M d, Y - P" }}</div>
+                                <div class="fw-medium text-dark">{{ notification.message }}</div>
+                            </div>
+                            <form action="{% url 'mark_notification_read' notification.pk %}" method="post">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-sm btn-outline px-3" style="border-radius: 8px;">
+                                    <i class="fas fa-check me-1"></i> Dismiss
+                                </button>
+                            </form>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+        
         <!-- Filter Form -->
         <div class="filter-card trip-fade-in">
             <form method="get" class="row gx-3 gy-3 align-items-end">
