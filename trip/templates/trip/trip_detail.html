@@ -8,9 +8,15 @@
 <link rel="stylesheet" href="{% static 'trip/css/trip.css' %}">
 <link rel="stylesheet" href="{% static 'trip/css/trip_details.css' %}">
 <style>
-    /* Prevent shivering/jittering on sticky overview cards on hover */
-    .sticky-top.premium-card:hover {
+    /* Prevent shivering/jittering on all layout cards on hover */
+    .premium-card:hover {
         transform: none !important;
+    }
+    
+    /* Prevent shaking, vibration and blurry text on inputs, buttons, and text inside modals */
+    .modal-content, .modal-content * {
+        transform: none !important;
+        transition: none !important;
     }
 </style>
 {% endblock %}
@@ -37,11 +43,12 @@
                     <span><i class="fas fa-map-marker-alt me-2 text-white"></i>{{ trip.location }}</span>
                     <span>
                         {% if trip.status == 1 %}
-                        <i class="fas fa-circle me-2 text-success" style="font-size: 0.5rem;"></i>
+                        <i class="fas fa-circle me-2 text-success" style="font-size: 0.5rem;"></i> Active
+                        {% elif trip.status == 2 %}
+                        <i class="fas fa-circle me-2 text-info" style="font-size: 0.5rem;"></i> Finished
                         {% else %}
-                        <i class="fas fa-circle me-2 text-danger" style="font-size: 0.5rem;"></i>
+                        <i class="fas fa-circle me-2 text-danger" style="font-size: 0.5rem;"></i> Inactive
                         {% endif %}
-                        {% if trip.status == 1 %}Active{% else %}Inactive{% endif %}
                     </span>
                 </div>
             </div>
@@ -50,6 +57,19 @@
 
     <!-- Main Content Area -->
     <div class="container trip-detail-card trip-fade-in" style="animation-delay: 0.2s;">
+        {% if messages %}
+        <div class="mt-3 mb-3">
+            {% for message in messages %}
+            <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %} alert-dismissible fade show border-0 rounded-4 shadow-sm p-3 d-flex align-items-center justify-content-between" role="alert">
+                <div>
+                    <i class="fas {% if message.tags == 'success' %}fa-check-circle text-success{% elif message.tags == 'error' %}fa-exclamation-circle text-danger{% else %}fa-info-circle text-info{% endif %} me-2 fs-5"></i>
+                    <span class="fw-semibold text-dark">{{ message }}</span>
+                </div>
+                <button type="button" class="btn-close shadow-none" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
         <div class="row g-4">
 
             <!-- Left Column: Details & Tabs -->
@@ -82,10 +102,24 @@
 
                             <!-- TAB 1: OVERVIEW -->
                             <div class="tab-pane fade show active" id="overview" role="tabpanel">
+                                {% if trip.status == 2 %}
+                                <div class="alert alert-success rounded-4 border-0 shadow-sm p-4 mb-4" style="background: linear-gradient(135deg, rgba(40, 167, 69, 0.05), rgba(40, 167, 69, 0.12)); border-left: 4px solid #28a745 !important;">
+                                    <h5 class="fw-bold text-success mb-2"><i class="fas fa-flag-checkered me-2"></i>Trip Finished</h5>
+                                    <p class="mb-0 text-secondary">This trip has been successfully marked as finished by the coordinator.</p>
+                                    {% if trip.finish_reason %}
+                                    <p class="mt-2 mb-0 small text-dark"><strong>Reason/Notes:</strong> {{ trip.finish_reason }}</p>
+                                    {% endif %}
+                                </div>
+                                {% endif %}
                                 <div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom">
                                     <h3 class="fw-bold m-0" style="font-family: 'Poppins', sans-serif;">About the
                                         Journey</h3>
-                                    <div class="d-flex gap-2">
+                                    <div class="d-flex gap-2 align-items-center">
+                                        {% if trip.status == 1 and request.user.is_authenticated and trip.coordinator.user == request.user %}
+                                        <button type="button" class="btn btn-outline-success action-btn px-3 py-2 fw-semibold" style="height: 45px; display: flex; align-items: center; justify-content: center; gap: 6px; border-radius: 25px;" data-bs-toggle="modal" data-bs-target="#finishTripModal">
+                                            <i class="fas fa-flag-checkered"></i> Finish Trip
+                                        </button>
+                                        {% endif %}
                                         <a href="{% url 'trip_update' trip.pk %}"
                                             class="btn btn-outline-warning action-btn rounded-circle"
                                             style="width: 45px; height: 45px; padding: 0; display: flex; align-items: center; justify-content: center;"
@@ -521,6 +555,48 @@
                 </div>
             </div>
 
+        </div>
+    </div>
+</div>
+
+<!-- Finish Trip Modal -->
+<div class="modal fade" style="color : yellow;" id="finishTripModal" tabindex="-1" aria-labelledby="finishTripModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 rounded-4 shadow-lg">
+            <div class="modal-header border-bottom-0 p-4 pb-0">
+                <h5 class="modal-title fw-bold text-dark" id="finishTripModalLabel"><i class="fas fa-flag-checkered text-primary me-2"></i>Finish Trip</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form action="{% url 'trip_finish' trip.pk %}" method="POST">
+                {% csrf_token %}
+                <div class="modal-body p-4">
+                    {% now "Y-m-d" as today_str %}
+                    {% if trip.to_date|date:"Y-m-d" == today_str %}
+                        <p class="text-secondary">Are you sure you want to finish this trip? This will change the status of the trip to finished.</p>
+                        <div class="mb-3">
+                            <label for="finishReason" class="form-label fw-semibold text-secondary small text-uppercase">Finish Notes / Reason (Optional)</label>
+                            <textarea id="finishReason" name="reason" class="form-control rounded-3 border-light-subtle" rows="3" placeholder="Enter optional notes or remarks..."></textarea>
+                        </div>
+                    {% else %}
+                        <!-- Warning message for end date not met -->
+                        <div class="alert alert-warning border-0 rounded-3 p-3 mb-4 small d-flex align-items-start gap-2">
+                            <i class="fas fa-exclamation-triangle mt-1 text-warning fs-5"></i>
+                            <div>
+                                <strong class="text-dark">Warning: Trip End Date Not Met!</strong>
+                                <p class="m-0 mt-1 text-secondary">The current date does not match the scheduled end date of this trip (<strong>{{ trip.to_date|date:"M d, Y" }}</strong>). A reason is mandatory to finish this trip early.</p>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="finishReasonMandatory" class="form-label fw-semibold text-secondary small text-uppercase">Reason for Finishing (Mandatory)</label>
+                            <textarea id="finishReasonMandatory" name="reason" class="form-control rounded-3 border-light-subtle" rows="3" placeholder="Explain why the trip is being finished early..." required="required"></textarea>
+                        </div>
+                    {% endif %}
+                </div>
+                <div class="modal-footer border-top-0 p-4 pt-0">
+                    <button type="button" class="btn btn-light rounded-3 px-4" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary rounded-3 px-4 "><i class="fas fa-check me-1"></i> Finish</button>
+                </div>
+            </form>
         </div>
     </div>
 </div>

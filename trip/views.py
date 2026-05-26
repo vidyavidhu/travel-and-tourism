@@ -378,9 +378,39 @@ class MyTripsView(LoginRequiredMixin, ListView):
         except Coordinator.DoesNotExist:
             coordinator = None
             
-        return Trip.objects.filter(
+        queryset = Trip.objects.filter(
             Q(trip_members__member=member) | Q(coordinator=coordinator)
-        ).distinct().order_by('-id')
+        ).distinct()
+
+        self.filter_form = TripFilterForm(self.request.GET)
+        if self.filter_form.is_valid():
+            title = self.filter_form.cleaned_data.get('title')
+            location_from_name = self.filter_form.cleaned_data.get('location_from_name')
+            location_to_name = self.filter_form.cleaned_data.get('location_to_name')
+            from_date = self.filter_form.cleaned_data.get('from_date')
+            to_date = self.filter_form.cleaned_data.get('to_date')
+            status = self.filter_form.cleaned_data.get('status')
+            
+            if title:
+                queryset = queryset.filter(title__icontains=title)
+            if location_from_name:
+                queryset = queryset.filter(location_from_name__icontains=location_from_name)
+            if location_to_name:
+                queryset = queryset.filter(location_to_name__icontains=location_to_name)
+            if from_date:
+                from django.db.models import Q
+                queryset = queryset.filter(Q(from_date=from_date) | Q(to_date=from_date))
+            if to_date:
+                queryset = queryset.filter(to_date__lte=to_date)
+            if status:
+                queryset = queryset.filter(status=status)
+                
+        return queryset.order_by('-id')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['filter_form'] = getattr(self, 'filter_form', TripFilterForm(self.request.GET))
+        return context
 
 from django.contrib import messages
 from django.views import View
@@ -392,3 +422,29 @@ class TripMemberApproveView(LoginRequiredMixin, View):
         tm.save()
         messages.success(request, f"Successfully approved {tm.member.user.first_name}'s request to join.")
         return redirect(reverse('trip_detail', kwargs={'pk': tm.trip.pk}))
+
+class TripFinishView(LoginRequiredMixin, View):
+    def post(self, request, pk):
+        from django.utils import timezone
+        trip = get_object_or_404(Trip, pk=pk)
+        
+        # Verify that the logged-in user is the coordinator of this trip
+        if trip.coordinator.user != request.user and not request.user.is_superuser:
+            messages.error(request, "You do not have permission to finish this trip.")
+            return redirect(reverse('trip_detail', kwargs={'pk': trip.pk}))
+            
+        today = timezone.localdate()
+        reason = request.POST.get('reason', '').strip()
+        
+        # If today is not the end date of the trip, reason is mandatory
+        if today != trip.to_date:
+            if not reason:
+                messages.error(request, "The trip's end date is not met. A mandatory reason is required to finish the trip.")
+                return redirect(reverse('trip_detail', kwargs={'pk': trip.pk}))
+            
+        trip.status = 2  # Set status to 2 (Finished)
+        trip.finish_reason = reason
+        trip.save()
+        
+        messages.success(request, f"Trip '{trip.title}' has been successfully finished!")
+        return redirect(reverse('trip_detail', kwargs={'pk': trip.pk}))

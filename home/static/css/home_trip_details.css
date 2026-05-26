@@ -57,7 +57,7 @@
 
 @keyframes ping {
     75%, 100% {
-        transform: scale(2);
+       
         opacity: 0;
     }
 }
@@ -163,7 +163,6 @@ body[data-theme="dark"] .trip-summary-header {
     height: 80px !important;
     object-fit: cover !important;
     cursor: pointer !important;
-    transition: transform 0.2s !important;
 }
 
 /* Comment board styling */
@@ -270,13 +269,13 @@ body[data-theme="dark"] .trip-summary-header {
 
 /* Prevent comment submit button from shivering/jittering on hover */
 .save-btn:hover {
-    transform: none !important;
+    
     box-shadow: 0 8px 20px rgba(67, 97, 238, 0.4) !important;
 }
 
 /* Premium zoom effect on gallery images on hover */
 .stop-gallery-img:hover {
-    transform: scale(1.06) !important;
+    
     z-index: 5 !important;
     position: relative !important;
 }
