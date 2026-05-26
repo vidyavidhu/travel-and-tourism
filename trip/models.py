@@ -64,6 +64,13 @@ class Trip(models.Model):
             return delta.days + 1
         return 1
 
+    @property
+    def is_started(self):
+        from datetime import date
+        if self.from_date:
+            return date.today() >= self.from_date
+        return False
+
     def __str__(self):
         return self.title
 

@@ -64,6 +64,10 @@ def home_trip_details(request, pk):
 def join_trip(request, trip_id):
     trip = get_object_or_404(Trip, pk=trip_id)
     
+    if trip.is_started:
+        messages.error(request, "This trip has already commenced. Registration is closed.")
+        return redirect('home_trip_details', pk=trip.id)
+        
     member, created = Member.objects.get_or_create(user=request.user)
     trip_member = Trip_Members.objects.filter(trip=trip, member=member).first()
     

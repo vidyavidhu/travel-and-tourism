@@ -444,6 +444,12 @@
                                 <span class="fw-bold d-block text-primary" style="font-size: 1.1rem;">Request Pending!</span>
                                 <small class="text-secondary d-block mt-1">Your request to join is pending approval.</small>
                             </div>
+                        {% elif trip.is_started %}
+                            <div class="alert alert-secondary border-0 rounded-4 shadow-sm p-3 text-center mb-0" style="background: linear-gradient(135deg, rgba(108, 117, 125, 0.1), rgba(108, 117, 125, 0.15)); border-left: 4px solid #6c757d !important;">
+                                <i class="fas fa-calendar-times fs-3 text-secondary mb-2 d-block"></i>
+                                <span class="fw-bold d-block text-secondary" style="font-size: 1.1rem;">Registration Closed</span>
+                                <small class="text-secondary d-block mt-1">This trip has already commenced. You cannot join this adventure.</small>
+                            </div>
                         {% else %}
                             <a href="{% url 'join_trip' trip.id %}" class="btn btn-primary action-btn save-btn w-100 py-3 rounded-4 shadow fw-bold d-flex align-items-center justify-content-center gap-2" style="background: linear-gradient(135deg, #0d6efd, #0b5ed7); transition: all 0.3s ease;">
                                 <i class="fas fa-user-plus"></i> Join this Adventure
