@@ -52,7 +52,7 @@
                 {% if user.is_authenticated %}
                 <a href="{% url 'my_trips' %}" class="{% if '/trip/my-trips/' in request.path %}active{% endif %}">My Trips</a>
                 {% if user.is_staff or user.is_superuser %}
-                <a href="{% url 'admin_dashboard' %}" class="{% if '/admin-dashboard/' in request.path %}active{% endif %}">Admin Dashboard</a>
+                <a href="{% url 'admin_dashboard' %}" class="{% if '/admin-dashboard/' in request.path %}active{% endif %}">Dashboard</a>
                 {% endif %}
                 {% if user.is_authenticated %}
                 <div class="dropdown" style="position: relative; display: inline-block;">

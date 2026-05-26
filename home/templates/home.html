@@ -29,7 +29,7 @@
                 text-align: left;
             }
             .prediction-item:hover {
-                background-color: rgba(22, 127, 183, 0.1);
+                background-color: rgba(74, 34, 52, 0.1);
                 color: var(--color-primary);
                 padding-left: 25px;
             }
@@ -272,7 +272,7 @@
                         <i class="fas fa-search-location text-muted mb-3" style="font-size: 4rem; opacity: 0.5;"></i>
                         <h3 class="text-secondary fw-bold" style="font-family: 'Poppins', sans-serif;">No matching trips found</h3>
                         <p class="text-muted">Try searching with a different destination or trip title!</p>
-                        <a href="/trip/?title=${encodeURIComponent(searchInput.value)}" class="btn btn-primary mt-3" style="border-radius: 30px; font-weight: bold; padding: 10px 24px; box-shadow: 0 4px 15px rgba(22, 127, 183, 0.3); text-decoration: none; color: white; display: inline-block;">Search All Trips</a>
+                        <a href="/trip/?title=${encodeURIComponent(searchInput.value)}" class="btn btn-primary mt-3" style="border-radius: 30px; font-weight: bold; padding: 10px 24px; box-shadow: 0 4px 15px rgba(74, 34, 52, 0.3); text-decoration: none; color: white; display: inline-block;">Search All Trips</a>
                     `;
                     const container = document.querySelector('#destinations .row');
                     if (container) container.appendChild(noResultsMsg);

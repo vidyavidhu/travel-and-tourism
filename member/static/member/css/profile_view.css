@@ -277,7 +277,7 @@
 .form-control:focus {
     outline: none;
     border-color: var(--color-primary);
-    box-shadow: 0 0 0 3px rgba(22, 127, 183, 0.2);
+    box-shadow: 0 0 0 3px rgba(74, 34, 52,0.2);
 }
 
 .form-row {

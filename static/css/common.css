@@ -1,5 +1,19 @@
 /* CSS Variables for Light/Dark Mode */
 :root {
+  /* Bootstrap Native Variables Overrides */
+  --bs-primary: #4a2234;
+  --bs-primary-rgb: 74, 34, 52;
+  --bs-link-color: #4a2234;
+  --bs-link-hover-color: #8c3b53;
+
+  --btn-primary-color: #4a2234;
+  --btn-primary-hover: #8c3b53;
+  --btn-primary-active: #2d121e;
+
+  --bg-primary-color: #4a2234;
+  --bg-primary-hover: #8c3b53;
+  --bg-primary-active: #2d121e;
+
   /* Core Brand Colors (Warm Sunset Palette) */
   --color-primary: #4a2234;
   /* Deep Burgundy/Plum (Brand Main) */
@@ -54,8 +68,6 @@
   --font-primary: 'Inter', system-ui, -apple-system, sans-serif;
   --font-secondary: 'Poppins', system-ui, -apple-system, sans-serif;
 
-
-
   --dash-primary: var(--color-primary);
   --dash-teal: var(--color-primary-light);
   --dash-bg: var(--bg-color);
@@ -63,13 +75,16 @@
   --dash-text: var(--text-primary);
   --dash-text-muted: var(--text-secondary);
   --dash-border: var(--border-color);
-
-
-
 }
 
 /* Dark Theme (Eggplant Night) */
 [data-theme="dark"] {
+  /* Bootstrap Native Variables Overrides */
+  --bs-primary: #fee5c6;
+  --bs-primary-rgb: 254, 229, 198;
+  --bs-link-color: #fee5c6;
+  --bs-link-hover-color: #bca8b0;
+
   --bg-color: #1a0c13;
   --surface-color: #24141e;
   --text-primary: #fee5c6;
@@ -724,4 +739,68 @@ img {
   padding: 10px;
   border-radius: var(--border-radius);
   background-color: #d1e7dd;
+}
+
+/* Bulletproof Global Bootstrap Overrides to match our custom design system */
+.text-primary {
+  color: var(--color-primary) !important;
+}
+
+.bg-primary {
+  background-color: var(--color-primary) !important;
+}
+
+.btn-primary {
+  background-color: var(--color-primary) !important;
+  border-color: var(--color-primary) !important;
+  color: #ffffff !important;
+  box-shadow: 0 4px 6px -1px rgba(74, 34, 52, 0.15) !important;
+}
+
+.btn-primary:hover,
+.btn-primary:focus,
+.btn-primary:active {
+  background-color: var(--color-primary-light) !important;
+  border-color: var(--color-primary-light) !important;
+  color: #ffffff !important;
+  box-shadow: 0 6px 12px rgba(74, 34, 52, 0.25) !important;
+}
+
+.btn-outline-primary {
+  color: var(--color-primary) !important;
+  border-color: var(--color-primary) !important;
+  background-color: transparent !important;
+}
+
+.btn-outline-primary:hover,
+.btn-outline-primary:focus,
+.btn-outline-primary:active {
+  background-color: var(--color-primary) !important;
+  border-color: var(--color-primary) !important;
+  color: #ffffff !important;
+}
+
+[data-theme="dark"] .text-primary {
+  color: var(--text-primary) !important;
+}
+
+[data-theme="dark"] .bg-primary {
+  background-color: var(--text-primary) !important;
+  color: var(--bg-color) !important;
+}
+
+[data-theme="dark"] .btn-primary {
+  background-color: var(--text-primary) !important;
+  border-color: var(--text-primary) !important;
+  color: var(--bg-color) !important;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.4) !important;
+}
+
+[data-theme="dark"] .btn-primary:hover,
+[data-theme="dark"] .btn-primary:focus,
+[data-theme="dark"] .btn-primary:active {
+  background-color: var(--text-secondary) !important;
+  border-color: var(--text-secondary) !important;
+  color: var(--bg-color) !important;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.5) !important;
 }
