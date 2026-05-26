@@ -33,7 +33,6 @@ class TripListView(ListView):
             if location_to_name:
                 queryset = queryset.filter(location_to_name__icontains=location_to_name)
             if from_date:
-                from django.db.models import Q
                 queryset = queryset.filter(Q(from_date=from_date) | Q(to_date=from_date))
             if to_date:
                 queryset = queryset.filter(to_date__lte=to_date)
@@ -378,9 +377,7 @@ class MyTripsView(LoginRequiredMixin, ListView):
         except Coordinator.DoesNotExist:
             coordinator = None
             
-        queryset = Trip.objects.filter(
-            Q(trip_members__member=member) | Q(coordinator=coordinator)
-        ).distinct()
+        queryset = Trip.objects.filter( Q(trip_members__member=member) | Q(coordinator=coordinator)).distinct() 
 
         self.filter_form = TripFilterForm(self.request.GET)
         if self.filter_form.is_valid():
@@ -398,7 +395,6 @@ class MyTripsView(LoginRequiredMixin, ListView):
             if location_to_name:
                 queryset = queryset.filter(location_to_name__icontains=location_to_name)
             if from_date:
-                from django.db.models import Q
                 queryset = queryset.filter(Q(from_date=from_date) | Q(to_date=from_date))
             if to_date:
                 queryset = queryset.filter(to_date__lte=to_date)
