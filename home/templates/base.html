@@ -54,7 +54,7 @@
                 {% if user.is_staff or user.is_superuser %}
                 <a href="{% url 'admin_dashboard' %}" class="{% if '/admin-dashboard/' in request.path %}active{% endif %}">Admin Dashboard</a>
                 {% endif %}
-                {% if user.coordinator %}
+                {% if user.is_authenticated %}
                 <div class="dropdown" style="position: relative; display: inline-block;">
                     <a href="#" class="notification-bell-btn" id="notifDropdownBtn" style="position: relative; padding: 10px; color: var(--text-primary); text-decoration: none; display: flex; align-items: center; justify-content: center; transition: var(--transition);">
                         <i class="fas fa-bell" style="font-size: 1.25rem;"></i>
@@ -70,21 +70,37 @@
                             <span><i class="fas fa-bell me-2"></i>Notifications</span>
                             <span class="badge bg-primary bg-opacity-10 text-primary" style="font-size: 0.75rem; border-radius: 20px; padding: 4px 8px;">{{ unread_notifications_count }} New</span>
                         </h6>
-                        {% if unread_coordinator_notifications %}
+                        {% if unread_coordinator_notifications or unread_trip_broadcasts %}
                             <div class="d-flex flex-column gap-2">
+                                <!-- Coordinator Notifications -->
                                 {% for notif in unread_coordinator_notifications %}
-                                <div class="p-2 rounded" style="border-bottom: 1px solid var(--border-color); font-size: 0.85rem; transition: background-color 0.2s ease;">
+                                <div class="p-2 rounded animate-fade-in" style="border-bottom: 1px solid var(--border-color); font-size: 0.85rem; transition: background-color 0.2s ease;">
                                     <div class="d-flex justify-content-between text-muted mb-1" style="font-size: 0.75rem;">
                                         <span><i class="far fa-clock"></i> {{ notif.created_at|date:"M d, P" }}</span>
-                                        {% if notif.send_to_all %}
-                                        <span class="badge bg-danger bg-opacity-10 text-danger" style="font-size: 0.65rem; border-radius: 4px; padding: 2px 6px;">Broadcast</span>
-                                        {% endif %}
+                                        <span class="badge bg-danger bg-opacity-10 text-danger" style="font-size: 0.65rem; border-radius: 4px; padding: 2px 6px;">Admin Alert</span>
                                     </div>
                                     <div class="mb-2" style="color: var(--text-primary); font-weight: 500; line-height: 1.4;">{{ notif.message }}</div>
                                     <form action="{% url 'mark_notification_read' notif.pk %}" method="post" style="display: inline;">
                                         {% csrf_token %}
                                         <button type="submit" class="btn btn-sm btn-link text-primary p-0 text-decoration-none" style="font-size: 0.75rem; font-weight: 600;">
-                                            <i class="fas fa-check me-1"></i>Mark as read
+                                            <i class="fas fa-check me-1"></i>Dismiss
+                                        </button>
+                                    </form>
+                                </div>
+                                {% endfor %}
+
+                                <!-- Member Announcements -->
+                                {% for broadcast in unread_trip_broadcasts %}
+                                <div class="p-2 rounded animate-fade-in" style="border-bottom: 1px solid var(--border-color); font-size: 0.85rem; transition: background-color 0.2s ease;">
+                                    <div class="d-flex justify-content-between text-muted mb-1" style="font-size: 0.75rem;">
+                                        <span><i class="far fa-clock"></i> {{ broadcast.created_at|date:"M d, P" }}</span>
+                                        <span class="badge bg-warning bg-opacity-10 text-dark text-uppercase" style="font-size: 0.65rem; border-radius: 4px; padding: 2px 6px;">{{ broadcast.trip.title|truncatechars:12 }}</span>
+                                    </div>
+                                    <div class="mb-2" style="color: var(--text-primary); font-weight: 500; line-height: 1.4;">{{ broadcast.message }}</div>
+                                    <form action="{% url 'mark_trip_broadcast_read' broadcast.pk %}" method="post" style="display: inline;">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn btn-sm btn-link text-primary p-0 text-decoration-none" style="font-size: 0.75rem; font-weight: 600;">
+                                            <i class="fas fa-check me-1"></i>Dismiss
                                         </button>
                                     </form>
                                 </div>

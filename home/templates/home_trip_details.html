@@ -93,6 +93,34 @@
             </div>
         </div>
 
+        <!-- Trip Announcements / Alerts -->
+        {% if broadcast_messages %}
+        <div class="card premium-card border-0 shadow-lg mb-4 p-4 rounded-4" style="background: rgba(248, 149, 30, 0.03) !important; border: 1px solid rgba(248, 149, 30, 0.15) !important;">
+            <h4 class="fw-bold mb-3" style="font-family: 'Poppins', sans-serif; color: var(--color-primary);">
+                <i class="fas fa-bullhorn me-2 text-warning animate-bounce"></i> Coordinator Announcements
+            </h4>
+            
+            <div class="d-flex flex-column gap-3">
+                {% for broadcast in broadcast_messages %}
+                <div class="p-3 bg-white rounded-3 border-start border-4 border-warning shadow-sm announcement-item {% if forloop.counter > 3 %}d-none{% endif %}">
+                    <div class="d-flex justify-content-between text-muted mb-2" style="font-size: 0.8rem;">
+                        <span><i class="fas fa-user-tie me-1"></i> Coordinated by <strong>{{ broadcast.sender.first_name|default:broadcast.sender.username }}</strong></span>
+                        <span><i class="far fa-clock me-1"></i> {{ broadcast.created_at|date:"M d, Y - P" }}</span>
+                    </div>
+                    <p class="m-0 text-dark fw-medium" style="line-height: 1.6; font-size: 0.95rem;">{{ broadcast.message|linebreaksbr }}</p>
+                </div>
+                {% endfor %}
+            </div>
+            {% if broadcast_messages|length > 3 %}
+            <div class="text-center mt-3">
+                <button type="button" id="toggleMoreAnnouncements" class="btn btn-sm btn-outline px-4" style="border-radius: 20px; font-weight: 600; color: var(--color-primary); border-color: var(--color-primary);">
+                    Show More Announcements <i class="fas fa-chevron-down ms-1"></i>
+                </button>
+            </div>
+            {% endif %}
+        </div>
+        {% endif %}
+
         <div class="row g-4">
 
             <!-- Left Column: Details & Tabs -->
@@ -564,5 +592,27 @@
                 wrap: true
             });
         }
+
+        // Toggle More/Less announcements in home_trip_details
+        document.addEventListener('DOMContentLoaded', () => {
+            const toggleBtn = document.getElementById('toggleMoreAnnouncements');
+            if (toggleBtn) {
+                toggleBtn.addEventListener('click', () => {
+                    const hiddenAnnouncements = document.querySelectorAll('.announcement-item.d-none');
+                    if (hiddenAnnouncements.length > 0) {
+                        hiddenAnnouncements.forEach(item => item.classList.remove('d-none'));
+                        toggleBtn.innerHTML = 'Show Less Announcements <i class="fas fa-chevron-up ms-1"></i>';
+                    } else {
+                        const allAnnouncements = document.querySelectorAll('.announcement-item');
+                        allAnnouncements.forEach((item, index) => {
+                            if (index >= 3) {
+                                item.classList.add('d-none');
+                            }
+                        });
+                        toggleBtn.innerHTML = 'Show More Announcements <i class="fas fa-chevron-down ms-1"></i>';
+                    }
+                });
+            }
+        });
 </script>
 {% endblock %}

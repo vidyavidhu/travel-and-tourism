@@ -322,6 +322,7 @@ class TripBroadcastMessage(models.Model):
     sender = models.ForeignKey(User, on_delete=models.CASCADE)
     message = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
+    read_by = models.ManyToManyField(Member, blank=True, related_name='read_trip_broadcasts')
 
     def __str__(self):
         return f"{self.trip.title} Alert: {self.message[:30]}"

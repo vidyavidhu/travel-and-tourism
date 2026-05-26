@@ -17,4 +17,5 @@ urlpatterns = [
     path('admin-dashboard/coordinators/<int:pk>/toggle-approve/', views.admin_coordinator_toggle_approve_view, name='admin_coordinator_toggle_approve'),
     path('admin-dashboard/coordinators/notify/', views.admin_coordinator_notify_view, name='admin_coordinator_notify'),
     path('notifications/<int:pk>/mark-read/', views.mark_notification_read_view, name='mark_notification_read'),
+    path('trip-broadcasts/<int:pk>/mark-read/', views.mark_trip_broadcast_read_view, name='mark_trip_broadcast_read'),
 ]+static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

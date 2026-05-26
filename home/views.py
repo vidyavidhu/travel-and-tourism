@@ -47,12 +47,16 @@ def home_trip_details(request, pk):
         except Member.DoesNotExist:
             pass
             
+    from trip.models import TripBroadcastMessage
+    broadcast_messages = TripBroadcastMessage.objects.filter(trip=trip).order_by('-created_at')
+            
     context = {
         'trip': trip,
         'trip_details': trip_details,
         'trip_members': trip_members,
         'trip_days': trip_days,
         'membership_status': membership_status,
+        'broadcast_messages': broadcast_messages,
     }
     return render(request, 'home_trip_details.html', context)
 

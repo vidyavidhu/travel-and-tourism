@@ -279,3 +279,23 @@ def mark_notification_read_view(request, pk):
             
     return redirect(request.META.get('HTTP_REFERER', '/'))
 
+
+@login_required
+def mark_trip_broadcast_read_view(request, pk):
+    if request.method == 'POST':
+        from trip.models import TripBroadcastMessage, Trip_Members
+        notification = get_object_or_404(TripBroadcastMessage, pk=pk)
+        
+        try:
+            member = request.user.member
+            is_joined = Trip_Members.objects.filter(trip=notification.trip, member=member, status=1).exists()
+            if is_joined:
+                notification.read_by.add(member)
+                messages.success(request, "Announcement marked as read.")
+            else:
+                messages.error(request, "Access denied.")
+        except Exception:
+            messages.error(request, "Profile not found.")
+            
+    return redirect(request.META.get('HTTP_REFERER', '/'))
+
