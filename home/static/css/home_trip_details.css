@@ -1,0 +1,315 @@
+/* 
+ * Premium Custom CSS for Trip Weaver - Trip Details Page
+ */
+
+
+
+/* Hero Carousel Layout */
+.hero-carousel-container {
+    height: 100%;
+    width: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 1;
+}
+
+.hero-carousel-indicators {
+    z-index: 3 !important;
+}
+
+.hero-carousel-inner {
+    height: 100% !important;
+}
+
+.hero-carousel-item {
+    height: 100% !important;
+}
+
+.hero-carousel-img {
+    height: 100% !important;
+    width: 100% !important;
+    object-fit: cover !important;
+    filter: brightness(0.7) !important;
+}
+
+.hero-carousel-dynamic-img {
+    height: 100% !important;
+    width: 100% !important;
+    object-fit: cover !important;
+    filter: brightness(0.65) !important;
+}
+
+.hero-carousel-control {
+    z-index: 3 !important;
+    width: 8% !important;
+}
+
+/* Animations */
+.trip-detail-card-delay {
+    animation-delay: 0.2s !important;
+}
+
+@keyframes ping {
+    75%, 100% {
+       
+        opacity: 0;
+    }
+}
+
+.pulse-ping {
+    animation: ping 1.5s cubic-bezier(0, 0, 0.2, 1) infinite !important;
+    border-radius: 50% !important;
+}
+
+.pulse-container {
+    width: 8px !important;
+    height: 8px !important;
+}
+
+.pulse-dot {
+    border-radius: 50% !important;
+    width: 8px !important;
+    height: 8px !important;
+}
+
+/* Badges & Text styles */
+.category-badge {
+    font-size: 0.75rem !important;
+}
+
+.status-badge {
+    font-size: 0.85rem !important;
+}
+
+.trip-main-title {
+    font-family: 'Poppins', sans-serif !important;
+    font-size: 2rem !important;
+}
+
+.trip-location-sub {
+    font-size: 1.05rem !important;
+}
+
+
+
+.trip-summary-header {
+    background: var(--header-bg) !important;
+    backdrop-filter: blur(10px) !important;
+    -webkit-backdrop-filter: blur(10px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.15) !important;
+}
+
+body[data-theme="dark"] .trip-summary-header {
+    border: 1px solid rgba(255, 255, 255, 0.05) !important;
+}
+
+.day-tab-subtext {
+    font-size: 0.75rem !important;
+}
+
+.day-stops-title {
+    font-family: 'Poppins', sans-serif !important;
+}
+
+/* Stop Card styling */
+.stop-card {
+    background: var(--bg-light, #f4f7fe) !important;
+}
+
+.stop-time-badge {
+    font-size: 0.75rem !important;
+}
+
+.stop-title {
+    font-family: 'Poppins', sans-serif !important;
+}
+
+.stop-location-img {
+    width: 100px !important;
+    height: 100px !important;
+    object-fit: cover !important;
+    border: 2px solid white !important;
+}
+
+.meta-label {
+    font-size: 0.7rem !important;
+}
+
+.stop-description-text {
+    line-height: 1.7 !important;
+    font-size: 0.95rem !important;
+}
+
+.guidelines-alert {
+    background-color: #fff8eb !important;
+    color: #b25e00 !important;
+}
+
+.stop-gallery-img {
+    width: 100% !important;
+    height: 80px !important;
+    object-fit: cover !important;
+    cursor: pointer !important;
+}
+
+/* Comment board styling */
+.comment-textarea {
+    resize: none !important;
+    background: white !important;
+}
+
+.comment-item {
+    border: 1px solid rgba(0,0,0,0.03) !important;
+}
+
+.comment-avatar {
+    width: 36px !important;
+    height: 36px !important;
+    font-size: 0.9rem !important;
+}
+
+.comment-timestamp {
+    font-size: 0.65rem !important;
+}
+
+.like-button {
+    font-size: 0.7rem !important;
+    border-color: #eee !important;
+}
+
+.comment-text {
+    line-height: 1.6 !important;
+    font-size: 0.9rem !important;
+}
+
+.reply-item {
+    background-color: #f8f9fa !important;
+}
+
+.reply-avatar {
+    width: 24px !important;
+    height: 24px !important;
+    font-size: 0.7rem !important;
+}
+
+.reply-author-name {
+    font-size: 0.8rem !important;
+}
+
+.reply-timestamp {
+    font-size: 0.65rem !important;
+}
+
+.reply-text {
+    font-size: 0.82rem !important;
+}
+
+.reply-input-text {
+    font-size: 0.8rem !important;
+}
+
+.empty-itinerary-icon {
+    font-size: 3rem !important;
+    opacity: 0.5 !important;
+}
+
+.empty-day-icon {
+    font-size: 3.5rem !important;
+    opacity: 0.4 !important;
+}
+
+/* Sidebar overview styling */
+.sticky-sidebar {
+    top: 2rem !important;
+}
+
+.sidebar-title {
+    font-family: 'Poppins', sans-serif !important;
+}
+
+.sidebar-label {
+    font-size: 0.75rem !important;
+}
+
+/* Sidebar custom colors */
+.text-accent {
+    color: var(--accent-color, #6e821f) !important;
+}
+
+.text-info-custom {
+    color: #8c3b53 !important; /* Elegant Berry/Rose */
+}
+
+.text-warning-custom {
+    color: #d46343 !important; /* Terracotta Sunset Orange */
+}
+
+.bg-gradient-custom {
+    background: linear-gradient(135deg, var(--gradient-start, #4a2234) 0%, #d46343 100%) !important;
+    color: white !important;
+}
+
+/* Prevent shivering/jittering on sticky overview cards on hover */
+.sticky-top.premium-card:hover {
+    transform: none !important;
+}
+
+/* Prevent comment submit button from shivering/jittering on hover */
+.save-btn:hover {
+    
+    box-shadow: 0 8px 20px rgba(212, 99, 67, 0.4) !important;
+}
+
+/* Premium zoom effect on gallery images on hover */
+.stop-gallery-img:hover {
+    
+    z-index: 5 !important;
+    position: relative !important;
+}
+
+/* Root level gallery modals */
+.root-gallery-modal {
+    z-index: 1060 !important;
+}
+
+.lightbox-modal-header {
+    z-index: 10 !important;
+    background: linear-gradient(to bottom, rgba(0,0,0,0.8), transparent) !important;
+}
+
+.lightbox-modal-img {
+    max-height: 80vh !important;
+    object-fit: contain !important;
+}
+
+.hero-carousel-caption {
+    z-index: 3 !important;
+    background: rgba(0,0,0,0.55) !important;
+    border-radius: 30px !important;
+    padding: 6px 20px !important;
+    bottom: 85px !important;
+    width: fit-content !important;
+    margin: 0 auto !important;
+    backdrop-filter: blur(5px) !important;
+    border: 1px solid rgba(255,255,255,0.15) !important;
+}
+
+.hero-carousel-caption-title {
+    margin: 0 !important;
+    font-size: 0.9rem !important;
+    font-weight: 500 !important;
+    font-family: 'Poppins', sans-serif !important;
+}
+
+/* Premium Spacing & Dimensions for Hero Carousel */
+.trip-hero {
+    height: 480px !important;    /* Taller banner for high-res photo viewing */
+    margin-bottom: 0 !important;  /* Remove overlapping layout margin */
+    border-radius: 0 0 30px 30px !important; /* Premium rounded bottom corners */
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08) !important;
+}
+
+.trip-detail-card {
+    margin-top: 2.5rem !important; /* Breathtaking clean whitespace separation */
+}

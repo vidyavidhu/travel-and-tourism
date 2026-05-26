@@ -27,3 +27,17 @@ class Coordinator(models.Model):
     is_approved = models.BooleanField(default=False)
     def __str__(self):
         return self.user.username
+
+class CoordinatorNotification(models.Model):
+    coordinator = models.ForeignKey(Coordinator, on_delete=models.CASCADE, null=True, blank=True, related_name='notifications')
+    message = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    is_read = models.BooleanField(default=False)
+    send_to_all = models.BooleanField(default=False)
+    read_by = models.ManyToManyField(Coordinator, blank=True, related_name='read_broadcasts')
+
+    def __str__(self):
+        if self.send_to_all:
+            return f"Broadcast: {self.message[:30]}"
+        return f"To {self.coordinator.user.username}: {self.message[:30]}"
+

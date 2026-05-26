@@ -57,7 +57,7 @@
 .form-control:focus {
     outline: none;
     border-color: var(--color-primary);
-    box-shadow: 0 0 0 3px rgba(22, 127, 183, 0.2);
+    box-shadow: 0 0 0 3px rgba(74, 34, 52,0.2);
 }
 
 .form-row {
@@ -133,15 +133,15 @@
 }
 
 .alert-error, .alert-danger {
-    background-color: #fee2e2;
-    color: #b91c1c;
-    border: 1px solid #fca5a5;
+    background-color: #fdf0f4;
+    color: #8c3b53;
+    border: 1px solid #f9d5e0;
 }
 
 .alert-success {
-    background-color: #d1fae5;
-    color: #047857;
-    border: 1px solid #6ee7b7;
+    background-color: #f5f8e9;
+    color: #6e821f;
+    border: 1px solid #e5ecbd;
 }
 
 /* Profile Edit Styles */

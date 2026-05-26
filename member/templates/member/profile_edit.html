@@ -18,6 +18,7 @@
 
             <form method="POST" action="" enctype="multipart/form-data" class="auth-form profile-form">
                 {% csrf_token %}
+                <input type="hidden" name="next" value="{{ next }}">
 
                 <div class="profile-image-upload text-center mb-4">
                     <div class="image-preview-container profile-edit-preview-container">
@@ -25,8 +26,8 @@
                         <img id="image-preview" class="preview-image-style" src="{{ user.member.image.url }}"
                             alt="Profile Image">
                         {% else %}
-                        <div id="image-preview" class="placeholder-icon preview-image-style preview-placeholder-large">
-                            {{ user.username|make_list|first|upper }}</div>
+                        <img id="image-preview" class="preview-image-style" src="{% static 'images/default-avatar.png' %}"
+                            alt="Profile Image">
                         {% endif %}
                         <label for="imageUpload" class="edit-icon profile-edit-icon" title="Change Profile Picture">
                             <i class="fa-solid fa-camera"></i>
@@ -72,10 +73,10 @@
                         <label for="gender"><i class="fa-solid fa-venus-mars"></i> Gender</label>
                         <select id="gender" name="gender" class="form-control" required>
                             <option value="">Select Gender</option>
-                            <option value="Female" {% if user.member.gender=='Female' %}selected{% endif %}>Female
+                            <option value="Female" {% if user.member.gender == 'Female' %}selected{% endif %}>Female
                             </option>
-                            <option value="Male" {% if user.member.gender=='Male' %}selected{% endif %}>Male</option>
-                            <option value="Transgender" {% if user.member.gender=='Transgender' %}selected{% endif %}>
+                            <option value="Male" {% if user.member.gender == 'Male' %}selected{% endif %}>Male</option>
+                            <option value="Transgender" {% if user.member.gender == 'Transgender' %}selected{% endif %}>
                                 Transgender</option>
                         </select>
                     </div>

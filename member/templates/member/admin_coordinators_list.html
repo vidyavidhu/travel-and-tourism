@@ -1,0 +1,209 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Coordinators Management - Trip Weaver{% endblock %}
+
+{% block extra_css %}
+<!-- Bootstrap 5 CSS -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<style>
+ 
+
+    body {
+        background-color: var(--dash-bg);
+        color: var(--dash-text);
+    }
+
+    .dash-card {
+        background-color: var(--dash-surface);
+        border: 1px solid var(--dash-border);
+        border-radius: 16px;
+        padding: 30px;
+        box-shadow: var(--box-shadow);
+        margin-top: 30px;
+    }
+
+    .dash-card-title {
+        font-family: var(--font-secondary);
+        font-weight: 700;
+        font-size: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        color: var(--dash-primary);
+        border-bottom: 2px solid var(--dash-border);
+        padding-bottom: 15px;
+        margin-bottom: 24px;
+    }
+
+    .table-container {
+        border-radius: 12px;
+        overflow: hidden;
+        border: 1px solid var(--dash-border);
+    }
+
+    .premium-table {
+        margin-bottom: 0;
+    }
+
+    .premium-table th {
+        background-color: rgba(74, 34, 52, 0.05) !important;
+        color: var(--dash-primary);
+        font-weight: 600;
+        text-transform: uppercase;
+        font-size: 0.8rem;
+        letter-spacing: 0.5px;
+        padding: 16px 20px;
+        border-bottom: 2px solid var(--dash-border) !important;
+    }
+
+    .premium-table td {
+        padding: 16px 20px;
+        vertical-align: middle;
+        border-bottom: 1px solid var(--dash-border);
+        color: var(--dash-text);
+        background-color: var(--dash-surface);
+    }
+
+    .premium-table tr:last-child td {
+        border-bottom: none;
+    }
+
+    .badge-approved {
+        background-color: rgba(16, 185, 129, 0.1);
+        color: #10b981;
+        border-radius: 30px;
+        padding: 6px 12px;
+        font-size: 0.75rem;
+        font-weight: 600;
+    }
+
+    .badge-pending {
+        background-color: rgba(245, 158, 11, 0.1);
+        color: #f59e0b;
+        border-radius: 30px;
+        padding: 6px 12px;
+        font-size: 0.75rem;
+        font-weight: 600;
+    }
+
+    .action-btn-group {
+        display: flex;
+        gap: 8px;
+    }
+
+    .back-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        color: var(--dash-text-muted);
+        font-weight: 500;
+        margin-bottom: 20px;
+        transition: color 0.2s ease;
+    }
+
+    .back-btn:hover {
+        color: var(--dash-primary);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    
+    <a href="{% url 'admin_dashboard' %}" class="back-btn text-decoration-none">
+        <i class="fas fa-arrow-left"></i> Back to Dashboard
+    </a>
+
+    <div class="dash-card">
+        <h2 class="dash-card-title">
+            <i class="fas fa-users-cog"></i> Coordinator Requests & Roster
+        </h2>
+        
+        <p class="text-secondary mb-4">View register profiles, verify professional descriptions, check uploaded credentials, and approve/restrict coordinator access.</p>
+
+        {% if coordinators %}
+        <div class="table-container shadow-sm">
+            <div class="table-responsive">
+                <table class="table premium-table">
+                    <thead>
+                        <tr>
+                            <th>Coordinator</th>
+                            <th>Email Address</th>
+                            <th>Description Summary</th>
+                            <th>Status Badge</th>
+                            <th>Action Operations</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for coord in coordinators %}
+                        <tr>
+                            <td>
+                                <div class="d-flex align-items-center gap-3">
+                                    <div class="bg-primary bg-opacity-10 text-primary rounded-circle d-flex align-items-center justify-content-center fw-bold" style="width: 40px; height: 40px; font-size: 1.1rem;">
+                                        {{ coord.user.username|make_list|first|upper }}
+                                    </div>
+                                    <div>
+                                        <div class="fw-bold">
+                                            {{ coord.user.first_name }} {{ coord.user.last_name }}
+                                        </div>
+                                        <small class="text-muted">@{{ coord.user.username }}</small>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <span class="text-secondary small">{{ coord.user.email }}</span>
+                            </td>
+                            <td>
+                                <div class="text-truncate text-secondary small" style="max-width: 250px;">
+                                    {{ coord.description|default:"No description uploaded." }}
+                                </div>
+                            </td>
+                            <td>
+                                {% if coord.is_approved %}
+                                <span class="badge-approved"><i class="fas fa-check-circle me-1"></i> Approved</span>
+                                {% else %}
+                                <span class="badge-pending"><i class="fas fa-clock me-1"></i> Pending Verification</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <div class="action-btn-group">
+                                    <a href="{% url 'admin_coordinator_detail' coord.pk %}" class="btn btn-sm btn-outline px-3" style="border-radius: 8px;">
+                                        <i class="fas fa-id-card me-1"></i> View Profile
+                                    </a>
+                                    
+                                    <form action="{% url 'admin_coordinator_toggle_approve' coord.pk %}" method="post" class="d-inline">
+                                        {% csrf_token %}
+                                        {% if coord.is_approved %}
+                                        <button type="submit" class="btn btn-sm btn-danger px-3" style="border-radius: 8px; background-color: rgba(239, 68, 68, 0.1); border-color: transparent; color: #ef4444;">
+                                            <i class="fas fa-ban me-1"></i> Disapprove
+                                        </button>
+                                        {% else %}
+                                        <button type="submit" class="btn btn-sm btn-success px-3" style="border-radius: 8px; background-color: rgba(16, 185, 129, 0.1); border-color: transparent; color: #10b981;">
+                                            <i class="fas fa-check me-1"></i> Approve
+                                        </button>
+                                        {% endif %}
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        {% else %}
+        <div class="text-center py-5">
+            <i class="fas fa-users-slash text-muted mb-3" style="font-size: 4rem; opacity: 0.4;"></i>
+            <h4 class="text-secondary fw-semibold">No registered coordinators found</h4>
+            <p class="text-muted">Once users sign up as coordinators, they will appear here for verification.</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<!-- Bootstrap 5 JS Bundle with Popper -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+{% endblock %}

@@ -1,0 +1,409 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Dashboard - Trip Weaver{% endblock %}
+
+{% block extra_css %}
+<!-- Bootstrap 5 CSS -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<style>
+
+
+    body {
+        background-color: var(--dash-bg);
+        color: var(--dash-text);
+    }
+
+    .dash-header {
+        background: linear-gradient(135deg, var(--dash-primary) 0%, var(--dash-teal) 100%);
+        color: white;
+        border-radius: 16px;
+        padding: 40px;
+        margin-bottom: 40px;
+        box-shadow: 0 8px 30px rgba(74, 34, 52, 0.15);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .dash-header::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        right: -20%;
+        width: 300px;
+        height: 300px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 50%;
+        pointer-events: none;
+    }
+
+    .stat-card {
+        background-color: var(--dash-surface);
+        border: 1px solid var(--dash-border);
+        border-radius: 16px;
+        padding: 24px;
+        box-shadow: var(--box-shadow);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 12px 24px rgba(0, 0, 0, 0.08);
+        border-color: var(--dash-primary);
+    }
+
+    .stat-icon {
+        width: 56px;
+        height: 56px;
+        border-radius: 12px;
+        background-color: rgba(74, 34, 52, 0.1);
+        color: var(--dash-primary);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        margin-bottom: 16px;
+    }
+
+    .stat-value {
+        font-size: 2.25rem;
+        font-weight: 700;
+        line-height: 1.2;
+        margin-bottom: 4px;
+        font-family: var(--font-secondary);
+    }
+
+    .stat-label {
+        color: var(--dash-text-muted);
+        font-size: 0.9rem;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .dash-card {
+        background-color: var(--dash-surface);
+        border: 1px solid var(--dash-border);
+        border-radius: 16px;
+        padding: 30px;
+        box-shadow: var(--box-shadow);
+        margin-bottom: 30px;
+    }
+
+    .dash-card-title {
+        font-family: var(--font-secondary);
+        font-weight: 600;
+        font-size: 1.25rem;
+        margin-bottom: 24px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        color: var(--dash-primary);
+        border-bottom: 2px solid var(--dash-border);
+        padding-bottom: 12px;
+    }
+
+    /* Accordion styling for monthly trips */
+    .month-accordion-item {
+        background-color: var(--dash-surface);
+        border: 1px solid var(--dash-border);
+        border-radius: 12px !important;
+        margin-bottom: 16px;
+        overflow: hidden;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.02);
+    }
+
+    .month-accordion-button {
+        background-color: var(--dash-surface);
+        color: var(--dash-text);
+        font-weight: 600;
+        padding: 20px 24px;
+        font-family: var(--font-secondary);
+        border: none;
+        width: 100%;
+        text-align: left;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        transition: all 0.2s ease;
+    }
+
+    .month-accordion-button:not(.collapsed) {
+        background-color: rgba(74, 34, 52, 0.05);
+        color: var(--dash-primary);
+        box-shadow: inset 0 -1px 0 var(--dash-border);
+    }
+
+    .month-accordion-button::after {
+        content: '▼';
+        font-size: 0.8rem;
+        transition: transform 0.2s ease;
+    }
+
+    .month-accordion-button:not(.collapsed)::after {
+        transform: rotate(-180deg);
+    }
+
+    .trip-row {
+        padding: 16px 24px;
+        border-bottom: 1px solid var(--dash-border);
+        transition: background-color 0.2s ease;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 12px;
+    }
+
+    .trip-row:last-child {
+        border-bottom: none;
+    }
+
+    .trip-row:hover {
+        background-color: rgba(0, 0, 0, 0.01);
+    }
+
+    .trip-info {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        flex: 1;
+        min-width: 250px;
+    }
+
+    .trip-img {
+        width: 48px;
+        height: 48px;
+        border-radius: 8px;
+        object-fit: cover;
+        background-color: var(--dash-border);
+    }
+
+    .trip-img-placeholder {
+        width: 48px;
+        height: 48px;
+        border-radius: 8px;
+        background-color: rgba(74, 34, 52, 0.1);
+        color: var(--dash-primary);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.25rem;
+    }
+
+    .trip-details h5 {
+        margin: 0 0 4px 0;
+        font-size: 0.95rem;
+        font-weight: 600;
+        color: var(--dash-text);
+    }
+
+    .trip-details span {
+        font-size: 0.8rem;
+        color: var(--dash-text-muted);
+    }
+
+    .premium-form-control {
+        background-color: var(--dash-surface);
+        border: 2px solid var(--dash-border);
+        color: var(--dash-text);
+        padding: 12px 16px;
+        border-radius: 10px;
+        transition: all 0.2s ease;
+    }
+
+    .premium-form-control:focus {
+        border-color: var(--dash-primary);
+        box-shadow: 0 0 0 3px rgba(74, 34, 52, 0.15);
+        background-color: var(--dash-surface);
+        color: var(--dash-text);
+    }
+
+    .badge-active {
+        background-color: rgba(16, 185, 129, 0.1);
+        color: #10b981;
+    }
+
+    .badge-inactive {
+        background-color: rgba(239, 68, 68, 0.1);
+        color: #ef4444;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    
+    <!-- Messages Alert -->
+    {% if messages %}
+    <div class="row mb-4">
+        <div class="col-12">
+            {% for message in messages %}
+            <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %} alert-dismissible fade show" role="alert" style="border-radius: 12px;">
+                <i class="fas {% if message.tags == 'success' %}fa-check-circle{% else %}fa-exclamation-circle{% endif %} me-2"></i>
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Dash Header -->
+    <div class="dash-header d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+        <div>
+            <span class="badge bg-white  px-3 py-2 mb-2 fw-semibold" style="border-radius: 30px; color: #4a2234ff;border: 2px solid #4a2234ff;">ADMINISTRATIVE CONTROL</span>
+            <h1 class="fw-bold mb-1" style="font-family: 'Poppins', sans-serif;">Management Dashboard</h1>
+            <p class="mb-0 opacity-75">Oversee travel operations, verify trip coordinators, and analyze listing schedules.</p>
+        </div>
+        <div>
+            <a href="{% url 'admin_coordinators_list' %}" class="btn btn-light  px-4 py-2 fw-semibold" style="border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.08);">
+                <i class="fas fa-users-cog me-2"></i> Manage Coordinators
+            </a>
+        </div>
+    </div>
+
+    <!-- Quick Stats -->
+    <div class="row g-4 mb-5">
+        <div class="col-md-4">
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-route"></i>
+                </div>
+                <div class="stat-value">{{ total_trips }}</div>
+                <div class="stat-label">Total Listed Trips</div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="stat-card">
+                <div class="stat-icon" style="background-color: rgba(86, 191, 209, 0.1); color: var(--dash-teal);">
+                    <i class="fas fa-users"></i>
+                </div>
+                <div class="stat-value">{{ total_coordinators }}</div>
+                <div class="stat-label">Registered Coordinators</div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <a href="{% url 'admin_coordinators_list' %}" class="text-decoration-none">
+                <div class="stat-card">
+                    <div class="stat-icon" style="background-color: rgba(239, 68, 68, 0.1); color: #ef4444;">
+                        <i class="fas fa-user-shield"></i>
+                    </div>
+                    <div class="stat-value" style="color: #ef4444;">{{ pending_coordinators }}</div>
+                    <div class="stat-label">Pending Approval Requests</div>
+                </div>
+            </a>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Monthly Trips list Dashboard -->
+        <div class="col-lg-8">
+            <div class="dash-card">
+                <h3 class="dash-card-title">
+                    <i class="fas fa-calendar-alt"></i> Monthly Wise Listed Trips
+                </h3>
+                
+                {% if monthly_trips %}
+                <div class="accordion" id="monthlyTripsAccordion">
+                    {% for month, trips_list in monthly_trips.items %}
+                    <div class="month-accordion-item">
+                        <h2 class="accordion-header" id="heading-{{ forloop.counter }}">
+                            <button class="month-accordion-button {% if not forloop.first %}collapsed{% endif %}" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-{{ forloop.counter }}" aria-expanded="{% if forloop.first %}true{% endif %}" aria-controls="collapse-{{ forloop.counter }}">
+                                <span><i class="far fa-folder-open me-2"></i> {{ month }}</span>
+                                <span class="badge bg-primary bg-opacity-10  ms-3" style="color: #4a2234ff;">{{ trips_list|length }} Trip{{ trips_list|length|pluralize }}</span>
+                            </button>
+                        </h2>
+                        <div id="collapse-{{ forloop.counter }}" class="accordion-collapse collapse {% if forloop.first %}show{% endif %}" aria-labelledby="heading-{{ forloop.counter }}" data-bs-parent="#monthlyTripsAccordion">
+                            <div class="accordion-body p-0">
+                                {% for trip in trips_list %}
+                                <div class="trip-row">
+                                    <div class="trip-info">
+                                        {% if trip.image and trip.image.name %}
+                                        <img src="{{ trip.image.url }}" alt="{{ trip.title }}" class="trip-img">
+                                        {% else %}
+                                        <div class="trip-img-placeholder">
+                                            <i class="fas fa-mountain"></i>
+                                        </div>
+                                        {% endif %}
+                                        <div class="trip-details">
+                                            <h5>{{ trip.title }}</h5>
+                                            <span>
+                                                <i class="fas fa-map-marker-alt me-1"></i> 
+                                                {{ trip.location_from_name }} &rarr; {{ trip.location_to_name }}
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="d-flex align-items-center gap-4 flex-wrap mt-2 mt-md-0">
+                                        <div class="text-md-end">
+                                            <div class="small fw-semibold text-secondary">Coordinator</div>
+                                            <a href="{% url 'admin_coordinator_detail' trip.coordinator.pk %}" class="small text-decoration-none fw-bold" style="color: var(--dash-primary);">
+                                                @{{ trip.coordinator.user.username }}
+                                            </a>
+                                        </div>
+                                        <div class="text-md-end">
+                                            <div class="small fw-semibold text-secondary">Duration</div>
+                                            <span class="small">{{ trip.from_date|date:"M d" }} - {{ trip.to_date|date:"M d, Y" }}</span>
+                                        </div>
+                                        <div>
+                                            {% if trip.status == 1 %}
+                                            <span class="badge badge-active px-2.5 py-1.5 small fw-semibold" style="border-radius: 20px;">Active</span>
+                                            {% else %}
+                                            <span class="badge badge-inactive px-2.5 py-1.5 small fw-semibold" style="border-radius: 20px;">Finished</span>
+                                            {% endif %}
+                                        </div>
+                                        <div>
+                                            <a href="{% url 'trip_detail' trip.pk %}" class="btn btn-sm btn-outline px-3" style="border-radius: 8px;">
+                                                <i class="fas fa-eye me-1"></i> Details
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="text-center py-5">
+                    <i class="fas fa-folder-open text-muted mb-3" style="font-size: 3.5rem; opacity: 0.4;"></i>
+                    <p class="text-secondary fw-semibold">No trips currently listed in the system.</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Alert Broadcast Panel -->
+        <div class="col-lg-4">
+            <div class="dash-card">
+                <h3 class="dash-card-title">
+                    <i class="fas fa-bullhorn text-danger"></i> Coordinator Broadcast
+                </h3>
+                <p class="text-secondary small mb-4">Send a high-priority notification or system alert to <strong>all registered coordinators</strong> simultaneously. They will receive it on their dashboard pages.</p>
+                
+                <form action="{% url 'admin_coordinator_notify' %}" method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="coordinator_id" value="all">
+                    
+                    <div class="mb-4">
+                        <label for="messageText" class="form-label small fw-bold text-uppercase text-secondary">Notification Message</label>
+                        <textarea class="form-control premium-form-control" id="messageText" name="message" rows="5" placeholder="Enter broadcast message detail here..." required></textarea>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary w-100 py-2.5 fw-semibold d-flex justify-content-center align-items-center gap-2" style="border-radius: 10px;">
+                        <i class="fas fa-paper-plane"></i> Send Alert to All
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<!-- Bootstrap 5 JS Bundle with Popper -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+{% endblock %}

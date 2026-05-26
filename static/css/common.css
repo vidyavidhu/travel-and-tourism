@@ -1,35 +1,106 @@
 /* CSS Variables for Light/Dark Mode */
 :root {
-  /* Brand Colors from Logo */
-  --color-primary: #167fb7; /* Deep Blue */
-  --color-primary-light: #56bfd1; /* Vibrant Teal/Cyan */
-  --color-primary-dark: #0f5b85;
-  
-  /* Light Theme (Default) */
-  --bg-color: #f8f9fa;
+  /* Bootstrap Native Variables Overrides */
+  --bs-primary: #4a2234;
+  --bs-primary-rgb: 74, 34, 52;
+  --bs-link-color: #4a2234;
+  --bs-link-hover-color: #8c3b53;
+
+  --btn-primary-color: #4a2234;
+  --btn-primary-hover: #8c3b53;
+  --btn-primary-active: #2d121e;
+
+  --bg-primary-color: #4a2234;
+  --bg-primary-hover: #8c3b53;
+  --bg-primary-active: #2d121e;
+
+  /* Core Brand Colors (Warm Sunset Palette) */
+  --color-primary: #4a2234;
+  /* Deep Burgundy/Plum (Brand Main) */
+  --color-primary-light: #8c3b53;
+  /* Muted Berry/Rose */
+  --color-primary-dark: #2d121e;
+  /* Darker eggplant/burgundy */
+
+  /* Portal Colors (Trip Weaver Specifics) */
+  --primary-color: #d46343;
+  /* Sunset Terracotta Orange (Core Portal Action) */
+  --primary-hover: #b94e30;
+  /* Darker Terracotta */
+  --accent-color: #6e821f;
+  /* Moss/Olive Green (Destinations & Positive States) */
+  --bg-light: #fff6ec;
+  /* Warm sand/peach card background tint */
+
+  /* Gradients */
+  --gradient-start: var(--color-primary);
+  --gradient-end: var(--primary-color);
+  --danger-gradient-start: var(--color-primary-light);
+  --danger-gradient-end: #6b2238;
+
+  /* Light Theme Specifics (Warm Linen/Sand) */
+  --bg-color: #fcf9f5;
   --surface-color: #ffffff;
-  --text-primary: #212529;
-  --text-secondary: #6c757d;
-  --border-color: #e9ecef;
-  
+  --text-primary: #2d121e;
+  /* Dark Plum instead of generic dark grey */
+  --text-secondary: #8c737e;
+  /* Muted warm rose-gray */
+  --border-color: #efe6e2;
+  /* Soft warm sand border */
+
+  /* Legacy/Common aliases to map beautifully */
+  --secondary-color: var(--bg-color);
+  --text-color: var(--text-primary);
+  --text-muted: var(--text-secondary);
+  --input-border: var(--border-color);
+  --input-focus: rgba(212, 99, 67, 0.2);
+
+  /* Shadows & Dimensions */
+  --border-radius: 8px;
+  --transition: all 0.3s ease;
+  --box-shadow: 0 4px 6px -1px rgba(74, 34, 52, 0.08), 0 2px 4px -1px rgba(74, 34, 52, 0.04);
+  --card-shadow: 0 10px 30px rgba(74, 34, 52, 0.06);
+  --hover-shadow: 0 15px 35px rgba(74, 34, 52, 0.1);
+  --header-bg: rgba(252, 249, 245, 0.85);
+  /* Translucent linen/sand */
+
   /* Typography Variables */
   --font-primary: 'Inter', system-ui, -apple-system, sans-serif;
   --font-secondary: 'Poppins', system-ui, -apple-system, sans-serif;
-  
-  /* Shared */
-  --border-radius: 8px;
-  --transition: all 0.3s ease;
-  --box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+
+  --dash-primary: var(--color-primary);
+  --dash-teal: var(--color-primary-light);
+  --dash-bg: var(--bg-color);
+  --dash-surface: var(--surface-color);
+  --dash-text: var(--text-primary);
+  --dash-text-muted: var(--text-secondary);
+  --dash-border: var(--border-color);
 }
 
-/* Dark Theme */
+/* Dark Theme (Eggplant Night) */
 [data-theme="dark"] {
-  --bg-color: #121212;
-  --surface-color: #1e1e1e;
-  --text-primary: #e9ecef;
-  --text-secondary: #adb5bd;
-  --border-color: #343a40;
-  --box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5), 0 2px 4px -1px rgba(0, 0, 0, 0.3);
+  /* Bootstrap Native Variables Overrides */
+  --bs-primary: #fee5c6;
+  --bs-primary-rgb: 254, 229, 198;
+  --bs-link-color: #fee5c6;
+  --bs-link-hover-color: #bca8b0;
+
+  --bg-color: #1a0c13;
+  --surface-color: #24141e;
+  --text-primary: #fee5c6;
+  /* Soft warm sand text */
+  --text-secondary: #bca8b0;
+  --border-color: #3d1c2a;
+  --box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.6), 0 2px 4px -1px rgba(0, 0, 0, 0.4);
+
+  /* Dark mode mappings for details / inputs */
+  --bg-light: #2b1723;
+  /* Darker plum background */
+  --header-bg: rgba(26, 12, 19, 0.85);
+  /* Translucent dark plum */
+  --secondary-color: var(--bg-color);
+  --card-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  --hover-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
 }
 
 /* Base Styles */
@@ -117,7 +188,7 @@ img {
   border-color: var(--color-primary-dark);
   color: #ffffff;
   transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(22, 127, 183, 0.3);
+  box-shadow: 0 4px 8px rgba(74, 34, 52, 0.3);
 }
 
 .btn-secondary {
@@ -275,7 +346,8 @@ img {
 
 @media (max-width: 768px) {
   .nav-links {
-    display: none; /* Hide by default on mobile, can be toggled with JS */
+    display: none;
+    /* Hide by default on mobile, can be toggled with JS */
     position: absolute;
     top: 100%;
     left: 0;
@@ -285,11 +357,11 @@ img {
     padding: 20px 0;
     box-shadow: var(--box-shadow);
   }
-  
+
   .nav-links.active {
     display: flex;
   }
-  
+
   .mobile-menu-btn {
     display: block;
   }
@@ -353,7 +425,8 @@ img {
   width: 100%;
   height: 200px;
   object-fit: cover;
-  background-color: var(--border-color); /* Placeholder */
+  background-color: var(--border-color);
+  /* Placeholder */
 }
 
 .card-content {
@@ -470,7 +543,8 @@ img {
 
 @media (max-width: 768px) {
   .nav-links {
-    display: none; /* Hide by default on mobile, can be toggled with JS */
+    display: none;
+    /* Hide by default on mobile, can be toggled with JS */
     position: absolute;
     top: 100%;
     left: 0;
@@ -480,11 +554,11 @@ img {
     padding: 20px 0;
     box-shadow: var(--box-shadow);
   }
-  
+
   .nav-links.active {
     display: flex;
   }
-  
+
   .mobile-menu-btn {
     display: block;
   }
@@ -548,7 +622,8 @@ img {
   width: 100%;
   height: 200px;
   object-fit: cover;
-  background-color: var(--border-color); /* Placeholder */
+  background-color: var(--border-color);
+  /* Placeholder */
 }
 
 .card-content {
@@ -604,7 +679,7 @@ img {
 .section-divider {
   border: 0;
   height: 1px;
-  background: rgba(0,0,0,0.1);
+  background: rgba(0, 0, 0, 0.1);
   margin-top: -5px;
   margin-bottom: 20px;
 }
@@ -658,9 +733,74 @@ img {
 
 .text-message {
   font-family: var(--font-primary);
-  color: #198754; /* Success green */
+  color: #198754;
+  /* Success green */
   font-weight: 500;
   padding: 10px;
   border-radius: var(--border-radius);
   background-color: #d1e7dd;
+}
+
+/* Bulletproof Global Bootstrap Overrides to match our custom design system */
+.text-primary {
+  color: var(--color-primary) !important;
+}
+
+.bg-primary {
+  background-color: var(--color-primary) !important;
+}
+
+.btn-primary {
+  background-color: var(--color-primary) !important;
+  border-color: var(--color-primary) !important;
+  color: #ffffff !important;
+  box-shadow: 0 4px 6px -1px rgba(74, 34, 52, 0.15) !important;
+}
+
+.btn-primary:hover,
+.btn-primary:focus,
+.btn-primary:active {
+  background-color: var(--color-primary-light) !important;
+  border-color: var(--color-primary-light) !important;
+  color: #ffffff !important;
+  box-shadow: 0 6px 12px rgba(74, 34, 52, 0.25) !important;
+}
+
+.btn-outline-primary {
+  color: var(--color-primary) !important;
+  border-color: var(--color-primary) !important;
+  background-color: transparent !important;
+}
+
+.btn-outline-primary:hover,
+.btn-outline-primary:focus,
+.btn-outline-primary:active {
+  background-color: var(--color-primary) !important;
+  border-color: var(--color-primary) !important;
+  color: #ffffff !important;
+}
+
+[data-theme="dark"] .text-primary {
+  color: var(--text-primary) !important;
+}
+
+[data-theme="dark"] .bg-primary {
+  background-color: var(--text-primary) !important;
+  color: var(--bg-color) !important;
+}
+
+[data-theme="dark"] .btn-primary {
+  background-color: var(--text-primary) !important;
+  border-color: var(--text-primary) !important;
+  color: var(--bg-color) !important;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.4) !important;
+}
+
+[data-theme="dark"] .btn-primary:hover,
+[data-theme="dark"] .btn-primary:focus,
+[data-theme="dark"] .btn-primary:active {
+  background-color: var(--text-secondary) !important;
+  border-color: var(--text-secondary) !important;
+  color: var(--bg-color) !important;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.5) !important;
 }

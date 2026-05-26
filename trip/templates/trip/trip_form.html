@@ -16,42 +16,45 @@
                 <div class="card premium-card border-0 shadow-lg rounded-4 overflow-hidden">
                     <div class="card-header gradient-header text-white p-4">
                         <h2 class="mb-0 text-center fw-bold">
-                            {% if object %}
-                                <i class="fas fa-plane-departure me-2"></i> Update Trip Details
+                            {% if form_title %}
+                            <i class="fas fa-coins me-2"></i> {{ form_title }}
+                            {% elif object %}
+                            <i class="fas fa-plane-departure me-2"></i> Update Trip Details
                             {% else %}
-                                <i class="fas fa-globe-americas me-2"></i> Create a New Adventure
+                            <i class="fas fa-globe-americas me-2"></i> Create a New Adventure
                             {% endif %}
                         </h2>
-                        <p class="text-center mb-0 mt-2 text-white-50">Fill in the details below to craft the perfect journey</p>
+                        <p class="text-center mb-0 mt-2 text-white-50">Fill in the details below to craft the perfect
+                            journey</p>
                     </div>
-                    
+
                     <div class="card-body p-4 p-md-5 bg-white">
                         <form method="post" enctype="multipart/form-data" novalidate class="premium-form">
                             {% csrf_token %}
-                            
+
                             {% if form.non_field_errors %}
-                                <div class="alert alert-danger custom-alert shadow-sm rounded-3" role="alert">
-                                    <div class="d-flex align-items-center">
-                                        <i class="fas fa-exclamation-triangle me-3 fs-4"></i>
-                                        <div>
-                                            {% for error in form.non_field_errors %}
-                                                <p class="mb-0">{{ error }}</p>
-                                            {% endfor %}
-                                        </div>
+                            <div class="alert alert-danger custom-alert shadow-sm rounded-3" role="alert">
+                                <div class="d-flex align-items-center">
+                                    <i class="fas fa-exclamation-triangle me-3 fs-4"></i>
+                                    <div>
+                                        {% for error in form.non_field_errors %}
+                                        <p class="mb-0">{{ error }}</p>
+                                        {% endfor %}
                                     </div>
                                 </div>
+                            </div>
                             {% endif %}
 
                             {% if per_head_cost is not None %}
-                                <div class="alert alert-info custom-alert shadow-sm rounded-3 mb-4" role="alert">
-                                    <div class="d-flex align-items-center">
-                                        <i class="fas fa-coins me-3 fs-4"></i>
-                                        <div>
-                                            <h5 class="mb-0 fw-bold">Per Head Cost: ₹{{ per_head_cost|floatformat:2 }}</h5>
-                                            <small>Estimated cost per member based on current trip details</small>
-                                        </div>
+                            <div class="alert alert-info custom-alert shadow-sm rounded-3 mb-4" role="alert">
+                                <div class="d-flex align-items-center">
+                                    <i class="fas fa-coins me-3 fs-4"></i>
+                                    <div>
+                                        <h5 class="mb-0 fw-bold">Per Head Cost: ₹{{ per_head_cost|floatformat:2 }}</h5>
+                                        <small>Estimated cost per member based on current trip details</small>
                                     </div>
                                 </div>
+                            </div>
                             {% endif %}
 
                             <div class="row g-4">
@@ -61,7 +64,7 @@
                                     {% elif field.name == 'location_from_name' %}
                                         <div class="col-12 mt-4">
                                             <div class="p-4 border border-2 rounded-4 bg-light shadow-sm">
-                                                <h4 class="mb-4 text-primary fw-bold"><i class="fas fa-map-marked-alt me-2"></i>Location Details</h4>
+                                                <h4 class="mb-4  fw-bold"><i class="fas fa-map-marked-alt me-2"></i>Location Details</h4>
                                                 
                                                 <h5 class="mb-3 text-secondary fw-bold"><i class="fas fa-plane-departure me-2"></i>From</h5>
                                                 <div class="row g-3 mb-4">
@@ -162,7 +165,7 @@
                                                 <label for="id_{{ field.name }}_display" class="form-label fw-semibold text-dark mb-2">{{ field.label }} {% if field.field.required %}<span class="text-danger">*</span>{% endif %}</label>
                                                 
                                                 <div class="d-none">
-                                                    {% render_field field id="id_"|add:field.name %}
+                                                    {% render_field field %}
                                                 </div>
                                                 
                                                 <input type="text" id="id_{{ field.name }}_display" class="form-control premium-input {% if field.errors %}is-invalid{% endif %}" placeholder="{{ field.label }}" readonly value="{% if field.value %}{{ field.value }}{% endif %}">
@@ -214,16 +217,62 @@
                                 {% endfor %}
                             </div>
 
+                            {% if co_travellers %}
+                            <!-- Registered Co-Travellers information cards for Approver/Coordinator -->
+                            <div class="mt-5 p-4 rounded-4 border shadow-sm" style="background-color: var(--bg-light); border-color: rgba(0, 0, 0, 0.05) !important;">
+                                <h4 class="mb-4 text-primary fw-bold" style="font-family: 'Poppins', sans-serif;">
+                                    <i class="fas fa-user-friends me-2"></i> Registered Co-Travellers ({{ co_travellers|length }})
+                                </h4>
+                                <div class="row g-4">
+                                    {% for co in co_travellers %}
+                                    <div class="col-md-6">
+                                        <div class="card border-0 rounded-4 shadow-sm p-4 bg-white h-100 position-relative">
+                                            <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom">
+                                                <h6 class="fw-bold mb-0 text-dark d-flex align-items-center gap-2">
+                                                    <i class="fas fa-id-card text-primary opacity-75"></i> {{ co.name }}
+                                                </h6>
+                                                <span class="badge rounded-pill px-3 py-1 fw-semibold {% if co.member_type.name|lower == 'adult' %}bg-primary-subtle text-primary border border-primary-subtle{% else %}bg-info-subtle text-info border border-info-subtle{% endif %}">
+                                                    {{ co.member_type.name|capfirst }}
+                                                </span>
+                                            </div>
+                                            <div class="row g-3 text-secondary" style="font-size: 0.9rem;">
+                                                <div class="col-6">
+                                                    <span class="text-muted d-block small text-uppercase fw-bold">Age</span>
+                                                    <span class="fw-semibold text-dark">{{ co.age|default:"-" }} yrs</span>
+                                                </div>
+                                                <div class="col-6">
+                                                    <span class="text-muted d-block small text-uppercase fw-bold">Gender</span>
+                                                    <span class="fw-semibold text-dark">{{ co.gender|default:"-" }}</span>
+                                                </div>
+                                                <div class="col-6">
+                                                    <span class="text-muted d-block small text-uppercase fw-bold">Blood Group</span>
+                                                    <span class="badge bg-danger-subtle text-danger fw-bold border border-danger-subtle px-2 py-1 mt-1">{{ co.bgroup|default:"-" }}</span>
+                                                </div>
+                                            </div>
+                                            {% if co.description %}
+                                            <div class="mt-3 pt-3 border-top text-muted small" style="font-style: italic;">
+                                                <i class="far fa-comment-dots text-primary me-2"></i>{{ co.description }}
+                                            </div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            {% endif %}
+
                             <hr class="my-5 custom-divider">
 
-                            <div class="d-flex flex-column flex-md-row justify-content-end gap-3 mt-4">
-                                <a href="{% url 'trip_list' %}" class="btn btn-light btn-lg px-5 fw-semibold action-btn cancel-btn">
-                                    <i class="fas fa-times me-2"></i> Cancel
-                                </a>
-                                <button type="submit" class="btn btn-primary btn-lg px-5 fw-bold action-btn save-btn shadow">
-                                    <i class="fas fa-paper-plane me-2"></i> {% if object %}Update Journey{% else %}Publish Journey{% endif %}
-                                </button>
-                            </div>
+                                    <div class="d-flex flex-column flex-md-row justify-content-end gap-3 mt-4">
+                                        <a href="{% url 'trip_list' %}"
+                                            class="btn btn-light btn-lg px-5 fw-semibold action-btn cancel-btn">
+                                            <i class="fas fa-times me-2"></i> Cancel
+                                        </a>
+                                        <button type="submit"
+                                            class="btn btn-primary btn-lg px-5 fw-bold action-btn save-btn shadow">
+                                            <i class="fas fa-paper-plane me-2"></i> {% if object %}Update Journey{% else %}Publish Journey{% endif %}
+                                        </button>
+                                    </div>
                         </form>
                     </div>
                 </div>
@@ -238,31 +287,55 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
 <!-- Google Maps Places API -->
-<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAjDxjhF5QmTBloP61Uqh44InCyIJFAgww&libraries=places"></script>
+<script
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAjDxjhF5QmTBloP61Uqh44InCyIJFAgww&libraries=places"></script>
 <script>
-    document.addEventListener("DOMContentLoaded", function() {
+    document.addEventListener("DOMContentLoaded", function () {
         const fromInput = document.getElementById('id_location_from_name');
         const toInput = document.getElementById('id_location_to_name');
         const fromLatInput = document.getElementById('id_location_from_lattitude');
         const fromLngInput = document.getElementById('id_location_from_longitude');
         const toLatInput = document.getElementById('id_location_to_lattitude');
         const toLngInput = document.getElementById('id_location_to_longitude');
-        const distanceInput = document.getElementById('id_distance');
+
+        // Define robust lookup with fallback to name attribute
+        const getDistanceInput = () => document.getElementById('id_distance') || document.getElementsByName('distance')[0];
+        const getDurationInput = () => document.getElementById('id_duration') || document.getElementsByName('duration')[0];
         const distanceDisplay = document.getElementById('id_distance_display');
-        const durationInput = document.getElementById('id_duration');
+        const durationDisplay = document.getElementById('id_duration_display');
+
+        // Page load formatting and initial synchronization
+        const initialDistInput = getDistanceInput();
+        const initialDurInput = getDurationInput();
+        if (distanceDisplay && initialDistInput) {
+            let val = distanceDisplay.value.trim();
+            if (val) {
+                let rawVal = val.replace(' km', '').trim();
+                initialDistInput.value = rawVal;
+                if (!val.includes(' km')) {
+                    distanceDisplay.value = rawVal + ' km';
+                }
+            }
+        }
+        if (durationDisplay && initialDurInput) {
+            let val = durationDisplay.value.trim();
+            if (val) {
+                initialDurInput.value = val;
+            }
+        }
 
         function calculateDistance() {
             if (fromLatInput.value && fromLngInput.value && toLatInput.value && toLngInput.value) {
                 const origin = new google.maps.LatLng(fromLatInput.value, fromLngInput.value);
                 const destination = new google.maps.LatLng(toLatInput.value, toLngInput.value);
-                
+
                 const service = new google.maps.DistanceMatrixService();
                 service.getDistanceMatrix(
-                  {
-                    origins: [origin],
-                    destinations: [destination],
-                    travelMode: 'DRIVING',
-                  }, callback);
+                    {
+                        origins: [origin],
+                        destinations: [destination],
+                        travelMode: 'DRIVING',
+                    }, callback);
 
                 function callback(response, status) {
                     if (status == 'OK') {
@@ -273,13 +346,18 @@
                             let results = response.rows[i].elements;
                             for (let j = 0; j < results.length; j++) {
                                 let element = results[j];
-                                if(element.status === "OK") {
+                                if (element.status === "OK") {
                                     let distance = element.distance.value; // in meters
                                     let duration = element.duration.text;
                                     let distKm = (distance / 1000).toFixed(2);
-                                    if (distanceInput) distanceInput.value = distKm; 
+
+                                    const distIn = getDistanceInput();
+                                    const durIn = getDurationInput();
+
+                                    if (distIn) distIn.value = distKm;
                                     if (distanceDisplay) distanceDisplay.value = distKm + " km";
-                                    if (durationInput) durationInput.value = duration;
+                                    if (durIn) durIn.value = duration;
+                                    if (durationDisplay) durationDisplay.value = duration;
                                 }
                             }
                         }
@@ -292,8 +370,8 @@
             const fromAutocomplete = new google.maps.places.Autocomplete(fromInput, {
                 types: ['geocode'],
             });
-            
-            fromAutocomplete.addListener('place_changed', function() {
+
+            fromAutocomplete.addListener('place_changed', function () {
                 const place = fromAutocomplete.getPlace();
                 if (!place.geometry) return;
                 fromLatInput.value = place.geometry.location.lat();
@@ -301,7 +379,7 @@
                 calculateDistance();
             });
 
-            fromInput.addEventListener('keydown', function(e) {
+            fromInput.addEventListener('keydown', function (e) {
                 if (e.keyCode === 13) e.preventDefault();
             });
         }
@@ -310,8 +388,8 @@
             const toAutocomplete = new google.maps.places.Autocomplete(toInput, {
                 types: ['geocode'],
             });
-            
-            toAutocomplete.addListener('place_changed', function() {
+
+            toAutocomplete.addListener('place_changed', function () {
                 const place = toAutocomplete.getPlace();
                 if (!place.geometry) return;
                 toLatInput.value = place.geometry.location.lat();
@@ -319,8 +397,30 @@
                 calculateDistance();
             });
 
-            toInput.addEventListener('keydown', function(e) {
+            toInput.addEventListener('keydown', function (e) {
                 if (e.keyCode === 13) e.preventDefault();
+            });
+        }
+
+        // Form Submit Synchronizer to guarantee values are submitted correctly
+        const formElement = document.querySelector('form');
+        if (formElement) {
+            formElement.addEventListener('submit', function () {
+                const distIn = getDistanceInput();
+                const durIn = getDurationInput();
+
+                if (distanceDisplay && distIn) {
+                    let distVal = distanceDisplay.value.replace(' km', '').trim();
+                    if (distVal) {
+                        distIn.value = distVal;
+                    }
+                }
+                if (durationDisplay && durIn) {
+                    let durVal = durationDisplay.value.trim();
+                    if (durVal) {
+                        durIn.value = durVal;
+                    }
+                }
             });
         }
     });
