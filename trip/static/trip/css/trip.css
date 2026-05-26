@@ -4,21 +4,21 @@
  */
 
 :root {
-    --primary-color: #4361ee;
-    --primary-hover: #3a56d4;
-    --secondary-color: #f8f9fa;
-    --accent-color: #f72585;
-    --text-color: #2b2d42;
-    --text-muted: #8d99ae;
-    --bg-light: #f4f7fe;
-    --card-shadow: 0 10px 30px rgba(67, 97, 238, 0.1);
-    --hover-shadow: 0 15px 35px rgba(67, 97, 238, 0.15);
-    --input-border: #e2e8f0;
-    --input-focus: rgba(67, 97, 238, 0.25);
-    --gradient-start: #4361ee;
-    --gradient-end: #3f37c9;
-    --danger-gradient-start: #ef233c;
-    --danger-gradient-end: #d90429;
+    --primary-color: #d46343; /* Sunset Terracotta Orange */
+    --primary-hover: #b94e30;
+    --secondary-color: #fcf9f5; /* Warm sand */
+    --accent-color: #6e821f; /* Moss/Olive Green */
+    --text-color: #2d121e; /* Deep Burgundy/Plum */
+    --text-muted: #8c737e;
+    --bg-light: #fff6ec;
+    --card-shadow: 0 10px 30px rgba(74, 34, 52, 0.06);
+    --hover-shadow: 0 15px 35px rgba(74, 34, 52, 0.1);
+    --input-border: #efe6e2;
+    --input-focus: rgba(212, 99, 67, 0.2);
+    --gradient-start: #4a2234; /* Sunset gradient */
+    --gradient-end: #d46343;
+    --danger-gradient-start: #8c3b53; /* Berry/Rose */
+    --danger-gradient-end: #6b2238;
 }
 
 /* Base Container Background */
@@ -194,7 +194,7 @@
 }
 
 .trip-placeholder-bg {
-    background: linear-gradient(135deg, var(--gradient-start) 0%, #00b4d8 100%);
+    background: linear-gradient(135deg, var(--gradient-start) 0%, var(--gradient-end) 100%);
     width: 100%;
     height: 100%;
     display: flex;
@@ -287,7 +287,7 @@
 /* Customizing Select Elements */
 select.premium-input {
     appearance: none;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%234361ee' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E") !important;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%23d46343' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E") !important;
     background-repeat: no-repeat !important;
     background-position: right 1.25rem center !important;
     background-size: 16px 12px !important;
@@ -352,11 +352,11 @@ input[type="file"].premium-input::file-selector-button:hover {
 
 .save-btn:hover, .danger-btn:hover {
     transform: translateY(-3px);
-    box-shadow: 0 8px 20px rgba(67, 97, 238, 0.4) !important;
+    box-shadow: 0 8px 20px rgba(212, 99, 67, 0.4) !important;
 }
 
 .danger-btn:hover {
-    box-shadow: 0 8px 20px rgba(239, 35, 60, 0.4) !important;
+    box-shadow: 0 8px 20px rgba(140, 59, 83, 0.4) !important;
 }
 
 .save-btn::after, .danger-btn::after {
@@ -460,4 +460,28 @@ input[type="file"].premium-input::file-selector-button:hover {
         opacity: 1;
         transform: translateY(0);
     }
+}
+
+/* Override Bootstrap primary colors inside trip grid cards to use the theme sunset palette */
+.trip-grid-card .text-primary {
+    color: var(--primary-color) !important;
+}
+
+.trip-grid-card .premium-badge.bg-primary {
+    background-color: rgba(212, 99, 67, 0.15) !important;
+    color: var(--primary-color) !important;
+}
+
+.trip-grid-card .icon-btn.btn-light {
+    background-color: var(--secondary-color) !important;
+    border-color: var(--input-border) !important;
+    color: var(--primary-color) !important;
+    transition: all 0.3s ease;
+}
+
+.trip-grid-card .icon-btn.btn-light:hover {
+    background-color: var(--primary-color) !important;
+    color: white !important;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(212, 99, 67, 0.25) !important;
 }

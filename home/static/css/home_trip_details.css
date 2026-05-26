@@ -4,9 +4,9 @@
 
 :root {
     --surface-color: #ffffff;
-    --bg-light: #f4f7fe;
-    --gradient-start: #4361ee;
-    --accent-color: #f72585;
+    --bg-light: #fff6ec; /* Soft warm peach/sand background */
+    --gradient-start: #4a2234; /* Deep Burgundy/Plum */
+    --accent-color: #6e821f; /* Moss/Olive Green */
 }
 
 /* Hero Carousel Layout */
@@ -98,11 +98,11 @@
 
 /* Header bg transparent values */
 :root {
-    --header-bg: rgba(255, 255, 255, 0.82);
+    --header-bg: rgba(252, 249, 245, 0.85); /* Translucent linen/sand */
 }
 
 body[data-theme="dark"] {
-    --header-bg: rgba(30, 30, 30, 0.82);
+    --header-bg: rgba(26, 12, 19, 0.85); /* Translucent dark plum */
 }
 
 .trip-summary-header {
@@ -246,19 +246,19 @@ body[data-theme="dark"] .trip-summary-header {
 
 /* Sidebar custom colors */
 .text-accent {
-    color: var(--accent-color, #f72585) !important;
+    color: var(--accent-color, #6e821f) !important;
 }
 
 .text-info-custom {
-    color: #4cc9f0 !important;
+    color: #8c3b53 !important; /* Elegant Berry/Rose */
 }
 
 .text-warning-custom {
-    color: #f8961e !important;
+    color: #d46343 !important; /* Terracotta Sunset Orange */
 }
 
 .bg-gradient-custom {
-    background: var(--gradient-start, #4361ee) !important;
+    background: linear-gradient(135deg, var(--gradient-start, #4a2234) 0%, #d46343 100%) !important;
     color: white !important;
 }
 
@@ -270,7 +270,7 @@ body[data-theme="dark"] .trip-summary-header {
 /* Prevent comment submit button from shivering/jittering on hover */
 .save-btn:hover {
     
-    box-shadow: 0 8px 20px rgba(67, 97, 238, 0.4) !important;
+    box-shadow: 0 8px 20px rgba(212, 99, 67, 0.4) !important;
 }
 
 /* Premium zoom effect on gallery images on hover */
