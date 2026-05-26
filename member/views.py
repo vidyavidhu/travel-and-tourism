@@ -264,7 +264,13 @@ def mark_notification_read_view(request, pk):
         except Exception:
             pass
             
-        if notification.send_to_all or is_owner:
+        if notification.send_to_all:
+            if hasattr(request.user, 'coordinator'):
+                notification.read_by.add(request.user.coordinator)
+                messages.success(request, "Notification marked as read.")
+            else:
+                messages.error(request, "Access denied.")
+        elif is_owner:
             notification.is_read = True
             notification.save()
             messages.success(request, "Notification marked as read.")

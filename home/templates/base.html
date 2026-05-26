@@ -54,6 +54,51 @@
                 {% if user.is_staff or user.is_superuser %}
                 <a href="{% url 'admin_dashboard' %}" class="{% if '/admin-dashboard/' in request.path %}active{% endif %}">Admin Dashboard</a>
                 {% endif %}
+                {% if user.coordinator %}
+                <div class="dropdown" style="position: relative; display: inline-block;">
+                    <a href="#" class="notification-bell-btn" id="notifDropdownBtn" style="position: relative; padding: 10px; color: var(--text-primary); text-decoration: none; display: flex; align-items: center; justify-content: center; transition: var(--transition);">
+                        <i class="fas fa-bell" style="font-size: 1.25rem;"></i>
+                        {% if unread_notifications_count > 0 %}
+                        <span class="badge bg-danger rounded-circle d-flex align-items-center justify-content-center" style="position: absolute; top: -2px; right: -2px; font-size: 0.65rem; min-width: 18px; height: 18px; padding: 0 4px; border: 2px solid var(--surface-color); font-weight: bold; color: white;">
+                            {{ unread_notifications_count }}
+                        </span>
+                        {% endif %}
+                    </a>
+                    <!-- Dropdown Menu -->
+                    <div class="dropdown-menu shadow-lg p-3" id="notifDropdownMenu" style="display: none; position: absolute; right: 0; top: 100%; width: 320px; background-color: var(--surface-color); border: 1px solid var(--border-color); border-radius: 12px; z-index: 1000; max-height: 400px; overflow-y: auto; margin-top: 10px;">
+                        <h6 class="fw-bold mb-3 d-flex justify-content-between align-items-center" style="border-bottom: 1px solid var(--border-color); padding-bottom: 10px; color: var(--color-primary); font-family: var(--font-secondary);">
+                            <span><i class="fas fa-bell me-2"></i>Notifications</span>
+                            <span class="badge bg-primary bg-opacity-10 text-primary" style="font-size: 0.75rem; border-radius: 20px; padding: 4px 8px;">{{ unread_notifications_count }} New</span>
+                        </h6>
+                        {% if unread_coordinator_notifications %}
+                            <div class="d-flex flex-column gap-2">
+                                {% for notif in unread_coordinator_notifications %}
+                                <div class="p-2 rounded" style="border-bottom: 1px solid var(--border-color); font-size: 0.85rem; transition: background-color 0.2s ease;">
+                                    <div class="d-flex justify-content-between text-muted mb-1" style="font-size: 0.75rem;">
+                                        <span><i class="far fa-clock"></i> {{ notif.created_at|date:"M d, P" }}</span>
+                                        {% if notif.send_to_all %}
+                                        <span class="badge bg-danger bg-opacity-10 text-danger" style="font-size: 0.65rem; border-radius: 4px; padding: 2px 6px;">Broadcast</span>
+                                        {% endif %}
+                                    </div>
+                                    <div class="mb-2" style="color: var(--text-primary); font-weight: 500; line-height: 1.4;">{{ notif.message }}</div>
+                                    <form action="{% url 'mark_notification_read' notif.pk %}" method="post" style="display: inline;">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn btn-sm btn-link text-primary p-0 text-decoration-none" style="font-size: 0.75rem; font-weight: 600;">
+                                            <i class="fas fa-check me-1"></i>Mark as read
+                                        </button>
+                                    </form>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            <div class="text-center py-4 text-muted">
+                                <i class="far fa-bell-slash mb-2" style="font-size: 1.75rem; opacity: 0.5;"></i>
+                                <div style="font-size: 0.85rem; font-weight: 500;">All caught up!</div>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endif %}
                 <div class="nav-profile">
                     <a href="{% url 'member_profile' %}" class="profile-icon" style="text-decoration:none; color:white; padding:0; overflow:hidden; display:flex; align-items:center; justify-content:center;">
                         {% if user.member.image and user.member.image.name %}
@@ -120,6 +165,22 @@
         mobileMenuBtn.addEventListener('click', () => {
             navLinks.classList.toggle('active');
         });
+
+        // Notifications Dropdown Toggling Logic
+        const notifDropdownBtn = document.getElementById('notifDropdownBtn');
+        const notifDropdownMenu = document.getElementById('notifDropdownMenu');
+        if (notifDropdownBtn && notifDropdownMenu) {
+            notifDropdownBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                notifDropdownMenu.style.display = notifDropdownMenu.style.display === 'none' ? 'block' : 'none';
+            });
+            // Close dropdown when clicking outside
+            document.addEventListener('click', (e) => {
+                if (!notifDropdownBtn.contains(e.target) && !notifDropdownMenu.contains(e.target)) {
+                    notifDropdownMenu.style.display = 'none';
+                }
+            });
+        }
     </script>
     
     {% block extra_js %}{% endblock %}

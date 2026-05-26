@@ -34,6 +34,7 @@ class CoordinatorNotification(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     is_read = models.BooleanField(default=False)
     send_to_all = models.BooleanField(default=False)
+    read_by = models.ManyToManyField(Coordinator, blank=True, related_name='read_broadcasts')
 
     def __str__(self):
         if self.send_to_all:

@@ -26,8 +26,8 @@
                         <img id="image-preview" class="preview-image-style" src="{{ user.member.image.url }}"
                             alt="Profile Image">
                         {% else %}
-                        <div id="image-preview" class="placeholder-icon preview-image-style preview-placeholder-large">
-                            {{ user.username|make_list|first|upper }}</div>
+                        <img id="image-preview" class="preview-image-style" src="{% static 'images/default-avatar.png' %}"
+                            alt="Profile Image">
                         {% endif %}
                         <label for="imageUpload" class="edit-icon profile-edit-icon" title="Change Profile Picture">
                             <i class="fa-solid fa-camera"></i>
