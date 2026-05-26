@@ -128,7 +128,7 @@
                                     {% if broadcast_messages %}
                                     <div class="d-flex flex-column gap-3">
                                         {% for broadcast in broadcast_messages %}
-                                        <div class="p-3 bg-light rounded-4 border-start border-4 border-warning shadow-sm" style="background: rgba(248, 149, 30, 0.03) !important;">
+                                        <div class="p-3 bg-light rounded-4 border-start border-4 border-warning shadow-sm announcement-item {% if forloop.counter > 3 %}d-none{% endif %}" style="background: rgba(248, 149, 30, 0.03) !important;">
                                             <div class="d-flex justify-content-between text-muted mb-2" style="font-size: 0.8rem;">
                                                 <span><i class="fas fa-user-tie me-1"></i> Coordinated by <strong>{{ broadcast.sender.first_name|default:broadcast.sender.username }}</strong></span>
                                                 <span><i class="far fa-clock me-1"></i> {{ broadcast.created_at|date:"M d, Y - P" }}</span>
@@ -137,6 +137,13 @@
                                         </div>
                                         {% endfor %}
                                     </div>
+                                    {% if broadcast_messages|length > 3 %}
+                                    <div class="text-center mt-3">
+                                        <button type="button" id="toggleMoreAnnouncements" class="btn btn-sm btn-outline px-4" style="border-radius: 20px; font-weight: 600; color: var(--dash-primary, #167fb7); border-color: var(--dash-primary, #167fb7);">
+                                            Show More Announcements <i class="fas fa-chevron-down ms-1"></i>
+                                        </button>
+                                    </div>
+                                    {% endif %}
                                     {% else %}
                                     <div class="text-center py-4 bg-light rounded-4 border border-dashed text-muted">
                                         <i class="far fa-bell-slash mb-2 fs-4" style="opacity: 0.5;"></i>
@@ -663,4 +670,26 @@
 {% block extra_js %}
 <!-- Bootstrap 5 JS Bundle -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const toggleBtn = document.getElementById('toggleMoreAnnouncements');
+        if (toggleBtn) {
+            toggleBtn.addEventListener('click', () => {
+                const hiddenAnnouncements = document.querySelectorAll('.announcement-item.d-none');
+                if (hiddenAnnouncements.length > 0) {
+                    hiddenAnnouncements.forEach(item => item.classList.remove('d-none'));
+                    toggleBtn.innerHTML = 'Show Less Announcements <i class="fas fa-chevron-up ms-1"></i>';
+                } else {
+                    const allAnnouncements = document.querySelectorAll('.announcement-item');
+                    allAnnouncements.forEach((item, index) => {
+                        if (index >= 3) {
+                            item.classList.add('d-none');
+                        }
+                    });
+                    toggleBtn.innerHTML = 'Show More Announcements <i class="fas fa-chevron-down ms-1"></i>';
+                }
+            });
+        }
+    });
+</script>
 {% endblock %}
