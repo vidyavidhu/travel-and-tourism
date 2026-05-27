@@ -6,7 +6,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Trip Weaver - Your Travel Companion{% endblock %}</title>
-    <link rel="shortcut icon" type="image/jpeg" href="{% static 'images/logos/logo-rg-big.jpeg' %}">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%231e293b'/><path d='M30 70 C 40 40, 60 60, 70 30' stroke='%23f8951e' stroke-width='8' stroke-linecap='round' fill='none'/><circle cx='30' cy='70' r='10' fill='%23d46343'/><circle cx='70' cy='30' r='10' fill='%236e821f'/></svg>">
     
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -31,6 +31,20 @@
             font-weight: 700 !important;
             text-decoration: underline !important;
         }
+        .logo-text {
+            font-family: 'Poppins', sans-serif !important;
+            font-weight: 800 !important;
+            font-size: 1.5rem !important;
+            letter-spacing: -0.03em !important;
+            color: var(--color-primary) !important;
+            display: flex !important;
+            align-items: center !important;
+            gap: 6px !important;
+            text-decoration: none !important;
+        }
+        .logo-accent {
+            color: var(--primary-color, #d46343) !important;
+        }
     </style>
     {% block extra_css %}{% endblock %}
 </head>
@@ -40,8 +54,8 @@
     <header class="main-header">
         <div class="container nav-container">
             <div class="logo-container">
-                <a href="/">
-                    <img src="{% static 'images/logos/logo-rg-big.jpeg' %}" alt="Trip Weaver Logo">
+                <a href="/" style="text-decoration: none;">
+                    <div class="logo-text"><i class="fas fa-route logo-accent"></i> TRIP<span class="logo-accent">WEAVER</span></div>
                 </a>
             </div>
             
@@ -140,11 +154,13 @@
 
     <!-- Footer Section -->
     <footer class="main-footer">
-        <div class="container d-flex flex-row align-items-center gap-3 justify-content-center">
+        <div class="container d-flex flex-row align-items-center gap-3 justify-content-center flex-wrap">
             <div class="logo-container">
-                <img src="{% static 'images/logos/logo-rg-big.jpeg' %}" alt="Trip Weaver Logo" style="height: 40px; border-radius: 4px;">
+                <a href="/" style="text-decoration: none;">
+                    <div class="logo-text" style="font-size: 1.2rem !important; color: #ffffff !important;"><i class="fas fa-route logo-accent"></i> TRIP<span class="logo-accent">WEAVER</span></div>
+                </a>
             </div>
-            <p>&copy; 2026 Trip Weaver. All rights reserved.</p>
+            <p class="m-0">&copy; 2026 Trip Weaver. All rights reserved.</p>
         </div>
     </footer>
 
