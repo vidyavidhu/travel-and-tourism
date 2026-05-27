@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invoice_{{ payment.payment_id }}</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f1f5f9;
+            color: #334155;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+        .invoice-card {
+            background-color: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
+            max-width: 800px;
+            margin: 40px auto;
+            border: 1px solid #e2e8f0;
+            overflow: hidden;
+        }
+        .invoice-header {
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            color: white;
+            padding: 40px;
+        }
+        .invoice-body {
+            padding: 40px;
+        }
+        .invoice-footer {
+            background-color: #f8fafc;
+            padding: 24px 40px;
+            border-top: 1px solid #e2e8f0;
+        }
+        .table th {
+            font-weight: 700;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            color: #64748b;
+            letter-spacing: 0.05em;
+            background-color: #f8fafc;
+            border-bottom: 2px solid #cbd5e1;
+            padding: 12px 16px;
+        }
+        .table td {
+            padding: 16px;
+            border-bottom: 1px solid #e2e8f0;
+            font-size: 0.88rem;
+        }
+        .invoice-badge-success {
+            background-color: #dcfce7;
+            color: #15803d;
+            font-weight: 700;
+            padding: 6px 14px;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            display: inline-block;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        .logo-text {
+            font-weight: 800;
+            letter-spacing: -0.03em;
+            font-size: 1.6rem;
+        }
+        .logo-accent {
+            color: #f8951e;
+        }
+        .action-bar {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        @media print {
+            body {
+                background-color: white;
+            }
+            .invoice-card {
+                margin: 0;
+                box-shadow: none;
+                border: none;
+                max-width: 100%;
+            }
+            .action-bar {
+                display: none !important;
+            }
+            .no-print {
+                display: none !important;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Printable Header Tool Bar (Hidden when printed) -->
+    <div class="action-bar d-flex justify-content-between align-items-center py-3 px-2 mt-4 no-print">
+        <a href="{% url 'payment_history' %}" class="btn btn-sm btn-outline-secondary d-inline-flex align-items-center gap-1" style="border-radius: 8px; font-weight: 600;">
+            <i class="fas fa-arrow-left"></i> Payment History
+        </a>
+        <button onclick="window.print();" class="btn btn-sm btn-dark d-inline-flex align-items-center gap-1" style="border-radius: 8px; font-weight: 600; background-color: #1e293b;">
+            <i class="fas fa-print"></i> Print Invoice
+        </button>
+    </div>
+
+    <!-- Main Invoice Card -->
+    <div class="invoice-card">
+        <!-- Brand Header Banner -->
+        <div class="invoice-header d-flex justify-content-between align-items-start flex-wrap gap-4">
+            <div>
+                <div class="logo-text"><i class="fas fa-route logo-accent"></i> TRIP<span class="logo-accent">WEAVER</span></div>
+                <p class="m-0 mt-1 small opacity-75">Your Ultimate Adventure Planner</p>
+                <p class="m-0 small opacity-50 mt-2">123 Wanderlust Way, Bangalore, KA, India</p>
+            </div>
+            <div class="text-md-end">
+                <h3 class="fw-bold text-uppercase tracking-wider m-0">INVOICE</h3>
+                <p class="m-0 small opacity-75 mt-1 font-monospace">{{ payment.payment_id }}</p>
+                <div class="mt-3">
+                    <span class="invoice-badge-success"><i class="fas fa-check-circle me-1"></i> {{ payment.payment_status }}</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Metadata & Addresses -->
+        <div class="invoice-body">
+            <div class="row mb-5 g-4">
+                <div class="col-sm-6">
+                    <small class="text-uppercase text-muted fw-bold d-block mb-2" style="font-size: 0.72rem; letter-spacing: 0.05em;">BILLED TO</small>
+                    <h6 class="fw-bold text-dark mb-1">{{ booking.member.name|default:booking.member.user.get_full_name|default:booking.member.user.username }}</h6>
+                    <p class="m-0 small text-secondary">Username: {{ booking.member.user.username }}</p>
+                    <p class="m-0 small text-secondary">Phone: {{ booking.member.phone|default:"N/A" }}</p>
+                    <p class="m-0 small text-secondary">Email: {{ booking.member.user.email|default:"N/A" }}</p>
+                </div>
+                <div class="col-sm-6 text-sm-end">
+                    <small class="text-uppercase text-muted fw-bold d-block mb-2" style="font-size: 0.72rem; letter-spacing: 0.05em;">PAYMENT DETAILS</small>
+                    <p class="m-0 small text-secondary"><strong>Transaction ID:</strong> <span class="font-monospace">{{ payment.transaction_id }}</span></p>
+                    <p class="m-0 small text-secondary"><strong>Gateway ID:</strong> <span class="font-monospace">{{ payment.mock_gateway_response.gateway_transaction_id }}</span></p>
+                    <p class="m-0 small text-secondary"><strong>Payment Method:</strong> {{ payment.payment_method }}</p>
+                    <p class="m-0 small text-secondary"><strong>Date Paid:</strong> {{ payment.created_at|date:"M d, Y - P" }}</p>
+                </div>
+            </div>
+
+            <!-- Booking Line Items -->
+            <div class="table-responsive mb-4">
+                <table class="table align-middle">
+                    <thead>
+                        <tr>
+                            <th>Description</th>
+                            <th class="text-center">Rate</th>
+                            <th class="text-center">Travelers</th>
+                            <th class="text-end">Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>
+                                <h6 class="fw-bold text-dark mb-1">{{ trip.title }}</h6>
+                                <p class="text-secondary small m-0">Destination: {{ trip.location_to_name }}</p>
+                                <p class="text-secondary small m-0">Duration: {{ trip.total_duration_days }} Days</p>
+                            </td>
+                            <td class="text-center">₹{{ trip.trip_details.per_head_cost|floatformat:2 }}</td>
+                            <td class="text-center">{{ booking.group_size }}</td>
+                            <td class="text-end fw-semibold">₹{{ payment.amount|floatformat:2 }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Calculation breakdown -->
+            <div class="row justify-content-end mt-4">
+                <div class="col-md-5">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="text-secondary small">Subtotal</span>
+                        <span class="text-dark fw-semibold small">₹{{ payment.amount|floatformat:2 }}</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="text-secondary small">Gateway Fees / Taxes</span>
+                        <span class="text-dark fw-semibold small">₹0.00</span>
+                    </div>
+                    <hr class="my-2" style="opacity: 0.1;">
+                    <div class="d-flex justify-content-between">
+                        <strong class="text-dark">Total Paid (INR)</strong>
+                        <strong class="text-success fs-5">₹{{ payment.amount|floatformat:2 }}</strong>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Official Footer -->
+        <div class="invoice-footer text-center">
+            <p class="m-0 small text-secondary"><i class="fas fa-heart text-danger me-1"></i> Thank you for choosing <strong>Trip Weaver</strong>. Have a wonderful and safe journey!</p>
+            <p class="m-0 mt-1 text-muted" style="font-size: 0.72rem;">This is a digitally generated simulation receipt for developer verification. No signatures required.</p>
+        </div>
+    </div>
+
+    <!-- Bootstrap 5 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

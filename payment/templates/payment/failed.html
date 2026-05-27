@@ -1,0 +1,144 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block extra_css %}
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="{% static 'trip/css/trip.css' %}">
+<style>
+    :root {
+        --color-danger: #dc3545;
+        --color-bg-light: #f4f7fe;
+    }
+    .failed-container {
+        min-height: calc(100vh - 100px);
+        background: radial-gradient(circle at 10% 20%, rgba(220, 53, 69, 0.02) 0%, rgba(212, 99, 67, 0.04) 90%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .failed-card {
+        background: white;
+        border-radius: 24px;
+        box-shadow: 0 15px 45px rgba(0, 0, 0, 0.07);
+        max-width: 500px;
+        width: 100%;
+        padding: 40px;
+        border: 1px solid rgba(0, 0, 0, 0.02);
+    }
+    .failed-icon-box {
+        width: 80px;
+        height: 80px;
+        background-color: rgba(220, 53, 69, 0.1);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 25px auto;
+        color: var(--color-danger);
+        font-size: 2.2rem;
+        position: relative;
+        animation: pulse-danger 2s infinite;
+    }
+    @keyframes pulse-danger {
+        0% {
+            box-shadow: 0 0 0 0 rgba(220, 53, 69, 0.4);
+        }
+        70% {
+            box-shadow: 0 0 0 15px rgba(220, 53, 69, 0);
+        }
+        100% {
+            box-shadow: 0 0 0 0 rgba(220, 53, 69, 0);
+        }
+    }
+    .failed-details {
+        background-color: #fffcfc;
+        border: 1px solid rgba(220, 53, 69, 0.15);
+        border-radius: 16px;
+        padding: 20px;
+        text-align: left;
+    }
+    .btn-action-primary {
+        background: linear-gradient(135deg, var(--color-danger) 0%, #bd2130 100%);
+        border: none;
+        border-radius: 12px;
+        font-weight: 700;
+        padding: 12px 24px;
+        box-shadow: 0 4px 15px rgba(220, 53, 69, 0.25);
+    }
+    .btn-action-outline {
+        border: 2px solid #e2e8f0;
+        background: transparent;
+        border-radius: 12px;
+        font-weight: 600;
+        color: #475569;
+        padding: 11px 24px;
+        transition: all 0.2s ease;
+    }
+    .btn-action-outline:hover {
+        background-color: #f8fafc;
+        border-color: #cbd5e1;
+        color: #1e293b;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="failed-container py-5">
+    <div class="failed-card text-center shadow-lg">
+        <!-- Pulse Icon -->
+        <div class="failed-icon-box shadow-sm">
+            <i class="fas fa-exclamation-triangle"></i>
+        </div>
+
+        <span class="badge bg-danger bg-opacity-10 text-danger px-3 py-1.5 rounded-pill fw-bold mb-2">
+            Payment Failed
+        </span>
+        <h2 class="fw-bold text-dark mb-1">Transaction Failed</h2>
+        <p class="text-secondary small mb-4">We were unable to process your payment transaction. Your bank has refused authorization, or funds are insufficient.</p>
+
+        <!-- Failed metadata -->
+        <div class="failed-details mb-4">
+            <div class="row g-2">
+                <div class="col-6">
+                    <span class="text-muted small d-block">TRIP ADVENTURE</span>
+                    <strong class="text-dark small d-block text-truncate">{{ payment.booking.trip.title }}</strong>
+                </div>
+                <div class="col-6">
+                    <span class="text-muted small d-block">FAILED AMOUNT</span>
+                    <strong class="text-danger small d-block">₹{{ payment.amount|floatformat:2 }}</strong>
+                </div>
+                <div class="col-12"><hr class="my-2" style="opacity: 0.08;"></div>
+                <div class="col-12">
+                    <span class="text-muted small d-block">FAILURE LOG / REASON</span>
+                    <span class="fw-semibold text-danger d-block mt-0.5" style="font-size: 0.82rem;">
+                        {{ payment.mock_gateway_response.error_message|default:"The transaction failed because bank authorization timed out." }}
+                    </span>
+                </div>
+                <div class="col-12"><hr class="my-2" style="opacity: 0.08;"></div>
+                <div class="col-6">
+                    <span class="text-muted small d-block">PAYMENT ID</span>
+                    <span class="text-dark small font-monospace d-block">{{ payment.payment_id }}</span>
+                </div>
+                <div class="col-6">
+                    <span class="text-muted small d-block">TRANSACTION ID</span>
+                    <span class="text-dark small font-monospace d-block">{{ payment.transaction_id }}</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Buttons -->
+        <div class="d-flex flex-column flex-sm-row justify-content-center gap-3">
+            <a href="{% url 'initiate_payment' payment.booking.id %}" class="btn btn-danger btn-action-primary d-inline-flex align-items-center justify-content-center gap-2">
+                <i class="fas fa-sync-alt"></i> Retry Payment
+            </a>
+            <a href="{% url 'home_trip_details' payment.booking.trip.id %}" class="btn btn-outline-secondary btn-action-outline d-inline-flex align-items-center justify-content-center gap-2">
+                <i class="fas fa-arrow-left"></i> Back to Trip
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+{% endblock %}

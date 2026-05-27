@@ -108,6 +108,23 @@
             </div>
         </div>
 
+        <!-- Payment Ledger Section -->
+        <div class="profile-display-card">
+            <h4 class="section-header">
+                <i class="fa-solid fa-receipt icon-primary" style="color: var(--color-primary, #f8951e) !important;"></i>
+                Payments & Ledger
+            </h4>
+            <hr class="section-divider">
+            <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
+                <div style="flex: 1; min-width: 250px;">
+                    <span class="text-secondary small">View all your simulated payment receipts, downloadable invoices, and transaction history.</span>
+                </div>
+                <a href="{% url 'payment_history' %}" class="btn btn-outline-primary px-4 py-2 d-inline-flex align-items-center gap-2" style="border-radius: 8px; font-weight: 600; text-decoration: none;">
+                    <i class="fa-solid fa-clock-rotate-left"></i> View Payment History
+                </a>
+            </div>
+        </div>
+
         <!-- Emergency Contact Section -->
         <div class="profile-display-card">
             <!-- <a href="{% url 'member_profile_edit' %}" class="section-edit-btn" title="Edit Emergency Contact">

@@ -1,0 +1,193 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block extra_css %}
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="{% static 'trip/css/trip.css' %}">
+<style>
+    :root {
+        --color-primary: #f8951e;
+        --color-primary-dark: #d46343;
+    }
+    .processing-container {
+        min-height: calc(100vh - 100px);
+        background: radial-gradient(circle at 10% 20%, rgba(248, 149, 30, 0.03) 0%, rgba(212, 99, 67, 0.04) 90%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .processing-card {
+        background: white;
+        border-radius: 24px;
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.06);
+        max-width: 480px;
+        width: 100%;
+        padding: 40px 30px;
+        border: 1px solid rgba(0, 0, 0, 0.03);
+    }
+    .loader-ring {
+        display: inline-block;
+        position: relative;
+        width: 100px;
+        height: 100px;
+    }
+    .loader-ring div {
+        box-sizing: border-box;
+        display: block;
+        position: absolute;
+        width: 80px;
+        height: 80px;
+        margin: 10px;
+        border: 6px solid var(--color-primary);
+        border-radius: 50%;
+        animation: loader-ring-anim 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+        border-color: var(--color-primary) transparent transparent transparent;
+    }
+    .loader-ring div:nth-child(1) {
+        animation-delay: -0.45s;
+    }
+    .loader-ring div:nth-child(2) {
+        animation-delay: -0.3s;
+    }
+    .loader-ring div:nth-child(3) {
+        animation-delay: -0.15s;
+    }
+    @keyframes loader-ring-anim {
+        0% {
+            transform: rotate(0deg);
+        }
+        100% {
+            transform: rotate(360deg);
+        }
+    }
+    .timeline-steps {
+        margin-top: 35px;
+        text-align: left;
+        max-width: 320px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+    .step-item {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        margin-bottom: 15px;
+        opacity: 0.35;
+        transition: all 0.3s ease;
+    }
+    .step-item.active {
+        opacity: 1;
+        color: var(--color-primary-dark);
+        font-weight: 600;
+    }
+    .step-item.completed {
+        opacity: 0.8;
+        color: #28a745;
+    }
+    .step-indicator {
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        background-color: #e2e8f0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.72rem;
+        font-weight: bold;
+        color: #64748b;
+        transition: all 0.3s ease;
+    }
+    .step-item.active .step-indicator {
+        background-color: var(--color-primary);
+        color: white;
+        box-shadow: 0 0 10px rgba(248, 149, 30, 0.4);
+    }
+    .step-item.completed .step-indicator {
+        background-color: #28a745;
+        color: white;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="processing-container py-5">
+    <div class="processing-card text-center shadow-lg">
+        <!-- Spinner -->
+        <div class="loader-ring mb-4">
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+        </div>
+
+        <h3 class="fw-bold text-dark mb-1">Processing Payment</h3>
+        <p class="text-secondary small">Do not close this window or click the back button.</p>
+
+        <!-- Simulated stages of transaction -->
+        <div class="timeline-steps">
+            <div class="step-item active" id="step1">
+                <div class="step-indicator" id="ind1">1</div>
+                <span class="step-label" style="font-size: 0.9rem;">Connecting secure payment gateway...</span>
+            </div>
+            <div class="step-item" id="step2">
+                <div class="step-indicator" id="ind2">2</div>
+                <span class="step-label" style="font-size: 0.9rem;">Authorizing transaction amount...</span>
+            </div>
+            <div class="step-item" id="step3">
+                <div class="step-indicator" id="ind3">3</div>
+                <span class="step-label" style="font-size: 0.9rem;">Confirming booking ledger...</span>
+            </div>
+        </div>
+
+        <!-- Hidden processing post form -->
+        <form id="processingForm" method="POST" action="{% url 'process_payment' payment.id %}">
+            {% csrf_token %}
+            <input type="hidden" name="force_success" value="{% if force_success %}true{% else %}false{% endif %}">
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const step1 = document.getElementById('step1');
+        const step2 = document.getElementById('step2');
+        const step3 = document.getElementById('step3');
+        
+        const ind1 = document.getElementById('ind1');
+        const ind2 = document.getElementById('ind2');
+        const ind3 = document.getElementById('ind3');
+
+        // Stage 1 (0ms - 800ms) - already active
+        
+        // Stage 2 (800ms - 1600ms)
+        setTimeout(() => {
+            step1.classList.remove('active');
+            step1.classList.add('completed');
+            ind1.innerHTML = '<i class="fas fa-check"></i>';
+            
+            step2.classList.add('active');
+        }, 850);
+
+        // Stage 3 (1600ms - 2400ms)
+        setTimeout(() => {
+            step2.classList.remove('active');
+            step2.classList.add('completed');
+            ind2.innerHTML = '<i class="fas fa-check"></i>';
+            
+            step3.classList.add('active');
+        }, 1700);
+
+        // Auto-Submit Form (2500ms)
+        setTimeout(() => {
+            step3.classList.remove('active');
+            step3.classList.add('completed');
+            ind3.innerHTML = '<i class="fas fa-check"></i>';
+            
+            document.getElementById('processingForm').submit();
+        }, 2500);
+    });
+</script>
+{% endblock %}

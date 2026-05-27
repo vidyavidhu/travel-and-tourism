@@ -37,12 +37,14 @@ def home_trip_details(request, pk):
         'itinerary_set__rating_set',
     )
     
+    user_member_detail = None
     membership_status = None
     if request.user.is_authenticated:
         try:
             member = request.user.member
             tm = Trip_Members.objects.filter(trip=trip, member=member).first()
             if tm:
+                user_member_detail = tm
                 membership_status = tm.status
         except Member.DoesNotExist:
             pass
@@ -56,6 +58,7 @@ def home_trip_details(request, pk):
         'trip_members': trip_members,
         'trip_days': trip_days,
         'membership_status': membership_status,
+        'user_member_detail': user_member_detail,
         'broadcast_messages': broadcast_messages,
     }
     return render(request, 'home_trip_details.html', context)

@@ -1,0 +1,167 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block extra_css %}
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="{% static 'trip/css/trip.css' %}">
+<style>
+    :root {
+        --color-primary: #f8951e;
+        --color-primary-dark: #d46343;
+        --color-bg-light: #f4f7fe;
+    }
+    .history-container {
+        min-height: calc(100vh - 100px);
+        background: radial-gradient(circle at 10% 20%, rgba(248, 149, 30, 0.03) 0%, rgba(212, 99, 67, 0.04) 90%);
+    }
+    .glass-card {
+        background: rgba(255, 255, 255, 0.85);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.5);
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+    }
+    .table-container {
+        border-radius: 16px;
+        overflow: hidden;
+        border: 1px solid #e2e8f0;
+    }
+    .table thead th {
+        background-color: #f8fafc;
+        border-bottom: 2px solid #e2e8f0;
+        color: #475569;
+        font-weight: 700;
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        padding: 16px 20px;
+    }
+    .table tbody td {
+        padding: 16px 20px;
+        vertical-align: middle;
+        border-bottom: 1px solid #f1f5f9;
+        font-size: 0.88rem;
+    }
+    .table tbody tr:last-child td {
+        border-bottom: none;
+    }
+    .badge-status {
+        font-size: 0.72rem;
+        font-weight: 700;
+        padding: 6px 12px;
+        border-radius: 8px;
+        letter-spacing: 0.02em;
+    }
+    .badge-success {
+        background-color: rgba(40, 167, 69, 0.1) !important;
+        color: #28a745 !important;
+    }
+    .badge-danger {
+        background-color: rgba(220, 53, 69, 0.1) !important;
+        color: #dc3545 !important;
+    }
+    .badge-warning {
+        background-color: rgba(255, 193, 7, 0.1) !important;
+        color: #ffc107 !important;
+    }
+    .badge-secondary {
+        background-color: rgba(108, 117, 125, 0.1) !important;
+        color: #6c757d !important;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="history-container py-5">
+    <div class="container">
+        <!-- Header -->
+        <div class="row mb-4">
+            <div class="col-12 d-flex justify-content-between align-items-center flex-wrap gap-3">
+                <div>
+                    <h2 class="fw-bold text-dark m-0"><i class="fas fa-history text-primary me-2"></i>Payment History</h2>
+                    <p class="text-secondary m-0 mt-1">Track and manage all your simulated invoices and checkout logs.</p>
+                </div>
+                <a href="{% url 'home' %}" class="btn btn-outline-secondary px-4 py-2" style="border-radius: 12px; font-weight: 600;">
+                    <i class="fas fa-arrow-left me-1"></i> Back to Home
+                </a>
+            </div>
+        </div>
+
+        <!-- Table Card -->
+        <div class="card glass-card p-4">
+            {% if payments %}
+            <div class="table-container table-responsive bg-white">
+                <table class="table table-hover align-middle m-0">
+                    <thead>
+                        <tr>
+                            <th>PAYMENT ID</th>
+                            <th>TRIP / BOOKING</th>
+                            <th>AMOUNT</th>
+                            <th>METHOD</th>
+                            <th>STATUS</th>
+                            <th>DATE</th>
+                            <th class="text-end">ACTIONS</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for payment in payments %}
+                        <tr>
+                            <td>
+                                <span class="fw-bold text-dark font-monospace" style="font-size: 0.8rem;">{{ payment.payment_id }}</span>
+                            </td>
+                            <td>
+                                <div class="fw-semibold text-dark">{{ payment.booking.trip.title }}</div>
+                                <small class="text-muted d-block">Booking #{{ payment.booking.id }}</small>
+                            </td>
+                            <td>
+                                <span class="fw-bold {% if payment.payment_status == 'SUCCESS' %}text-success{% elif payment.payment_status == 'FAILED' %}text-danger{% else %}text-dark{% endif %}">
+                                    ₹{{ payment.amount|floatformat:2 }}
+                                </span>
+                            </td>
+                            <td>
+                                <span class="badge bg-light text-secondary border px-2 py-1" style="font-size: 0.72rem;">{{ payment.payment_method }}</span>
+                            </td>
+                            <td>
+                                <span class="badge badge-status {% if payment.payment_status == 'SUCCESS' %}badge-success{% elif payment.payment_status == 'FAILED' %}badge-danger{% elif payment.payment_status == 'PENDING' %}badge-warning{% else %}badge-secondary{% endif %}">
+                                    {{ payment.payment_status }}
+                                </span>
+                            </td>
+                            <td>
+                                <span class="text-secondary small">{{ payment.created_at|date:"M d, Y - P" }}</span>
+                            </td>
+                            <td class="text-end">
+                                {% if payment.payment_status == 'SUCCESS' %}
+                                <a href="{% url 'download_invoice' payment.id %}" target="_blank" class="btn btn-sm btn-outline-primary px-3 py-1.5" style="border-radius: 8px; font-weight: 600; font-size: 0.8rem;">
+                                    <i class="fas fa-file-invoice me-1"></i> Invoice
+                                </a>
+                                {% elif payment.payment_status == 'FAILED' %}
+                                <a href="{% url 'initiate_payment' payment.booking.id %}" class="btn btn-sm btn-outline-danger px-3 py-1.5" style="border-radius: 8px; font-weight: 600; font-size: 0.8rem;">
+                                    <i class="fas fa-sync me-1"></i> Retry
+                                </a>
+                                {% else %}
+                                <span class="text-muted small italic">N/A</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="text-center py-5">
+                <div class="mb-3" style="font-size: 3.5rem; opacity: 0.35; color: var(--color-primary);">
+                    <i class="fas fa-receipt"></i>
+                </div>
+                <h5 class="fw-bold text-secondary">No Payments Logged</h5>
+                <p class="text-muted small mb-0">You have not completed or initiated any simulated checkout transactions yet.</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+{% endblock %}

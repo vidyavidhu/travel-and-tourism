@@ -1,0 +1,259 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block extra_css %}
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="{% static 'trip/css/trip.css' %}">
+<style>
+    :root {
+        --color-primary: #f8951e;
+        --color-primary-dark: #d46343;
+        --color-bg-light: #f4f7fe;
+    }
+    .payment-container {
+        min-height: calc(100vh - 100px);
+        background: radial-gradient(circle at 10% 20%, rgba(248, 149, 30, 0.03) 0%, rgba(212, 99, 67, 0.04) 90%);
+    }
+    .glass-card {
+        background: rgba(255, 255, 255, 0.85);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.5);
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+    }
+    .method-card {
+        border: 2px solid #e2e8f0;
+        border-radius: 16px;
+        padding: 20px;
+        cursor: pointer;
+        transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative;
+        background: white;
+    }
+    .method-card:hover {
+        border-color: var(--color-primary);
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(248, 149, 30, 0.1);
+    }
+    .method-card.active {
+        border-color: var(--color-primary);
+        background-color: rgba(248, 149, 30, 0.02);
+        box-shadow: 0 8px 25px rgba(248, 149, 30, 0.15);
+    }
+    .method-card input[type="radio"] {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        accent-color: var(--color-primary);
+        width: 18px;
+        height: 18px;
+    }
+    .icon-box {
+        width: 48px;
+        height: 48px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.4rem;
+        margin-bottom: 15px;
+        background-color: #f8f9fa;
+        color: #475569;
+        transition: all 0.2s ease;
+    }
+    .method-card.active .icon-box {
+        background-color: rgba(248, 149, 30, 0.1);
+        color: var(--color-primary);
+    }
+    .dev-badge {
+        font-size: 0.72rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        background-color: #f1f5f9;
+        color: #64748b;
+        padding: 4px 10px;
+        border-radius: 100px;
+        font-weight: 700;
+    }
+    .form-check-input:checked {
+        background-color: var(--color-primary);
+        border-color: var(--color-primary);
+    }
+    .btn-pay {
+        background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+        border: none;
+        border-radius: 12px;
+        font-weight: 700;
+        padding: 14px;
+        box-shadow: 0 6px 20px rgba(248, 149, 30, 0.35);
+        transition: all 0.3s ease;
+    }
+    .btn-pay:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 8px 25px rgba(248, 149, 30, 0.45);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="payment-container py-5">
+    <div class="container">
+        <!-- Header -->
+        <div class="row justify-content-center mb-5">
+            <div class="col-lg-10 text-center">
+                <span class="badge bg-primary bg-opacity-10 text-primary px-3 py-2 rounded-pill fw-bold mb-2">
+                    <i class="fas fa-shield-alt me-1"></i> Secure Checkout Portal
+                </span>
+                <h1 class="fw-bold text-dark mb-2">Complete Your Payment</h1>
+                <p class="text-secondary">Select a payment option below to confirm your booking for <strong>{{ booking.trip.title }}</strong></p>
+            </div>
+        </div>
+
+        <div class="row justify-content-center g-4">
+            <!-- Left Side: Selection -->
+            <div class="col-lg-7">
+                <form id="paymentForm" method="POST" action="{% url 'initiate_payment' booking.id %}">
+                    {% csrf_token %}
+                    
+                    <div class="card glass-card p-4 mb-4">
+                        <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-3">
+                            <h5 class="fw-bold m-0"><i class="fas fa-wallet text-primary me-2"></i>Payment Methods</h5>
+                            <span class="dev-badge"><i class="fas fa-code me-1"></i> Mock Mode</span>
+                        </div>
+
+                        <div class="row g-3">
+                            <!-- UPI Option -->
+                            <div class="col-md-6">
+                                <label class="method-card active w-100 d-block" for="upi_method">
+                                    <input type="radio" name="payment_method" id="upi_method" value="UPI" checked onclick="selectMethod('UPI')">
+                                    <div class="icon-box">
+                                        <i class="fas fa-qrcode"></i>
+                                    </div>
+                                    <h6 class="fw-bold text-dark mb-1">UPI Transfer</h6>
+                                    <p class="text-muted small m-0">Pay instantly using Google Pay, PhonePe, or BHIM.</p>
+                                </label>
+                            </div>
+
+                            <!-- CARD Option -->
+                            <div class="col-md-6">
+                                <label class="method-card w-100 d-block" for="card_method">
+                                    <input type="radio" name="payment_method" id="card_method" value="CARD" onclick="selectMethod('CARD')">
+                                    <div class="icon-box">
+                                        <i class="far fa-credit-card"></i>
+                                    </div>
+                                    <h6 class="fw-bold text-dark mb-1">Credit / Debit Card</h6>
+                                    <p class="text-muted small m-0">All major Visa, MasterCard, and RuPay cards accepted.</p>
+                                </label>
+                            </div>
+
+                            <!-- Netbanking Option -->
+                            <div class="col-md-6">
+                                <label class="method-card w-100 d-block" for="nb_method">
+                                    <input type="radio" name="payment_method" id="nb_method" value="NETBANKING" onclick="selectMethod('NETBANKING')">
+                                    <div class="icon-box">
+                                        <i class="fas fa-university"></i>
+                                    </div>
+                                    <h6 class="fw-bold text-dark mb-1">Netbanking</h6>
+                                    <p class="text-muted small m-0">Direct checkout from SBI, HDFC, ICICI, and other top banks.</p>
+                                </label>
+                            </div>
+
+                            <!-- Wallet Option -->
+                            <div class="col-md-6">
+                                <label class="method-card w-100 d-block" for="wallet_method">
+                                    <input type="radio" name="payment_method" id="wallet_method" value="WALLET" onclick="selectMethod('WALLET')">
+                                    <div class="icon-box">
+                                        <i class="fas fa-wallet"></i>
+                                    </div>
+                                    <h6 class="fw-bold text-dark mb-1">Mobile Wallets</h6>
+                                    <p class="text-muted small m-0">Pay securely with Paytm, Amazon Pay, or MobiKwik.</p>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Developer Control Box -->
+                    <div class="card glass-card p-4 mb-4 border border-warning" style="background: rgba(248, 149, 30, 0.02) !important;">
+                        <h6 class="fw-bold text-warning-custom mb-3"><i class="fas fa-tools me-2"></i>Developer Simulation Suite</h6>
+                        <div class="form-check form-switch py-2">
+                            <input class="form-check-input" type="checkbox" role="switch" id="force_success_switch" checked>
+                            <label class="form-check-label fw-semibold text-dark ms-2" for="force_success_switch">
+                                Force Payment Success
+                            </label>
+                            <small class="text-muted d-block mt-1">If enabled, the simulated response is guaranteed to succeed. Disable to test random gateway failures.</small>
+                        </div>
+                        <input type="hidden" name="force_success" id="force_success_hidden" value="true">
+                    </div>
+
+                    <!-- Submit Button -->
+                    <button type="submit" class="btn btn-primary btn-pay w-100 py-3 text-white text-uppercase tracking-wider">
+                        <i class="fas fa-lock me-2"></i> Proceed to Pay ₹{{ unpaid_amount|floatformat:2 }}
+                    </button>
+                </form>
+            </div>
+
+            <!-- Right Side: Booking Breakdown -->
+            <div class="col-lg-3">
+                <div class="card glass-card p-4 sticky-top" style="top: 20px;">
+                    <h5 class="fw-bold mb-4 pb-2 border-bottom"><i class="fas fa-file-invoice-dollar me-2 text-primary"></i>Receipt Summary</h5>
+                    
+                    <ul class="list-unstyled m-0 d-flex flex-column gap-3 mb-4">
+                        <li class="d-flex justify-content-between">
+                            <span class="text-secondary small">Trip Adventure</span>
+                            <span class="fw-bold text-dark text-end small" style="max-width: 140px;">{{ booking.trip.title }}</span>
+                        </li>
+                        <li class="d-flex justify-content-between">
+                            <span class="text-secondary small">Primary Member</span>
+                            <span class="fw-semibold text-dark small">{{ booking.member.name|default:booking.member.user.username }}</span>
+                        </li>
+                        <li class="d-flex justify-content-between">
+                            <span class="text-secondary small">Group Size</span>
+                            <span class="fw-semibold text-dark small">{{ booking.group_size }} traveler{{ booking.group_size|pluralize }}</span>
+                        </li>
+                        <li class="d-flex justify-content-between pt-3 border-top mt-1">
+                            <span class="text-dark fw-bold">Total Amount Due</span>
+                            <span class="fw-bold text-primary fs-5">₹{{ unpaid_amount|floatformat:2 }}</span>
+                        </li>
+                    </ul>
+
+                    <div class="alert alert-light border shadow-sm p-3 rounded-3 mb-0 text-secondary" style="font-size: 0.78rem; line-height: 1.4;">
+                        <i class="fas fa-info-circle text-primary me-1"></i> This is a simulated checkout screen. No real money will be deducted from your cards or bank accounts.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    function selectMethod(method) {
+        // Remove active class from all method labels
+        document.querySelectorAll('.method-card').forEach(card => {
+            card.classList.remove('active');
+        });
+        
+        // Find selected radio and highlight its label parent
+        const radio = document.getElementById(method.toLowerCase() + '_method');
+        if (radio) {
+            radio.checked = true;
+            radio.closest('.method-card').classList.add('active');
+        }
+    }
+
+    // Capture Developer toggle state and map to hidden form variable
+    document.addEventListener('DOMContentLoaded', () => {
+        const devSwitch = document.getElementById('force_success_switch');
+        const hiddenInput = document.getElementById('force_success_hidden');
+        
+        if (devSwitch && hiddenInput) {
+            devSwitch.addEventListener('change', () => {
+                hiddenInput.value = devSwitch.checked ? 'true' : 'false';
+            });
+        }
+    });
+</script>
+{% endblock %}

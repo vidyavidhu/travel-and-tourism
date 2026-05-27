@@ -1,0 +1,182 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block extra_css %}
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="{% static 'trip/css/trip.css' %}">
+<style>
+    :root {
+        --color-success: #28a745;
+        --color-bg-light: #f4f7fe;
+    }
+    .success-container {
+        min-height: calc(100vh - 100px);
+        background: radial-gradient(circle at 10% 20%, rgba(40, 167, 69, 0.02) 0%, rgba(212, 99, 67, 0.04) 90%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .success-card {
+        background: white;
+        border-radius: 24px;
+        box-shadow: 0 15px 45px rgba(0, 0, 0, 0.07);
+        max-width: 550px;
+        width: 100%;
+        padding: 40px;
+        border: 1px solid rgba(0, 0, 0, 0.02);
+    }
+    /* Animated Checkmark CSS */
+    .checkmark-wrapper {
+        width: 80px;
+        height: 80px;
+        margin: 0 auto 25px auto;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .checkmark-circle {
+        stroke-dasharray: 166;
+        stroke-dashoffset: 166;
+        stroke-width: 2;
+        stroke-miterlimit: 10;
+        stroke: var(--color-success);
+        fill: none;
+        animation: stroke 0.6s cubic-bezier(0.65, 0, 0.45, 1) forwards;
+    }
+    .checkmark {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        display: block;
+        stroke-width: 4;
+        stroke: #fff;
+        stroke-miterlimit: 10;
+        box-shadow: inset 0px 0px 0px var(--color-success);
+        animation: fill .4s ease-in-out .4s forwards, scale .3s ease-in-out .9s alternate forwards;
+    }
+    .checkmark-check {
+        transform-origin: 50% 50%;
+        stroke-dasharray: 48;
+        stroke-dashoffset: 48;
+        animation: stroke 0.3s cubic-bezier(0.65, 0, 0.45, 1) 0.8s forwards;
+    }
+    @keyframes stroke {
+        100% {
+            stroke-dashoffset: 0;
+        }
+    }
+    @keyframes scale {
+        0% {
+            transform: none;
+        }
+        50% {
+            transform: scale3d(1.1, 1.1, 1);
+        }
+        100% {
+            transform: none;
+        }
+    }
+    @keyframes fill {
+        100% {
+            box-shadow: inset 0px 0px 0px 40px var(--color-success);
+        }
+    }
+    .receipt-details {
+        background-color: #f8fafc;
+        border: 1px dashed #cbd5e1;
+        border-radius: 16px;
+        padding: 20px;
+        text-align: left;
+    }
+    .btn-action-primary {
+        background: linear-gradient(135deg, #0d6efd 0%, #0b5ed7 100%);
+        border: none;
+        border-radius: 12px;
+        font-weight: 700;
+        padding: 12px 24px;
+        box-shadow: 0 4px 15px rgba(13, 110, 253, 0.25);
+    }
+    .btn-action-outline {
+        border: 2px solid #e2e8f0;
+        background: transparent;
+        border-radius: 12px;
+        font-weight: 600;
+        color: #475569;
+        padding: 11px 24px;
+        transition: all 0.2s ease;
+    }
+    .btn-action-outline:hover {
+        background-color: #f8fafc;
+        border-color: #cbd5e1;
+        color: #1e293b;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="success-container py-5">
+    <div class="success-card text-center shadow-lg">
+        <!-- Animation -->
+        <div class="checkmark-wrapper">
+            <svg class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
+                <circle class="checkmark-circle" cx="26" cy="26" r="25" fill="none"/>
+                <path class="checkmark-check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/>
+            </svg>
+        </div>
+
+        <span class="badge bg-success bg-opacity-10 text-success px-3 py-1.5 rounded-pill fw-bold mb-2">
+            Payment Completed
+        </span>
+        <h2 class="fw-bold text-dark mb-1">Booking Confirmed!</h2>
+        <p class="text-secondary small mb-4">Thank you! Your payment has been received successfully and your booking is now secure.</p>
+
+        <!-- Receipt Table -->
+        <div class="receipt-details mb-4">
+            <div class="row g-3">
+                <div class="col-6">
+                    <small class="text-muted d-block">TRIP ADVENTURE</small>
+                    <span class="fw-bold text-dark text-truncate d-block" style="font-size: 0.88rem;">{{ payment.booking.trip.title }}</span>
+                </div>
+                <div class="col-6">
+                    <small class="text-muted d-block">TOTAL AMOUNT PAID</small>
+                    <span class="fw-bold text-success" style="font-size: 1.1rem;">₹{{ payment.amount|floatformat:2 }}</span>
+                </div>
+                
+                <div class="col-12"><hr class="my-1" style="opacity: 0.1;"></div>
+                
+                <div class="col-6">
+                    <small class="text-muted d-block">PAYMENT ID</small>
+                    <span class="fw-semibold text-dark" style="font-size: 0.82rem; font-family: monospace;">{{ payment.payment_id }}</span>
+                </div>
+                <div class="col-6">
+                    <small class="text-muted d-block">TRANSACTION ID</small>
+                    <span class="fw-semibold text-dark" style="font-size: 0.82rem; font-family: monospace;">{{ payment.transaction_id }}</span>
+                </div>
+
+                <div class="col-6">
+                    <small class="text-muted d-block">PAYMENT METHOD</small>
+                    <span class="badge bg-secondary bg-opacity-10 text-secondary fw-bold">{{ payment.payment_method }}</span>
+                </div>
+                <div class="col-6">
+                    <small class="text-muted d-block">DATE & TIME</small>
+                    <span class="fw-medium text-secondary" style="font-size: 0.8rem;">{{ payment.created_at|date:"M d, Y - P" }}</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Buttons -->
+        <div class="d-flex flex-column flex-sm-row justify-content-center gap-3">
+            <a href="{% url 'download_invoice' payment.id %}" target="_blank" class="btn btn-primary btn-action-primary d-inline-flex align-items-center justify-content-center gap-2">
+                <i class="fas fa-file-invoice"></i> Download Invoice
+            </a>
+            <a href="{% url 'home_trip_details' payment.booking.trip.id %}" class="btn btn-outline-secondary btn-action-outline d-inline-flex align-items-center justify-content-center gap-2">
+                <i class="fas fa-arrow-right"></i> Trip Details
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+{% endblock %}
