@@ -49,8 +49,18 @@ def home_trip_details(request, pk):
         except Member.DoesNotExist:
             pass
             
+    from django.db.models import Q
     from trip.models import TripBroadcastMessage
-    broadcast_messages = TripBroadcastMessage.objects.filter(trip=trip).order_by('-created_at')
+    if request.user.is_authenticated:
+        try:
+            member = request.user.member
+            broadcast_messages = TripBroadcastMessage.objects.filter(trip=trip).filter(
+                Q(recipient__isnull=True) | Q(recipient=member)
+            ).order_by('-created_at')
+        except Exception:
+            broadcast_messages = TripBroadcastMessage.objects.filter(trip=trip, recipient__isnull=True).order_by('-created_at')
+    else:
+        broadcast_messages = TripBroadcastMessage.objects.filter(trip=trip, recipient__isnull=True).order_by('-created_at')
             
     context = {
         'trip': trip,

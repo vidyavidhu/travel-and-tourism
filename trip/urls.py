@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import TripListView, TripDetailView, TripCreateView, TripUpdateView, TripDeleteView, TripDetailsCreateView, TripDetailsUpdateView, TripMembersCreateView, TripMembersUpdateView, TripDayCreateView, ItineraryCreateView, ItineraryDetailView, GalleryCreateView, CommentCreateView, CommentLikeView, ReplyCreateView, MyTripsView, TripMemberApproveView, TripFinishView, TripBroadcastCreateView, ItineraryCancelView, ItineraryDismissCancelView
+from .views import TripListView, TripDetailView, TripCreateView, TripUpdateView, TripDeleteView, TripDetailsCreateView, TripDetailsUpdateView, TripMembersCreateView, TripMembersUpdateView, TripDayCreateView, ItineraryCreateView, ItineraryDetailView, GalleryCreateView, CommentCreateView, CommentLikeView, ReplyCreateView, MyTripsView, TripMemberApproveView, TripFinishView, TripBroadcastCreateView, ItineraryCancelView, ItineraryDismissCancelView, trip_member_detail
 from finance.views import ExpenseCreateView, ExpenseDeleteView
 
 urlpatterns = [
@@ -20,6 +20,7 @@ urlpatterns = [
     path('<int:trip_id>/members/add/', TripMembersCreateView.as_view(), name='trip_members_create'),
     path('members/<int:pk>/update/', TripMembersUpdateView.as_view(), name='trip_members_update'),
     path('members/<int:pk>/approve/', TripMemberApproveView.as_view(), name='trip_member_approve'),
+    path('members/<int:tm_id>/detail/', trip_member_detail, name='trip_member_detail'),
     
     # Trip Days & Itinerary
     path('<int:trip_id>/days/add/', TripDayCreateView.as_view(), name='trip_day_create'),

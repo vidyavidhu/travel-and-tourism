@@ -381,6 +381,7 @@ class CoTraveller(models.Model):
 class TripBroadcastMessage(models.Model):
     trip = models.ForeignKey(Trip, on_delete=models.CASCADE, related_name='broadcasts')
     sender = models.ForeignKey(User, on_delete=models.CASCADE)
+    recipient = models.ForeignKey(Member, on_delete=models.CASCADE, null=True, blank=True, related_name='direct_trip_messages')
     message = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
     read_by = models.ManyToManyField(Member, blank=True, related_name='read_trip_broadcasts')

@@ -612,3 +612,63 @@ class ItineraryDismissCancelView(LoginRequiredMixin, View):
         messages.success(request, f"Cancellation for stop '{itinerary.title}' has been dismissed and the stop is now active.")
         return redirect(reverse('itinerary_detail', kwargs={'pk': pk}))
 
+
+from django.contrib.auth.decorators import login_required
+from payment.models import Payment
+from .models import CoTraveller, TripBroadcastMessage
+
+@login_required
+def trip_member_detail(request, tm_id):
+    """
+    Coordinator-only detail view for a specific member registered to a trip.
+    Shows profile details, group travellers, detailed payments log, and direct messages.
+    """
+    tm = get_object_or_404(Trip_Members, pk=tm_id)
+    trip = tm.trip
+    
+    # Permission check: must be admin or the trip coordinator
+    is_coordinator = request.user.is_superuser or request.user.is_staff
+    if not is_coordinator and hasattr(request.user, 'coordinator'):
+        # Check if the user is the coordinator of this trip
+        if trip.coordinator and trip.coordinator.user == request.user:
+            is_coordinator = True
+            
+    if not is_coordinator:
+        messages.error(request, "Access denied. Only the trip coordinator or administrators can view member details.")
+        return redirect('home')
+
+    member = tm.member
+    # Fetch co-travellers registered for this user and trip
+    co_travellers = CoTraveller.objects.filter(trip=trip, user=member.user)
+    # Fetch payment transactions related to this booking
+    payments = Payment.objects.filter(booking=tm).order_by('-created_at')
+    
+    # Process Direct Message Submission
+    if request.method == 'POST':
+        message_text = request.POST.get('message', '').strip()
+        if message_text:
+            TripBroadcastMessage.objects.create(
+                trip=trip,
+                sender=request.user,
+                recipient=member,
+                message=message_text
+            )
+            messages.success(request, f"Secure message successfully sent to {member.name|default:member.user.username}!")
+            return redirect('trip_member_detail', tm_id=tm.id)
+        else:
+            messages.error(request, "Message content cannot be blank.")
+            
+    # Fetch past messages sent specifically to this member for this trip
+    direct_messages = TripBroadcastMessage.objects.filter(trip=trip, recipient=member).order_by('-created_at')
+
+    context = {
+        'tm': tm,
+        'trip': trip,
+        'member': member,
+        'co_travellers': co_travellers,
+        'payments': payments,
+        'direct_messages': direct_messages,
+    }
+    return render(request, 'trip/trip_member_detail.html', context)
+
+
