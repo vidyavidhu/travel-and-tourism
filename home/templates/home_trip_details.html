@@ -96,19 +96,19 @@
 
         <!-- Trip Announcements / Alerts -->
         {% if broadcast_messages %}
-        <div class="card premium-card border-0 shadow-lg mb-4 p-4 rounded-4" style="background: rgba(248, 149, 30, 0.03) !important; border: 1px solid rgba(248, 149, 30, 0.15) !important;">
-            <h4 class="fw-bold mb-3" style="font-family: 'Poppins', sans-serif; color: var(--color-primary);">
+        <div class="card premium-card border-0 shadow-lg mb-3 p-3 rounded-4" style="background: rgba(248, 149, 30, 0.03) !important; border: 1px solid rgba(248, 149, 30, 0.15) !important;">
+            <h5 class="fw-bold mb-2 fs-5" style="font-family: 'Poppins', sans-serif; color: var(--color-primary);">
                 <i class="fas fa-bullhorn me-2 text-warning animate-bounce"></i> Coordinator Announcements
-            </h4>
+            </h5>
             
-            <div class="d-flex flex-column gap-3">
+            <div class="d-flex flex-column gap-2">
                 {% for broadcast in broadcast_messages %}
-                <div class="p-3 bg-white rounded-3 border-start border-4 border-warning shadow-sm announcement-item {% if forloop.counter > 3 %}d-none{% endif %}">
-                    <div class="d-flex justify-content-between text-muted mb-2" style="font-size: 0.8rem;">
+                <div class="py-2 px-3 bg-white rounded-3 border-start border-4 border-warning shadow-sm announcement-item {% if forloop.counter > 3 %}d-none{% endif %}">
+                    <div class="d-flex justify-content-between text-muted mb-1" style="font-size: 0.75rem;">
                         <span><i class="fas fa-user-tie me-1"></i> Coordinated by <strong>{{ broadcast.sender.first_name|default:broadcast.sender.username }}</strong></span>
                         <span><i class="far fa-clock me-1"></i> {{ broadcast.created_at|date:"M d, Y - P" }}</span>
                     </div>
-                    <p class="m-0 text-dark fw-medium" style="line-height: 1.6; font-size: 0.95rem;">{{ broadcast.message|linebreaksbr }}</p>
+                    <p class="m-0 text-dark fw-medium" style="line-height: 1.4; font-size: 0.85rem;">{{ broadcast.message|linebreaksbr }}</p>
                 </div>
                 {% endfor %}
             </div>

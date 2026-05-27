@@ -123,11 +123,11 @@
                                 {% endif %}
 
                                 <!-- Trip Announcements / Alerts -->
-                                <div class="mb-5">
-                                    <div class="d-flex justify-content-between align-items-center mb-3">
-                                        <h4 class="fw-bold m-0" style="font-family: 'Poppins', sans-serif; color: var(--dash-primary, #167fb7);">
+                                <div class="mb-4">
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <h5 class="fw-bold m-0 fs-5" style="font-family: 'Poppins', sans-serif; color: var(--dash-primary, #167fb7);">
                                             <i class="fas fa-bullhorn me-2 text-warning animate-bounce"></i> Coordinator Announcements
-                                        </h4>
+                                        </h5>
                                         {% if is_coordinator %}
                                         <button type="button" class="btn btn-primary btn-sm px-3" style="border-radius: 8px;" data-bs-toggle="modal" data-bs-target="#sendBroadcastModal">
                                             <i class="fas fa-plus me-1"></i> Send Announcement
@@ -136,14 +136,14 @@
                                     </div>
                                     
                                     {% if broadcast_messages %}
-                                    <div class="d-flex flex-column gap-3">
+                                    <div class="d-flex flex-column gap-2">
                                         {% for broadcast in broadcast_messages %}
-                                        <div class="p-3 bg-light rounded-4 border-start border-4 border-warning shadow-sm announcement-item {% if forloop.counter > 3 %}d-none{% endif %}" style="background: rgba(248, 149, 30, 0.03) !important;">
-                                            <div class="d-flex justify-content-between text-muted mb-2" style="font-size: 0.8rem;">
+                                        <div class="py-2 px-3 bg-light rounded-3 border-start border-4 border-warning shadow-sm announcement-item {% if forloop.counter > 3 %}d-none{% endif %}" style="background: rgba(248, 149, 30, 0.03) !important;">
+                                            <div class="d-flex justify-content-between text-muted mb-1" style="font-size: 0.75rem;">
                                                 <span><i class="fas fa-user-tie me-1"></i> Coordinated by <strong>{{ broadcast.sender.first_name|default:broadcast.sender.username }}</strong></span>
                                                 <span><i class="far fa-clock me-1"></i> {{ broadcast.created_at|date:"M d, Y - P" }}</span>
                                             </div>
-                                            <p class="m-0 text-dark fw-medium" style="line-height: 1.6; font-size: 0.95rem;">{{ broadcast.message|linebreaksbr }}</p>
+                                            <p class="m-0 text-dark fw-medium" style="line-height: 1.4; font-size: 0.85rem;">{{ broadcast.message|linebreaksbr }}</p>
                                         </div>
                                         {% endfor %}
                                     </div>
@@ -155,9 +155,9 @@
                                     </div>
                                     {% endif %}
                                     {% else %}
-                                    <div class="text-center py-4 bg-light rounded-4 border border-dashed text-muted">
-                                        <i class="far fa-bell-slash mb-2 fs-4" style="opacity: 0.5;"></i>
-                                        <div style="font-size: 0.85rem;">No coordinator announcements have been posted for this trip yet.</div>
+                                    <div class="text-center py-3 bg-light rounded-4 border border-dashed text-muted">
+                                        <i class="far fa-bell-slash mb-2 fs-5" style="opacity: 0.5;"></i>
+                                        <div style="font-size: 0.8rem;">No coordinator announcements have been posted for this trip yet.</div>
                                     </div>
                                     {% endif %}
                                 </div>
@@ -199,8 +199,8 @@
 
                             <!-- TAB 2: FINANCE -->
                             <div class="tab-pane fade" id="details" role="tabpanel">
-                                <div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom">
-                                    <h3 class="fw-bold m-0" style="font-family: 'Poppins', sans-serif;">Cost & Capacity</h3>
+                                <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom">
+                                    <h5 class="fw-bold m-0 fs-5" style="font-family: 'Poppins', sans-serif;">Cost & Capacity</h5>
                                     {% if not trip_details %}
                                     <a href="{% url 'trip_details_create' trip.pk %}"
                                         class="btn btn-primary action-btn save-btn btn-sm"><i
@@ -213,83 +213,87 @@
                                 </div>
 
                                 {% if trip_details %}
-                                <div class="row g-4 mb-5">
+                                <div class="row g-3 mb-4">
                                     <div class="col-md-4">
-                                        <div class="p-3 border rounded-4 bg-light shadow-sm">
-                                            <small class="text-muted text-uppercase fw-bold"><i class="fas fa-users me-1 text-primary"></i> Max Members</small>
-                                            <h4 class="mb-0 text-primary mt-1 fw-bold">{{ trip_details.max_members }}</h4>
+                                        <div class="py-2 px-3 border rounded-3 bg-light shadow-sm">
+                                            <small class="text-muted text-uppercase fw-bold" style="font-size: 0.72rem;"><i class="fas fa-users me-1 text-primary"></i> Max Members</small>
+                                            <h5 class="mb-0 text-primary mt-1 fw-bold fs-5">{{ trip_details.max_members }}</h5>
                                         </div>
                                     </div>
                                     <div class="col-md-4">
-                                        <div class="p-3 border rounded-4 bg-light shadow-sm">
-                                            <small class="text-muted text-uppercase fw-bold"><i class="fas fa-user-check me-1 text-primary"></i> Currently Joined</small>
-                                            <h4 class="mb-0 text-primary mt-1 fw-bold">{{ trip_details.no_of_members }}</h4>
+                                        <div class="py-2 px-3 border rounded-3 bg-light shadow-sm">
+                                            <small class="text-muted text-uppercase fw-bold" style="font-size: 0.72rem;"><i class="fas fa-user-check me-1 text-primary"></i> Currently Joined</small>
+                                            <h5 class="mb-0 text-primary mt-1 fw-bold fs-5">{{ trip_details.no_of_members }}</h5>
                                         </div>
                                     </div>
                                     <div class="col-md-4">
-                                        <div class="p-3 border rounded-4 bg-light shadow-sm">
-                                            <small class="text-muted text-uppercase fw-bold"><i class="fas fa-tag me-1 text-success"></i> Estimated Cost</small>
-                                            <h4 class="mb-0 text-success mt-1 fw-bold">₹{{ trip_details.estimated_cost|floatformat:2 }}</h4>
+                                        <div class="py-2 px-3 border rounded-3 bg-light shadow-sm">
+                                            <small class="text-muted text-uppercase fw-bold" style="font-size: 0.72rem;"><i class="fas fa-tag me-1 text-success"></i> Estimated Cost</small>
+                                            <h5 class="mb-0 text-success mt-1 fw-bold fs-5">₹{{ trip_details.estimated_cost|floatformat:2 }}</h5>
                                         </div>
                                     </div>
                                 </div>
 
                                 <!-- Financial Metrics Dashboard -->
-                                <h3 class="fw-bold mb-4 pb-3 border-bottom" style="font-family: 'Poppins', sans-serif;"><i class="fas fa-chart-line me-2 text-primary"></i>Financial Details</h3>
-                                <div class="row g-4 mb-5">
+                                <h5 class="fw-bold mb-3 pb-2 border-bottom fs-5" style="font-family: 'Poppins', sans-serif;"><i class="fas fa-chart-line me-2 text-primary"></i>Financial Details</h5>
+                                <div class="row g-3 mb-4">
                                     <div class="col-md-6 col-lg-3">
-                                        <div class="p-3 border rounded-4 bg-white shadow-sm border-start border-4 border-primary">
-                                            <small class="text-muted text-uppercase fw-bold"><i class="fas fa-wallet me-1 text-primary"></i> Expected Collection</small>
-                                            <h4 class="mb-0 mt-1 fw-bold text-dark">₹{{ estimated_cost|floatformat:2 }}</h4>
+                                        <div class="py-2 px-3 border rounded-3 bg-white shadow-sm border-start border-4 border-primary h-100">
+                                            <small class="text-muted text-uppercase fw-bold" style="font-size: 0.72rem;"><i class="fas fa-wallet me-1 text-primary"></i> Expected Collection</small>
+                                            <hr class="my-1" style="opacity: 0.15;">
+                                            <h5 class="mb-0 fw-bold text-dark fs-5">₹{{ estimated_cost|floatformat:2 }}</h5>
                                         </div>
                                     </div>
                                     <div class="col-md-6 col-lg-3">
-                                        <div class="p-3 border rounded-4 bg-white shadow-sm border-start border-4 border-success">
-                                            <small class="text-muted text-uppercase fw-bold"><i class="fas fa-hand-holding-usd me-1 text-success"></i> Actual Collection</small>
-                                            <h4 class="mb-0 mt-1 fw-bold text-success">₹{{ actual_collection|floatformat:2 }}</h4>
+                                        <div class="py-2 px-3 border rounded-3 bg-white shadow-sm border-start border-4 border-success h-100">
+                                            <small class="text-muted text-uppercase fw-bold" style="font-size: 0.72rem;"><i class="fas fa-hand-holding-usd me-1 text-success"></i> Actual Collection</small>
+                                            <hr class="my-1" style="opacity: 0.15;">
+                                            <h5 class="mb-0 fw-bold text-success fs-5">₹{{ actual_collection|floatformat:2 }}</h5>
                                         </div>
                                     </div>
                                     <div class="col-md-6 col-lg-3">
-                                        <div class="p-3 border rounded-4 bg-white shadow-sm border-start border-4 border-danger">
-                                            <small class="text-muted text-uppercase fw-bold"><i class="fas fa-file-invoice-dollar me-1 text-danger"></i> Total Expenses</small>
-                                            <h4 class="mb-0 mt-1 fw-bold text-danger">₹{{ total_expenses|floatformat:2 }}</h4>
+                                        <div class="py-2 px-3 border rounded-3 bg-white shadow-sm border-start border-4 border-danger h-100">
+                                            <small class="text-muted text-uppercase fw-bold" style="font-size: 0.72rem;"><i class="fas fa-file-invoice-dollar me-1 text-danger"></i> Total Expenses</small>
+                                            <hr class="my-1" style="opacity: 0.15;">
+                                            <h5 class="mb-0 fw-bold text-danger fs-5">₹{{ total_expenses|floatformat:2 }}</h5>
                                         </div>
                                     </div>
                                     <div class="col-md-6 col-lg-3">
-                                        <div class="p-3 border rounded-4 bg-white shadow-sm border-start border-4 {% if pending_money >= 0 %}border-success{% else %}border-danger{% endif %}">
-                                            <small class="text-muted text-uppercase fw-bold"><i class="fas fa-piggy-bank me-1 {% if pending_money >= 0 %}text-success{% else %}text-danger{% endif %}"></i> Pending Money</small>
-                                            <h4 class="mb-0 mt-1 fw-bold {% if pending_money >= 0 %}text-success{% else %}text-danger{% endif %}">₹{{ pending_money|floatformat:2 }}</h4>
+                                        <div class="py-2 px-3 border rounded-3 bg-white shadow-sm border-start border-4 {% if pending_money >= 0 %}border-success{% else %}border-danger{% endif %} h-100">
+                                            <small class="text-muted text-uppercase fw-bold" style="font-size: 0.72rem;"><i class="fas fa-piggy-bank me-1 {% if pending_money >= 0 %}text-success{% else %}text-danger{% endif %}"></i> Pending Money</small>
+                                            <hr class="my-1" style="opacity: 0.15;">
+                                            <h5 class="mb-0 fw-bold {% if pending_money >= 0 %}text-success{% else %}text-danger{% endif %} fs-5">₹{{ pending_money|floatformat:2 }}</h5>
                                         </div>
                                     </div>
                                 </div>
 
                                 {% if total_expenses > estimated_cost %}
                                 <!-- Deficit warning & additional collections -->
-                                <div class="alert alert-warning shadow-sm rounded-4 mb-5 border-start border-4 border-warning" role="alert">
+                                <div class="alert alert-warning shadow-sm rounded-4 mb-4 border-start border-4 border-warning" role="alert">
                                     <div class="d-flex align-items-center mb-2">
-                                        <i class="fas fa-exclamation-circle text-warning me-3 fs-3"></i>
+                                        <i class="fas fa-exclamation-circle text-warning me-3 fs-4"></i>
                                         <div>
-                                            <h5 class="mb-0 fw-bold text-dark">Budget Deficit Detected</h5>
+                                            <h6 class="mb-0 fw-bold text-dark fs-6">Budget Deficit Detected</h6>
                                             <small class="text-secondary">Expenses have exceeded the estimated cost of this trip.</small>
                                         </div>
                                     </div>
-                                    <hr class="my-3">
+                                    <hr class="my-2">
                                     <div class="row g-3 text-dark">
                                         <div class="col-sm-6">
-                                            <span class="d-block text-muted text-uppercase fw-bold" style="font-size: 0.8rem;">Additional Collection Required</span>
-                                            <span class="fs-4 fw-bold text-danger">₹{{ additional_collection|floatformat:2 }}</span>
+                                            <span class="d-block text-muted text-uppercase fw-bold" style="font-size: 0.72rem;">Additional Collection Required</span>
+                                            <span class="fs-5 fw-bold text-danger">₹{{ additional_collection|floatformat:2 }}</span>
                                         </div>
                                         <div class="col-sm-6">
-                                            <span class="d-block text-muted text-uppercase fw-bold" style="font-size: 0.8rem;">Additional Cost Per Head</span>
-                                            <span class="fs-4 fw-bold text-danger">₹{{ additional_cost_per_head|floatformat:2 }}</span>
+                                            <span class="d-block text-muted text-uppercase fw-bold" style="font-size: 0.72rem;">Additional Cost Per Head</span>
+                                            <span class="fs-5 fw-bold text-danger">₹{{ additional_cost_per_head|floatformat:2 }}</span>
                                         </div>
                                     </div>
                                 </div>
                                 {% endif %}
 
                                 <!-- Expenses List and Actions -->
-                                <div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom">
-                                    <h3 class="fw-bold m-0" style="font-family: 'Poppins', sans-serif;"><i class="fas fa-receipt me-2 text-primary"></i>Trip Expenses</h3>
+                                <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom">
+                                    <h5 class="fw-bold m-0 fs-5" style="font-family: 'Poppins', sans-serif;"><i class="fas fa-receipt me-2 text-primary"></i>Trip Expenses</h5>
                                     <a href="{% url 'expense_create' trip.pk %}"
                                         class="btn btn-primary action-btn save-btn btn-sm"><i
                                             class="fas fa-plus me-1"></i> Add Expense</a>

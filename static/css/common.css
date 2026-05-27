@@ -804,3 +804,20 @@ img {
   color: var(--bg-color) !important;
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.5) !important;
 }
+
+/* Global Page Title Size Adjustments - Reduced for premium, compact aesthetic */
+h1, .h1, .text-title, .hero h1, .trip-hero-content h1, .display-4 {
+  font-size: 2.2rem !important;
+}
+h2, .h2, .trip-main-title, .cta-section h2, .dash-card-title {
+  font-size: 1.6rem !important;
+}
+
+@media (max-width: 768px) {
+  h1, .h1, .text-title, .hero h1, .trip-hero-content h1, .display-4 {
+    font-size: 1.75rem !important;
+  }
+  h2, .h2, .trip-main-title, .cta-section h2, .dash-card-title {
+    font-size: 1.35rem !important;
+  }
+}
