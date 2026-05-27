@@ -235,7 +235,17 @@
                                 </div>
 
                                 <!-- Financial Metrics Dashboard -->
-                                <h5 class="fw-bold mb-3 pb-2 border-bottom fs-5" style="font-family: 'Poppins', sans-serif;"><i class="fas fa-chart-line me-2 text-primary"></i>Financial Details</h5>
+                                <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom flex-wrap gap-2">
+                                    <h5 class="fw-bold m-0 fs-5" style="font-family: 'Poppins', sans-serif;"><i class="fas fa-chart-line me-2 text-primary"></i>Financial Details</h5>
+                                    <div class="d-flex gap-2">
+                                        <a href="{% url 'export_finance_excel' trip.id %}" class="btn btn-sm btn-outline-success fw-bold d-inline-flex align-items-center gap-1.5" style="border-radius: 8px; font-size: 0.78rem;">
+                                            <i class="far fa-file-excel"></i> Export Excel
+                                        </a>
+                                        <a href="{% url 'export_finance_pdf' trip.id %}" target="_blank" class="btn btn-sm btn-outline-danger fw-bold d-inline-flex align-items-center gap-1.5" style="border-radius: 8px; font-size: 0.78rem;">
+                                            <i class="far fa-file-pdf"></i> Export PDF
+                                        </a>
+                                    </div>
+                                </div>
                                 <div class="row g-3 mb-4">
                                     <div class="col-md-6 col-lg-3">
                                         <div class="py-2 px-3 border rounded-3 bg-white shadow-sm border-start border-4 border-primary h-100">
