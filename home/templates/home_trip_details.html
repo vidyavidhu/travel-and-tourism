@@ -250,7 +250,7 @@
 
                                         <!-- Stop Gallery -->
                                         <div class="stop-gallery mb-4 pt-3 border-top">
-                                            <h6 class="fw-bold text-dark mb-3"><i class="far fa-images text-primary me-2"></i>Stop Gallery</h6>
+                                            <h6 class="fw-bold text-dark mb-3"><i class="far fa-images text-primary me-2"></i>Gallery</h6>
                                             <div class="row g-2">
                                                 {% for gallery_item in stop.gallery_set.all %}
                                                 {% if gallery_item.image and gallery_item.image.name %}
@@ -262,7 +262,7 @@
                                                 {% endif %}
                                                 {% empty %}
                                                 <div class="col-12">
-                                                    <p class="text-muted small italic m-0">No stop gallery photos uploaded yet.</p>
+                                                    <p class="text-muted small italic m-0">No gallery photos uploaded yet.</p>
                                                 </div>
                                                 {% endfor %}
                                             </div>
@@ -270,7 +270,7 @@
 
                                         <!-- Stop Discussion / Comments Section -->
                                         <div class="stop-discussion pt-4 border-top">
-                                            <h6 class="fw-bold text-dark mb-3"><i class="far fa-comments text-primary me-2"></i>Stop Discussion ({{ stop.comments_set.all.count }})</h6>
+                                            <h6 class="fw-bold text-dark mb-3"><i class="far fa-comments text-primary me-2"></i>Discussion ({{ stop.comments_set.all.count }})</h6>
                                             
                                             {% if user.is_authenticated %}
                                             <form action="{% url 'comment_create' stop.id %}" method="POST" class="mb-4">
@@ -278,7 +278,7 @@
                                                 <input type="hidden" name="next" value="{{ request.path }}">
                                                 <div class="d-flex gap-2">
                                                     <textarea name="text" class="form-control rounded-3 border-0 shadow-sm p-3 small comment-textarea" rows="2" placeholder="Share comments, rules, or questions about this stop..." required></textarea>
-                                                    <button type="submit" class="btn btn-primary rounded-3 px-4 shadow-sm fw-semibold save-btn"><i class="fas fa-paper-plane"></i></button>
+                                                    <button type="submit" class="btn btn-primary rounded-3 px-4 shadow-sm fw-semibold "><i class="fas fa-paper-plane"></i></button>
                                                 </div>
                                             </form>
                                             {% else %}
