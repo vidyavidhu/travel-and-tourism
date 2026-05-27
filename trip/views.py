@@ -203,6 +203,22 @@ class TripMembersCreateView(CreateView):
     def form_valid(self, form):
         trip = get_object_or_404(Trip, pk=self.kwargs['trip_id'])
         form.instance.trip = trip
+        
+        # Check capacity
+        try:
+            trip_details = Trip_Details.objects.get(trip=trip)
+            max_members = trip_details.max_members
+        except Trip_Details.DoesNotExist:
+            max_members = 0
+            
+        if max_members > 0:
+            joined_members = Trip_Members.objects.filter(trip=trip, status=1)
+            joined_count = sum(m.group_size for m in joined_members)
+            new_group_size = form.instance.group_size
+            if (joined_count + new_group_size) > max_members:
+                form.add_error(None, f"Cannot add member. This action would exceed the maximum capacity of {max_members} members (currently joined: {joined_count}, new member group size: {new_group_size}).")
+                return self.form_invalid(form)
+                
         return super().form_valid(form)
         
     def get_success_url(self):
@@ -224,6 +240,26 @@ class TripMembersUpdateView(UpdateView):
             user=self.object.member.user
         )
         return context
+        
+    def form_valid(self, form):
+        trip = self.object.trip
+        
+        # Check capacity
+        try:
+            trip_details = Trip_Details.objects.get(trip=trip)
+            max_members = trip_details.max_members
+        except Trip_Details.DoesNotExist:
+            max_members = 0
+            
+        if max_members > 0 and form.instance.status == 1:
+            joined_members = Trip_Members.objects.filter(trip=trip, status=1).exclude(pk=self.object.pk)
+            joined_count = sum(m.group_size for m in joined_members)
+            new_group_size = form.instance.group_size
+            if (joined_count + new_group_size) > max_members:
+                form.add_error(None, f"Cannot update member. This action would exceed the maximum capacity of {max_members} members (other joined: {joined_count}, updated group size: {new_group_size}).")
+                return self.form_invalid(form)
+                
+        return super().form_valid(form)
         
     def get_success_url(self):
         return reverse('trip_detail', kwargs={'pk': self.object.trip.pk})
@@ -465,6 +501,22 @@ from django.views import View
 class TripMemberApproveView(LoginRequiredMixin, View):
     def post(self, request, pk):
         tm = get_object_or_404(Trip_Members, pk=pk)
+        
+        # Check capacity
+        trip = tm.trip
+        try:
+            trip_details = Trip_Details.objects.get(trip=trip)
+            max_members = trip_details.max_members
+        except Trip_Details.DoesNotExist:
+            max_members = 0
+            
+        if max_members > 0:
+            joined_members = Trip_Members.objects.filter(trip=trip, status=1)
+            joined_count = sum(m.group_size for m in joined_members)
+            if (joined_count + tm.group_size) > max_members:
+                messages.error(request, f"Cannot approve request. This action would exceed the maximum capacity of {max_members} members (currently joined: {joined_count}, requesting size: {tm.group_size}).")
+                return redirect(reverse('trip_detail', kwargs={'pk': trip.pk}))
+                
         tm.status = 1  # 1 is Joined
         tm.save()
         messages.success(request, f"Successfully approved {tm.member.user.first_name}'s request to join.")
