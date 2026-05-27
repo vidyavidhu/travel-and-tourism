@@ -353,16 +353,24 @@
 
                             <!-- TAB 3: MEMBERS -->
                             <div class="tab-pane fade" id="members" role="tabpanel">
-                                <div
-                                    class="d-flex flex-wrap justify-content-between align-items-center mb-4 pb-3 border-bottom gap-2">
+                                <div class="d-flex flex-wrap justify-content-between align-items-start mb-4 pb-3 border-bottom gap-3">
                                     <div>
-                                        <h3 class="fw-bold m-0" style="font-family: 'Poppins', sans-serif;">Trip Members
-                                        </h3>
+                                        <h5 class="fw-bold m-0 fs-5" style="font-family: 'Poppins', sans-serif;">Trip Members</h5>
                                         {% if trip_details %}
-                                        <span class="text-muted small fw-semibold">
-                                            <i class="fas fa-coins me-1 text-warning"></i> Per Head Cost: 
-                                            <span class="text-success fw-bold">₹{{trip_details.per_head_cost|floatformat:2 }}</span>
-                                        </span>
+                                        <div class="d-flex flex-wrap gap-2 mt-2">
+                                            <span class="badge bg-secondary bg-opacity-10 text-secondary border px-3 py-1.5 rounded-pill fw-semibold" style="font-size: 0.8rem;">
+                                                <i class="fas fa-users-cog me-1 text-primary"></i> Max Capacity: <strong>{{ trip_details.max_members }}</strong>
+                                            </span>
+                                            <span class="badge bg-success bg-opacity-10 text-success border px-3 py-1.5 rounded-pill fw-semibold" style="font-size: 0.8rem;">
+                                                <i class="fas fa-user-check me-1 text-success"></i> Joined: <strong>{{ joined_count }}</strong>
+                                            </span>
+                                            <span class="badge bg-warning bg-opacity-10 text-warning border px-3 py-1.5 rounded-pill fw-semibold" style="font-size: 0.8rem; color: #b7791f !important; border-color: #fbd38d !important; background-color: #feebc8 !important;">
+                                                <i class="fas fa-user-plus me-1 text-warning" style="color: #b7791f !important;"></i> Left: <strong>{{ left_count }}</strong>
+                                            </span>
+                                            <span class="badge bg-primary bg-opacity-10 text-primary border px-3 py-1.5 rounded-pill fw-semibold" style="font-size: 0.8rem;">
+                                                <i class="fas fa-coins me-1 text-warning"></i> Per Head Cost: <strong>₹{{ trip_details.per_head_cost|floatformat:2 }}</strong>
+                                            </span>
+                                        </div>
                                         {% endif %}
                                     </div>
                                     <a href="{% url 'trip_members_create' trip.pk %}"
@@ -370,72 +378,181 @@
                                             class="fas fa-user-plus me-1"></i> Add Member</a>
                                 </div>
 
-                                {% if trip_members %}
-                                <div class="table-responsive">
-                                    <table class="table table-hover align-middle">
-                                        <thead class="table-light">
-                                            <tr>
-                                                <th>Member</th>
-                                                <th class="text-center">Group Size</th>
-                                                <th>Join Status</th>
-                                                <th>Payment Status</th>
-                                                <th class="text-end">Paid Amount</th>
-                                                <th class="text-end">Unpaid Amount</th>
-                                                <th>Notes</th>
-                                                <th class="text-end">Actions</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            {% for tm in trip_members %}
-                                            <tr>
-                                                <td class="fw-semibold">{{ tm.member.name|default:tm.member }}</td>
-                                                <td class="text-center">
-                                                    <span class="badge bg-info text-dark fw-bold" style="font-size: 0.85rem; background-color: rgba(76, 201, 240, 0.15) !important; color: #0077b6 !important; border: 1px solid rgba(76, 201, 240, 0.3);"><i class="fas fa-users me-1"></i>{{ tm.group_size }}</span>
-                                                </td>
-                                                <td>
-                                                    {% if tm.status == 1 %}<span class="badge bg-success">Joined</span>
-                                                    {% elif tm.status == 2 %}<span
-                                                        class="badge bg-danger">Cancelled</span>
-                                                    {% else %}<span class="badge bg-secondary">Pending</span>{% endif %}
-                                                </td>
-                                                <td>
-                                                    {% if tm.payment_status == 1 %}<span
-                                                        class="badge bg-success">Paid</span>
-                                                    {% else %}<span class="badge bg-warning text-dark">Unpaid</span>
-                                                    {% endif %}
-                                                </td>
-                                                <td class="text-end fw-bold text-success">₹{{ tm.paid_amount|floatformat:2 }}</td>
-                                                <td class="text-end fw-bold {% if tm.unpaid_amount > 0 %}text-danger{% else %}text-secondary{% endif %}">₹{{ tm.unpaid_amount|floatformat:2 }}</td>
-                                                <td class="text-muted small">{{ tm.description|truncatechars:30 }}</td>
-                                                <td class="text-end">
-                                                    {% if tm.status == 0 %}
-                                                    <form action="{% url 'trip_member_approve' tm.pk %}" method="POST" class="d-inline">
-                                                        {% csrf_token %}
-                                                        <button type="submit" class="btn btn-outline-success btn-sm rounded-circle shadow-sm me-1"
-                                                                style="width: 32px; height: 32px; padding:0; display:inline-flex; align-items:center; justify-content:center;"
-                                                                title="Approve Member">
-                                                            <i class="fas fa-check"></i>
-                                                        </button>
-                                                    </form>
-                                                    {% endif %}
-                                                    <a href="{% url 'trip_members_update' tm.pk %}" 
-                                                       class="btn btn-outline-warning btn-sm rounded-circle shadow-sm"
-                                                       style="width: 32px; height: 32px; padding:0; display:inline-flex; align-items:center; justify-content:center;"
-                                                       title="Edit Member">
-                                                        <i class="fas fa-edit"></i>
-                                                    </a>
-                                                </td>
-                                            </tr>
-                                            {% endfor %}
-                                        </tbody>
-                                    </table>
-                                </div>
+                                {% if pending_members or joined_members or cancelled_members %}
+                                    {% comment %} 1. JOIN REQUESTS (PENDING APPROVAL) {% endcomment %}
+                                    <div class="mb-5">
+                                        <h6 class="fw-bold mb-3 text-secondary d-flex align-items-center gap-2" style="font-size: 1rem;">
+                                            <i class="fas fa-clock text-warning"></i> Join Requests (Pending Approval)
+                                            <span class="badge bg-warning text-dark rounded-pill fw-bold ms-1" style="font-size: 0.75rem;">{{ pending_members.count }}</span>
+                                        </h6>
+                                        
+                                        {% if pending_members %}
+                                        <div class="table-responsive border rounded-3 shadow-sm bg-white">
+                                            <table class="table table-hover align-middle mb-0">
+                                                <thead class="table-light">
+                                                    <tr>
+                                                        <th>Member</th>
+                                                        <th class="text-center">Group Size</th>
+                                                        <th>Payment Status</th>
+                                                        <th class="text-end">Paid Amount</th>
+                                                        <th class="text-end">Unpaid Amount</th>
+                                                        <th>Notes</th>
+                                                        <th class="text-end">Actions</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {% for tm in pending_members %}
+                                                    <tr>
+                                                        <td class="fw-semibold text-dark">{{ tm.member.name|default:tm.member }}</td>
+                                                        <td class="text-center">
+                                                            <span class="badge bg-info text-dark fw-bold" style="font-size: 0.8rem; background-color: rgba(76, 201, 240, 0.15) !important; color: #0077b6 !important; border: 1px solid rgba(76, 201, 240, 0.3);"><i class="fas fa-users me-1"></i>{{ tm.group_size }}</span>
+                                                        </td>
+                                                        <td>
+                                                            {% if tm.payment_status == 1 %}<span class="badge bg-success">Paid</span>
+                                                            {% else %}<span class="badge bg-warning text-dark">Unpaid</span>{% endif %}
+                                                        </td>
+                                                        <td class="text-end fw-bold text-success">₹{{ tm.paid_amount|floatformat:2 }}</td>
+                                                        <td class="text-end fw-bold text-danger">₹{{ tm.unpaid_amount|floatformat:2 }}</td>
+                                                        <td class="text-muted small">{{ tm.description|default:"-"|truncatechars:30 }}</td>
+                                                        <td class="text-end">
+                                                            <form action="{% url 'trip_member_approve' tm.pk %}" method="POST" class="d-inline">
+                                                                {% csrf_token %}
+                                                                <button type="submit" class="btn btn-outline-success btn-sm rounded-circle shadow-sm me-1"
+                                                                        style="width: 32px; height: 32px; padding:0; display:inline-flex; align-items:center; justify-content:center;"
+                                                                        title="Approve Member">
+                                                                    <i class="fas fa-check"></i>
+                                                                </button>
+                                                            </form>
+                                                            <a href="{% url 'trip_members_update' tm.pk %}" 
+                                                               class="btn btn-outline-warning btn-sm rounded-circle shadow-sm"
+                                                               style="width: 32px; height: 32px; padding:0; display:inline-flex; align-items:center; justify-content:center;"
+                                                               title="Edit Member">
+                                                                <i class="fas fa-edit"></i>
+                                                            </a>
+                                                        </td>
+                                                    </tr>
+                                                    {% endfor %}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                        {% else %}
+                                        <div class="alert alert-light border border-dashed rounded-3 py-3 mb-0 text-muted" style="font-size: 0.85rem; background-color: #fafafa !important;">
+                                            <i class="fas fa-check-circle text-success me-1"></i> No pending join requests at this time.
+                                        </div>
+                                        {% endif %}
+                                    </div>
+
+                                    {% comment %} 2. JOINED MEMBERS {% endcomment %}
+                                    <div class="mb-5">
+                                        <h6 class="fw-bold mb-3 text-success d-flex align-items-center gap-2" style="font-size: 1rem;">
+                                            <i class="fas fa-check-double text-success"></i> Joined Members
+                                            <span class="badge bg-success text-white rounded-pill fw-bold ms-1" style="font-size: 0.75rem;">{{ joined_members.count }}</span>
+                                        </h6>
+                                        
+                                        {% if joined_members %}
+                                        <div class="table-responsive border rounded-3 shadow-sm bg-white">
+                                            <table class="table table-hover align-middle mb-0">
+                                                <thead class="table-light">
+                                                    <tr>
+                                                        <th>Member</th>
+                                                        <th class="text-center">Group Size</th>
+                                                        <th>Payment Status</th>
+                                                        <th class="text-end">Paid Amount</th>
+                                                        <th class="text-end">Unpaid Amount</th>
+                                                        <th>Notes</th>
+                                                        <th class="text-end">Actions</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {% for tm in joined_members %}
+                                                    <tr>
+                                                        <td class="fw-semibold text-dark">{{ tm.member.name|default:tm.member }}</td>
+                                                        <td class="text-center">
+                                                            <span class="badge bg-info text-dark fw-bold" style="font-size: 0.8rem; background-color: rgba(76, 201, 240, 0.15) !important; color: #0077b6 !important; border: 1px solid rgba(76, 201, 240, 0.3);"><i class="fas fa-users me-1"></i>{{ tm.group_size }}</span>
+                                                        </td>
+                                                        <td>
+                                                            {% if tm.payment_status == 1 %}<span class="badge bg-success">Paid</span>
+                                                            {% else %}<span class="badge bg-warning text-dark">Unpaid</span>{% endif %}
+                                                        </td>
+                                                        <td class="text-end fw-bold text-success">₹{{ tm.paid_amount|floatformat:2 }}</td>
+                                                        <td class="text-end fw-bold {% if tm.unpaid_amount > 0 %}text-danger{% else %}text-secondary{% endif %}">₹{{ tm.unpaid_amount|floatformat:2 }}</td>
+                                                        <td class="text-muted small">{{ tm.description|default:"-"|truncatechars:30 }}</td>
+                                                        <td class="text-end">
+                                                            <a href="{% url 'trip_members_update' tm.pk %}" 
+                                                               class="btn btn-outline-warning btn-sm rounded-circle shadow-sm"
+                                                               style="width: 32px; height: 32px; padding:0; display:inline-flex; align-items:center; justify-content:center;"
+                                                               title="Edit Member">
+                                                                <i class="fas fa-edit"></i>
+                                                            </a>
+                                                        </td>
+                                                    </tr>
+                                                    {% endfor %}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                        {% else %}
+                                        <div class="alert alert-light border border-dashed rounded-3 py-4 text-center text-muted" style="font-size: 0.85rem; background-color: #fafafa !important;">
+                                            <i class="fas fa-users-slash text-muted mb-2 d-block" style="font-size: 1.5rem;"></i>
+                                            No members have officially joined this trip yet.
+                                        </div>
+                                        {% endif %}
+                                    </div>
+
+                                    {% comment %} 3. CANCELLED MEMBERS {% endcomment %}
+                                    {% if cancelled_members %}
+                                    <div class="mb-4">
+                                        <h6 class="fw-bold mb-3 text-danger d-flex align-items-center gap-2" style="font-size: 1rem;">
+                                            <i class="fas fa-user-times text-danger"></i> Cancelled / Inactive Members
+                                            <span class="badge bg-danger text-white rounded-pill fw-bold ms-1" style="font-size: 0.75rem;">{{ cancelled_members.count }}</span>
+                                        </h6>
+                                        
+                                        <div class="table-responsive border rounded-3 shadow-sm bg-white" style="opacity: 0.85;">
+                                            <table class="table table-hover align-middle mb-0">
+                                                <thead class="table-light">
+                                                    <tr>
+                                                        <th>Member</th>
+                                                        <th class="text-center">Group Size</th>
+                                                        <th>Payment Status</th>
+                                                        <th class="text-end">Paid Amount</th>
+                                                        <th class="text-end">Unpaid Amount</th>
+                                                        <th>Notes</th>
+                                                        <th class="text-end">Actions</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {% for tm in cancelled_members %}
+                                                    <tr>
+                                                        <td class="fw-semibold text-decoration-line-through text-muted">{{ tm.member.name|default:tm.member }}</td>
+                                                        <td class="text-center text-muted">
+                                                            <span class="badge bg-secondary text-white fw-bold" style="font-size: 0.8rem;"><i class="fas fa-users me-1"></i>{{ tm.group_size }}</span>
+                                                        </td>
+                                                        <td>
+                                                            <span class="badge bg-light text-secondary">Cancelled</span>
+                                                        </td>
+                                                        <td class="text-end text-muted">₹{{ tm.paid_amount|floatformat:2 }}</td>
+                                                        <td class="text-end text-muted">₹{{ tm.unpaid_amount|floatformat:2 }}</td>
+                                                        <td class="text-muted small">{{ tm.description|default:"-"|truncatechars:30 }}</td>
+                                                        <td class="text-end">
+                                                            <a href="{% url 'trip_members_update' tm.pk %}" 
+                                                               class="btn btn-outline-warning btn-sm rounded-circle shadow-sm"
+                                                               style="width: 32px; height: 32px; padding:0; display:inline-flex; align-items:center; justify-content:center;"
+                                                               title="Edit Member">
+                                                                <i class="fas fa-edit"></i>
+                                                            </a>
+                                                        </td>
+                                                    </tr>
+                                                    {% endfor %}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                    {% endif %}
                                 {% else %}
-                                <div class="text-center py-5">
-                                    <i class="fas fa-users-slash text-muted mb-3"
-                                        style="font-size: 3rem; opacity: 0.5;"></i>
-                                    <p class="text-muted mb-0">No members have joined this trip yet.</p>
-                                </div>
+                                    <div class="text-center py-5 bg-white border border-dashed rounded-4">
+                                        <i class="fas fa-users-slash text-muted mb-3" style="font-size: 3rem; opacity: 0.5;"></i>
+                                        <h5 class="fw-bold text-secondary">No Members Registered</h5>
+                                        <p class="text-muted small mb-0">No one has registered or requested to join this adventure yet.</p>
+                                    </div>
                                 {% endif %}
                             </div>
 

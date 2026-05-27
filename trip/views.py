@@ -80,7 +80,20 @@ class TripDetailView(DetailView):
             context['trip_details'] = None
             
         # Members
-        context['trip_members'] = Trip_Members.objects.filter(trip=trip)
+        trip_members = Trip_Members.objects.filter(trip=trip)
+        context['trip_members'] = trip_members
+        context['pending_members'] = trip_members.filter(status=0)
+        context['joined_members'] = trip_members.filter(status=1)
+        context['cancelled_members'] = trip_members.filter(status=2)
+        
+        # Calculate joined members count and left count
+        joined_count = 0
+        left_count = 0
+        if context['trip_details']:
+            joined_count = sum(m.group_size for m in context['joined_members'])
+            left_count = max(0, context['trip_details'].max_members - joined_count)
+        context['joined_count'] = joined_count
+        context['left_count'] = left_count
         
         # Days
         context['trip_days'] = Trip_Day.objects.filter(trip=trip).prefetch_related('itinerary_set')
