@@ -63,7 +63,11 @@ def home_trip_details(request, pk):
         
     joined_count = sum(m.group_size for m in joined_members)
 
-    from django.db.models import Q
+    from finance.models import Expenses
+    from django.db.models import Sum, Q
+    expenses = Expenses.objects.filter(trip=trip).order_by('-id')
+    total_expenses = expenses.aggregate(Sum('amount'))['amount__sum'] or 0.0
+
     from trip.models import TripBroadcastMessage
     if request.user.is_authenticated:
         try:
@@ -88,6 +92,8 @@ def home_trip_details(request, pk):
         'is_joined_or_coordinator': is_joined_or_coordinator,
         'joined_members': joined_members,
         'joined_count': joined_count,
+        'expenses': expenses,
+        'total_expenses': total_expenses,
     }
     return render(request, 'home_trip_details.html', context)
 

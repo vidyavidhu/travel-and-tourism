@@ -16,6 +16,7 @@ class Expenses(models.Model):
     expense_category = models.ForeignKey(ExpensesCategory, on_delete=models.CASCADE)
     amount = models.FloatField()
     description = models.TextField(null=True, blank=True) 
+    status = models.IntegerField(default=1) 
 
     class Meta:
         verbose_name_plural = "Expenses"
