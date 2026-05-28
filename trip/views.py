@@ -149,6 +149,10 @@ class TripDetailView(DetailView):
         from .models import TripBroadcastMessage
         context['broadcast_messages'] = TripBroadcastMessage.objects.filter(trip=trip).order_by('-created_at')
         
+        # Fetch trip playlists for Entertainment
+        from entertainment.models import EntertainmentPlaylist
+        context['playlists'] = EntertainmentPlaylist.objects.filter(trip=trip).prefetch_related('media_items').order_by('created_at')
+        
         return context
 
 from .models import Trip_Details, Trip_Members, Trip_Day, Itinerary
