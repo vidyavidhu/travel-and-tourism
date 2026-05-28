@@ -98,6 +98,10 @@
                         <span class="badge bg-danger text-white rounded-pill ms-0.5" style="font-size: 0.68rem; padding: 0.25em 0.5em;">{{ broadcast_messages.count }}</span>
                     </button>
                     {% endif %}
+
+                    <button type="button" class="btn btn-outline-primary btn-sm px-3 py-2 rounded-3 fw-bold d-inline-flex align-items-center gap-1.5 shadow-sm hover-pulse" data-bs-toggle="modal" data-bs-target="#entertainmentHubModal" style="height: 38px; font-size: 0.82rem; border-radius: 8px; border-width: 2px; color: var(--color-primary, #f8951e); border-color: var(--color-primary, #f8951e);">
+                        <i class="fas fa-music"></i> Entertainment
+                    </button>
                 </div>
             </div>
         </div>
@@ -956,6 +960,210 @@
 </div>
 {% endif %}
 
+<!-- Entertainment Hub Modal -->
+<div class="modal fade" id="entertainmentHubModal" tabindex="-1" aria-labelledby="entertainmentHubModalLabel" aria-hidden="true" style="color: var(--dash-text, #212529);">
+    <div class="modal-dialog modal-dialog-centered modal-xl modal-fullscreen-lg-down">
+        <div class="modal-content border-0 rounded-4 shadow-lg" style="background: #f8f9fa;">
+            <div class="modal-header border-bottom bg-white p-4">
+                <h5 class="modal-title fw-bold text-dark" id="entertainmentHubModalLabel">
+                    <i class="fas fa-music text-primary me-2 animate-bounce" style="color: var(--color-primary, #f8951e) !important;"></i> Trip Entertainment Hub
+                </h5>
+                <button type="button" class="btn-close shadow-none" data-bs-dismiss="modal" aria-label="Close" onclick="closeAllPlayersHome()"></button>
+            </div>
+            <div class="modal-body p-4">
+                <div class="row g-4">
+                    <!-- Left Side: Playlist Section -->
+                    <div class="col-md-4 border-end-md">
+                        <h5 class="fw-bold mb-3 text-secondary d-flex align-items-center gap-2" style="font-size: 1.05rem;">
+                            <i class="fas fa-list-ul text-primary"></i> Playlists
+                        </h5>
+                        <div class="pe-md-2" style="max-height: 500px; overflow-y: auto;">
+                            <div class="d-flex flex-column gap-3">
+                                <!-- Playlist Cards (NO Add Playlist button for members!) -->
+                                {% for playlist in playlists %}
+                                <div class="card playlist-card-home border-0 rounded-4 overflow-hidden shadow-sm position-relative cursor-pointer"
+                                     data-playlist-id-home="{{ playlist.id }}"
+                                     style="height: 100px; transition: all 0.2s ease; cursor: pointer;"
+                                     onclick="selectPlaylistHome({{ playlist.id }})">
+                                    
+                                    {% if playlist.thumbnail %}
+                                    <div class="position-absolute w-100 h-100 bg-dark opacity-50 z-1"></div>
+                                    <img src="{{ playlist.thumbnail.url }}" alt="{{ playlist.playlist_name }}" class="w-100 h-100 position-absolute start-0 top-0" style="object-fit: cover;">
+                                    {% else %}
+                                    <!-- Dynamic gradient background if no thumbnail -->
+                                    <div class="position-absolute w-100 h-100" style="background: linear-gradient(135deg, {% cycle '#6366f1, #a855f7' '#ec4899, #f43f5e' '#84cc16, #10b981' '#06b6d4, #3b82f6' '#f59e0b, #eab308' %});"></div>
+                                    {% endif %}
+                                    
+                                    <div class="position-relative z-2 h-100 d-flex flex-column justify-content-between p-3">
+                                        <div class="d-flex justify-content-between align-items-start">
+                                            <span class="badge bg-dark bg-opacity-75 text-white" style="font-size: 0.72rem;">
+                                                <i class="fas fa-compact-disc"></i> {{ playlist.media_items.count }} items
+                                            </span>
+                                        </div>
+                                        <div class="text-center text-white fw-bold fs-5 playlist-title-text">{{ playlist.playlist_name }}</div>
+                                        <div class="small text-white-50" style="font-size: 0.68rem;">By {{ playlist.created_by.first_name|default:playlist.created_by.username }}</div>
+                                    </div>
+                                </div>
+                                {% empty %}
+                                <div class="text-center py-5 text-muted bg-white rounded-4 border">
+                                    <i class="fas fa-music mb-2 fs-3 text-muted" style="opacity: 0.5;"></i>
+                                    <div class="small fw-semibold text-secondary">No playlists generated by the coordinator yet.</div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right Side: Media URL List & Player -->
+                    <div class="col-md-8">
+                        {% for playlist in playlists %}
+                        <div class="playlist-details-pane-home d-none" id="playlist-pane-home-{{ playlist.id }}">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <div>
+                                    <h4 class="fw-bold m-0 text-dark">{{ playlist.playlist_name }}</h4>
+                                    <p class="text-secondary small m-0">Playlist created by {{ playlist.created_by.first_name|default:playlist.created_by.username }}</p>
+                                </div>
+                                <button type="button" class="btn btn-primary btn-sm px-3 rounded-pill" data-bs-toggle="modal" data-bs-target="#addMediaModalHome{{ playlist.id }}" style="background-color: var(--color-primary, #f8951e) !important; border-color: var(--color-primary, #f8951e) !important;">
+                                    <i class="fas fa-plus me-1"></i> Add Track
+                                </button>
+                            </div>
+
+                            <!-- In-App Embedded Media Player Box -->
+                            <div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-4 now-playing-card-home d-none" id="player-box-home-{{ playlist.id }}">
+                                <div class="card-header bg-dark text-white py-2.5 px-3 d-flex justify-content-between align-items-center" style="background-color: #212529 !important;">
+                                    <div class="d-flex align-items-center gap-2">
+                                        <span class="pulse-dot bg-success rounded-full" style="width: 8px; height: 8px; display: inline-block;"></span>
+                                        <small class="fw-bold text-uppercase text-white-50" style="font-size: 0.72rem; letter-spacing: 0.5px;">Now Playing</small>
+                                    </div>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <button class="btn btn-sm btn-link text-white-50 hover-text-white p-0 shadow-none border-0" onclick="closePlayerHome({{ playlist.id }})">
+                                            <i class="fas fa-times fs-6 text-white"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="card-body bg-black p-0 text-center d-flex align-items-center justify-content-center border" style="min-height: 250px; background-color: #121212 !important;">
+                                    <div class="player-mount-point-home w-100" id="player-mount-home-{{ playlist.id }}">
+                                        <!-- dynamic iframe / audio / video elements injected here -->
+                                    </div>
+                                </div>
+                                <div class="card-footer bg-light p-3 border-top d-flex justify-content-between align-items-center">
+                                    <div class="d-flex align-items-center gap-3">
+                                        <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px; background-color: var(--color-primary, #f8951e) !important;">
+                                            <i class="fas fa-compact-disc fa-spin"></i>
+                                        </div>
+                                        <div>
+                                            <div class="fw-bold text-dark player-media-title-home" style="font-size: 0.92rem;">Media Name</div>
+                                            <a href="#" target="_blank" class="small text-primary text-decoration-none player-media-url-home" style="font-size: 0.75rem;">URL</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Media Tracks List -->
+                            <div class="d-flex flex-column gap-3" style="max-height: 400px; overflow-y: auto;">
+                                {% for media in playlist.media_items.all %}
+                                <div class="card border-0 bg-light rounded-4 p-3 shadow-xs position-relative media-item-card" 
+                                     style="transition: all 0.2s ease;">
+                                    <div class="d-flex justify-content-between align-items-start flex-wrap gap-2">
+                                        <div class="d-flex gap-3">
+                                            <div class="rounded-circle bg-dark bg-opacity-10 d-flex align-items-center justify-content-center fw-bold text-secondary" 
+                                                 style="width: 32px; height: 32px; font-size: 0.9rem; flex-shrink: 0;">
+                                                {{ forloop.counter }}
+                                            </div>
+                                            <div>
+                                                <h6 class="fw-bold text-dark mb-1 media-name-text" style="font-size: 0.92rem;">{{ media.media_name }}</h6>
+                                                <a href="{{ media.media_url }}" target="_blank" class="small text-decoration-none d-block mb-1 text-truncate" style="max-width: 250px; color: var(--dash-primary, #167fb7); font-size: 0.75rem;">
+                                                    <i class="fas fa-link me-1"></i> {{ media.media_url }}
+                                                </a>
+                                                {% if media.description %}
+                                                <p class="text-secondary small m-0 mt-1.5">{{ media.description }}</p>
+                                                {% endif %}
+                                                <span class="badge bg-secondary bg-opacity-10 text-secondary border mt-2" style="font-size: 0.65rem;">
+                                                    <i class="{% if media.resolved_media_type == 'youtube' %}fab fa-youtube text-danger{% elif media.resolved_media_type == 'spotify' %}fab fa-spotify text-success{% elif media.resolved_media_type == 'audio' %}fas fa-volume-up text-primary{% else %}fas fa-video text-info{% endif %} me-1"></i>
+                                                    {{ media.resolved_media_type|upper }}
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <div class="d-flex align-items-center gap-2 ms-auto">
+                                            <!-- Play Button -->
+                                            <button type="button" class="btn btn-success btn-sm px-3 rounded-pill fw-bold shadow-xs hover-pulse d-inline-flex align-items-center gap-1.5"
+                                                    onclick="playMediaHome({{ playlist.id }}, '{{ media.resolved_media_type }}', '{{ media.embed_url|escapejs }}', '{{ media.media_name|escapejs }}', '{{ media.media_url|escapejs }}')"
+                                                    style="background-color: #28a745 !important; border-color: #28a745 !important;">
+                                                <i class="fas fa-play"></i> Play
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% empty %}
+                                <div class="text-center py-5 bg-white border border-dashed rounded-4">
+                                    <i class="fas fa-headphones text-muted mb-2 fs-3" style="opacity: 0.4;"></i>
+                                    <p class="text-muted small mb-0">This playlist is currently empty.</p>
+                                    <button class="btn btn-sm btn-outline-primary px-3 rounded-pill mt-3" data-bs-toggle="modal" data-bs-target="#addMediaModalHome{{ playlist.id }}">
+                                        <i class="fas fa-plus me-1"></i> Add First Track
+                                    </button>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        {% endfor %}
+
+                        <!-- Empty State when no playlist selected/exists -->
+                        <div id="no-playlist-selected-home" class="text-center py-5 bg-white border border-dashed rounded-4">
+                            <i class="fas fa-music text-muted mb-3 fs-1 animate-pulse" style="opacity: 0.4;"></i>
+                            <h5 class="fw-bold text-dark">Trip Entertainment Hub</h5>
+                            <p class="text-muted px-4" style="max-width: 480px; margin: 0 auto; font-size: 0.88rem;">
+                                Select a playlist from the left side to stream music and videos generated by your coordinator, or add your own favorite links!
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer border-top bg-white p-3">
+                <button type="button" class="btn btn-secondary px-4 rounded-pill" data-bs-dismiss="modal" onclick="closeAllPlayersHome()">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Media Modals for each Playlist (Home/Member side) -->
+{% for playlist in playlists %}
+<div class="modal fade" id="addMediaModalHome{{ playlist.id }}" tabindex="-1" aria-labelledby="addMediaModalHomeLabel{{ playlist.id }}" aria-hidden="true" style="color: var(--dash-text, #212529); z-index: 1060;">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 rounded-4 shadow-lg">
+            <form action="{% url 'add_media' playlist.id %}" method="POST">
+                {% csrf_token %}
+                <div class="modal-header border-bottom-0 p-4 pb-0">
+                    <h5 class="modal-title fw-bold text-dark" id="addMediaModalHomeLabel{{ playlist.id }}"><i class="fas fa-plus me-2 text-primary"></i>Add Track to {{ playlist.playlist_name }}</h5>
+                    <button type="button" class="btn-close shadow-none" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <p class="text-secondary small mb-3">Add links from <strong class="text-dark">YouTube, Spotify</strong>, direct <strong class="text-dark">MP3 audio</strong>, or direct <strong class="text-dark">MP4 video</strong> URLs. They will stream directly inside the application.</p>
+                    
+                    <div class="mb-3">
+                        <label for="media_name_home{{ playlist.id }}" class="form-label small fw-bold text-uppercase text-secondary">Media / Track Name *</label>
+                        <input type="text" name="media_name" id="media_name_home{{ playlist.id }}" class="form-control rounded-3 border-light-subtle shadow-xs" placeholder="e.g. Bohemian Rhapsody" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="media_url_home{{ playlist.id }}" class="form-label small fw-bold text-uppercase text-secondary">Media Link / URL *</label>
+                        <input type="url" name="media_url" id="media_url_home{{ playlist.id }}" class="form-control rounded-3 border-light-subtle shadow-xs" placeholder="e.g. https://www.youtube.com/watch?v=..." required>
+                    </div>
+
+                    <div class="mb-0">
+                        <label for="description_home{{ playlist.id }}" class="form-label small fw-bold text-uppercase text-secondary">Description / Remarks (Optional)</label>
+                        <textarea name="description" id="description_home{{ playlist.id }}" class="form-control rounded-3 border-light-subtle shadow-xs" rows="3" placeholder="e.g. Perfect for night drives!"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer border-top-0 p-4 pt-0">
+                    <button type="button" class="btn btn-outline-secondary px-4 rounded-pill fw-semibold shadow-none" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary px-4 rounded-pill fw-bold shadow-sm" style="background: linear-gradient(135deg, var(--color-primary, #f8951e), #d77c11); border: none;">Add Track</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endfor %}
+
 {% endblock %}
 
 {% block extra_js %}
@@ -1149,5 +1357,153 @@
                 console.error('Error fetching weather:', error);
             }
         }
+
+        // Entertainment Hub Modal Controller (Home/Member side)
+        let activePlaylistIdHome = null;
+
+        function selectPlaylistHome(playlistId) {
+            // Deactivate all playlist cards on member side
+            document.querySelectorAll('.playlist-card-home').forEach(card => {
+                card.classList.remove('border', 'border-primary', 'border-2', 'shadow-lg');
+                card.style.transform = 'none';
+            });
+
+            // Activate selected card
+            const selectedCard = document.querySelector(`.playlist-card-home[data-playlist-id-home="${playlistId}"]`);
+            if (selectedCard) {
+                selectedCard.classList.add('border', 'border-primary', 'border-2', 'shadow-lg');
+                selectedCard.style.transform = 'scale(1.02)';
+            }
+
+            // Hide all playlist details panes
+            document.querySelectorAll('.playlist-details-pane-home').forEach(pane => {
+                pane.classList.add('d-none');
+            });
+
+            // Hide empty/no playlist pane
+            const noPlaylistPane = document.getElementById('no-playlist-selected-home');
+            if (noPlaylistPane) {
+                noPlaylistPane.classList.add('d-none');
+            }
+
+            // Show active playlist pane
+            const activePane = document.getElementById(`playlist-pane-home-${playlistId}`);
+            if (activePane) {
+                activePane.classList.remove('d-none');
+            }
+
+            activePlaylistIdHome = playlistId;
+        }
+
+        function playMediaHome(playlistId, mediaType, embedUrl, mediaName, mediaUrl) {
+            const playerBox = document.getElementById(`player-box-home-${playlistId}`);
+            const mountPoint = document.getElementById(`player-mount-home-${playlistId}`);
+            
+            if (!playerBox || !mountPoint) return;
+
+            // Show the player card container
+            playerBox.classList.remove('d-none');
+
+            // Populate card footer metadata
+            const titleEl = playerBox.querySelector('.player-media-title-home');
+            const urlEl = playerBox.querySelector('.player-media-url-home');
+            if (titleEl) titleEl.textContent = mediaName;
+            if (urlEl) {
+                urlEl.textContent = mediaUrl;
+                urlEl.href = mediaUrl;
+            }
+
+            // Mount the player based on detected type
+            let htmlContent = '';
+            if (mediaType === 'youtube') {
+                htmlContent = `
+                    <div class="ratio ratio-16x9">
+                        <iframe src="${embedUrl}?autoplay=1" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen class="rounded-bottom-0"></iframe>
+                    </div>
+                `;
+            } else if (mediaType === 'spotify') {
+                htmlContent = `
+                    <div style="width: 100%; height: 352px;">
+                        <iframe style="border-radius:12px" src="${embedUrl}" width="100%" height="352" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+                    </div>
+                `;
+            } else if (mediaType === 'audio') {
+                htmlContent = `
+                    <div class="p-4 bg-dark text-center" style="background-color: #1a1a1a !important;">
+                        <i class="fas fa-music text-primary fs-1 mb-3 animate-bounce" style="color: var(--color-primary, #f8951e) !important;"></i>
+                        <audio src="${embedUrl}" controls autoplay class="w-100"></audio>
+                    </div>
+                `;
+            } else {
+                // Direct video streaming file fallback
+                htmlContent = `
+                    <div class="ratio ratio-16x9">
+                        <video src="${embedUrl}" controls autoplay class="w-100" style="max-height: 400px;"></video>
+                    </div>
+                `;
+            }
+
+            mountPoint.innerHTML = htmlContent;
+
+            // Smooth scroll to player box
+            playerBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+
+        function closePlayerHome(playlistId) {
+            const playerBox = document.getElementById(`player-box-home-${playlistId}`);
+            const mountPoint = document.getElementById(`player-mount-home-${playlistId}`);
+            
+            if (playerBox) {
+                playerBox.classList.add('d-none');
+            }
+            if (mountPoint) {
+                mountPoint.innerHTML = '';
+            }
+        }
+
+        function closeAllPlayersHome() {
+            document.querySelectorAll('.player-mount-point-home').forEach(mount => {
+                mount.innerHTML = '';
+            });
+            document.querySelectorAll('.now-playing-card-home').forEach(card => {
+                card.classList.add('d-none');
+            });
+        }
+
+        // Auto-select first playlist when Entertainment Modal opens
+        document.addEventListener('DOMContentLoaded', () => {
+            const modalEl = document.getElementById('entertainmentHubModal');
+            if (modalEl) {
+                modalEl.addEventListener('shown.bs.modal', () => {
+                    const firstPlaylist = document.querySelector('.playlist-card-home');
+                    if (firstPlaylist) {
+                        const firstId = firstPlaylist.getAttribute('data-playlist-id-home');
+                        selectPlaylistHome(parseInt(firstId));
+                    }
+                });
+                modalEl.addEventListener('hidden.bs.modal', () => {
+                    closeAllPlayersHome();
+                });
+            }
+
+            // Support URL parameter activation on page load: e.g. ?tab=entertainment
+            const urlParams = new URLSearchParams(window.location.search);
+            const activeTab = urlParams.get('tab');
+            const activePl = urlParams.get('playlist');
+            
+            if (activeTab === 'entertainment') {
+                const modalElement = document.getElementById('entertainmentHubModal');
+                if (modalElement) {
+                    const modalInstance = new bootstrap.Modal(modalElement);
+                    modalInstance.show();
+                    
+                    if (activePl) {
+                        setTimeout(() => {
+                            selectPlaylistHome(parseInt(activePl));
+                        }, 300);
+                    }
+                }
+            }
+        });
 </script>
 {% endblock %}

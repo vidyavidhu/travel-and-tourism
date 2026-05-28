@@ -97,6 +97,10 @@ def home_trip_details(request, pk):
     else:
         broadcast_messages = TripBroadcastMessage.objects.filter(trip=trip, recipient__isnull=True).order_by('-created_at')
             
+    # Fetch trip playlists for Entertainment
+    from entertainment.models import EntertainmentPlaylist
+    playlists = EntertainmentPlaylist.objects.filter(trip=trip).prefetch_related('media_items').order_by('created_at')
+
     context = {
         'trip': trip,
         'trip_details': trip_details,
@@ -115,6 +119,7 @@ def home_trip_details(request, pk):
         'group_reimbursements': group_reimbursements,
         'categories': categories,
         'total_expenses': total_expenses,
+        'playlists': playlists,
     }
     return render(request, 'home_trip_details.html', context)
 
