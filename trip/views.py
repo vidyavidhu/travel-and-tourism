@@ -326,24 +326,33 @@ class GalleryCreateView(LoginRequiredMixin, CreateView):
     
     def form_valid(self, form):
         itinerary = get_object_or_404(Itinerary, pk=self.kwargs['itinerary_id'])
+        trip = itinerary.trip_day.trip
         
         # Get or create Member profile for logged in user
         from member.models import Member
         member, created = Member.objects.get_or_create(user=self.request.user)
         
-        # Get or create Trip_Members for this member and trip
-        trip = itinerary.trip_day.trip
-        trip_member, tm_created = Trip_Members.objects.get_or_create(
-            trip=trip,
-            member=member,
-            defaults={'status': 1}
-        )
+        # Check permissions: must be coordinator or joined member (status == 1)
+        is_coordinator = self.request.user.is_superuser or self.request.user.is_staff or (hasattr(trip, 'coordinator') and trip.coordinator.user == self.request.user)
+        trip_member = Trip_Members.objects.filter(trip=trip, member=member).first()
+        is_joined = trip_member and trip_member.status == 1
+        
+        if not (is_coordinator or is_joined):
+            from django.core.exceptions import PermissionDenied
+            raise PermissionDenied("You must be a joined member of this trip to upload gallery items.")
+            
+        # Ensure a Trip_Members record exists (especially for coordinator)
+        if not trip_member:
+            trip_member = Trip_Members.objects.create(trip=trip, member=member, status=1)
         
         form.instance.itinerary = itinerary
         form.instance.uploaded_by = trip_member
         return super().form_valid(form)
         
     def get_success_url(self):
+        next_url = self.request.POST.get('next')
+        if next_url:
+            return next_url
         return reverse('itinerary_detail', kwargs={'pk': self.kwargs['itinerary_id']})
 
 
@@ -353,18 +362,24 @@ class CommentCreateView(LoginRequiredMixin, CreateView):
     
     def form_valid(self, form):
         itinerary = get_object_or_404(Itinerary, pk=self.kwargs['itinerary_id'])
+        trip = itinerary.trip_day.trip
         
         # Get or create Member profile for logged in user
         from member.models import Member
         member, created = Member.objects.get_or_create(user=self.request.user)
         
-        # Get or create Trip_Members for this member and trip
-        trip = itinerary.trip_day.trip
-        trip_member, tm_created = Trip_Members.objects.get_or_create(
-            trip=trip,
-            member=member,
-            defaults={'status': 1} # 1 is Joined
-        )
+        # Check permissions
+        is_coordinator = self.request.user.is_superuser or self.request.user.is_staff or (hasattr(trip, 'coordinator') and trip.coordinator.user == self.request.user)
+        trip_member = Trip_Members.objects.filter(trip=trip, member=member).first()
+        is_joined = trip_member and trip_member.status == 1
+        
+        if not (is_coordinator or is_joined):
+            from django.core.exceptions import PermissionDenied
+            raise PermissionDenied("You must be a joined member of this trip to post comments.")
+            
+        # Ensure a Trip_Members record exists (especially for coordinator)
+        if not trip_member:
+            trip_member = Trip_Members.objects.create(trip=trip, member=member, status=1)
         
         form.instance.itinerary = itinerary
         form.instance.message_by = trip_member
@@ -381,18 +396,24 @@ from django.views import View
 class CommentLikeView(LoginRequiredMixin, View):
     def post(self, request, comment_id):
         comment = get_object_or_404(Comments, pk=comment_id)
+        trip = comment.itinerary.trip_day.trip
         
         # Get or create Member profile for logged in user
         from member.models import Member
         member, created = Member.objects.get_or_create(user=request.user)
         
-        # Get or create Trip_Members for this member and trip
-        trip = comment.itinerary.trip_day.trip
-        trip_member, tm_created = Trip_Members.objects.get_or_create(
-            trip=trip,
-            member=member,
-            defaults={'status': 1}
-        )
+        # Check permissions
+        is_coordinator = request.user.is_superuser or request.user.is_staff or (hasattr(trip, 'coordinator') and trip.coordinator.user == request.user)
+        trip_member = Trip_Members.objects.filter(trip=trip, member=member).first()
+        is_joined = trip_member and trip_member.status == 1
+        
+        if not (is_coordinator or is_joined):
+            from django.core.exceptions import PermissionDenied
+            raise PermissionDenied("You must be a joined member of this trip to react to comments.")
+            
+        # Ensure a Trip_Members record exists (especially for coordinator)
+        if not trip_member:
+            trip_member = Trip_Members.objects.create(trip=trip, member=member, status=1)
         
         # Check if reaction already exists
         reaction = Reaction.objects.filter(comment=comment, member=trip_member).first()
@@ -412,18 +433,24 @@ class ReplyCreateView(LoginRequiredMixin, CreateView):
     
     def form_valid(self, form):
         comment = get_object_or_404(Comments, pk=self.kwargs['comment_id'])
+        trip = comment.itinerary.trip_day.trip
         
         # Get or create Member profile for logged in user
         from member.models import Member
         member, created = Member.objects.get_or_create(user=self.request.user)
         
-        # Get or create Trip_Members for this member and trip
-        trip = comment.itinerary.trip_day.trip
-        trip_member, tm_created = Trip_Members.objects.get_or_create(
-            trip=trip,
-            member=member,
-            defaults={'status': 1}
-        )
+        # Check permissions
+        is_coordinator = self.request.user.is_superuser or self.request.user.is_staff or (hasattr(trip, 'coordinator') and trip.coordinator.user == self.request.user)
+        trip_member = Trip_Members.objects.filter(trip=trip, member=member).first()
+        is_joined = trip_member and trip_member.status == 1
+        
+        if not (is_coordinator or is_joined):
+            from django.core.exceptions import PermissionDenied
+            raise PermissionDenied("You must be a joined member of this trip to reply to comments.")
+            
+        # Ensure a Trip_Members record exists (especially for coordinator)
+        if not trip_member:
+            trip_member = Trip_Members.objects.create(trip=trip, member=member, status=1)
         
         form.instance.comment = comment
         form.instance.reply_by = trip_member

@@ -49,6 +49,13 @@ def home_trip_details(request, pk):
         except Member.DoesNotExist:
             pass
             
+    is_coordinator = False
+    if request.user.is_authenticated:
+        if request.user.is_superuser or request.user.is_staff or (hasattr(request.user, 'coordinator') and trip.coordinator.user == request.user):
+            is_coordinator = True
+            
+    is_joined_or_coordinator = (membership_status == 1) or is_coordinator
+            
     from django.db.models import Q
     from trip.models import TripBroadcastMessage
     if request.user.is_authenticated:
@@ -70,6 +77,8 @@ def home_trip_details(request, pk):
         'membership_status': membership_status,
         'user_member_detail': user_member_detail,
         'broadcast_messages': broadcast_messages,
+        'is_coordinator': is_coordinator,
+        'is_joined_or_coordinator': is_joined_or_coordinator,
     }
     return render(request, 'home_trip_details.html', context)
 
