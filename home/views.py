@@ -56,6 +56,13 @@ def home_trip_details(request, pk):
             
     is_joined_or_coordinator = (membership_status == 1) or is_coordinator
             
+    # Fetch joined members and attach their co-travellers
+    joined_members = trip_members.filter(status=1)
+    for tm in joined_members:
+        tm.co_travellers_list = CoTraveller.objects.filter(trip=trip, user=tm.member.user)
+        
+    joined_count = sum(m.group_size for m in joined_members)
+
     from django.db.models import Q
     from trip.models import TripBroadcastMessage
     if request.user.is_authenticated:
@@ -79,6 +86,8 @@ def home_trip_details(request, pk):
         'broadcast_messages': broadcast_messages,
         'is_coordinator': is_coordinator,
         'is_joined_or_coordinator': is_joined_or_coordinator,
+        'joined_members': joined_members,
+        'joined_count': joined_count,
     }
     return render(request, 'home_trip_details.html', context)
 

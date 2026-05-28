@@ -469,6 +469,21 @@
                             </div>
                         </li>
 
+                        {% if membership_status == 1 or is_coordinator %}
+                        <li class="d-flex align-items-center" data-bs-toggle="modal" data-bs-target="#tripMembersModal" style="cursor: pointer;">
+                            <div class="detail-icon-box shadow-sm text-primary-custom" style="color: #0d6efd;">
+                                <i class="fas fa-users"></i>
+                            </div>
+                            <div>
+                                <small class="text-muted d-block text-uppercase fw-bold sidebar-label">Trip Capacity</small>
+                                <span class="fw-semibold text-dark">
+                                    <strong>{{ joined_count }}</strong> joined / <strong>{{ trip_details.max_members }}</strong> max
+                                    <span class="ms-1 text-primary" style="font-size: 0.72rem; text-decoration: underline;"><i class="fas fa-external-link-alt me-0.5"></i>Companions</span>
+                                </span>
+                            </div>
+                        </li>
+                        {% endif %}
+
                         <li class="d-flex align-items-center pt-3 border-top mt-1">
                             <div class="detail-icon-box shadow-sm bg-gradient-custom">
                                 <i class="fas fa-user-tie"></i>
@@ -634,6 +649,73 @@
         </div>
         {% endfor %}
     {% endfor %}
+{% endif %}
+
+<!-- Dynamic Companions Modal -->
+{% if membership_status == 1 or is_coordinator %}
+<div class="modal fade" id="tripMembersModal" tabindex="-1" aria-labelledby="tripMembersModalLabel" aria-hidden="true" style="color: var(--dash-text, #212529);">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 rounded-4 shadow-lg">
+            <div class="modal-header border-bottom-0 pb-0 p-4">
+                <h5 class="modal-title fw-bold text-dark" id="tripMembersModalLabel">
+                    <i class="fas fa-users text-primary me-2"></i>Adventure Companions
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4 pt-3" style="max-height: 60vh; overflow-y: auto;">
+                <p class="text-secondary small mb-4">Meet your fellow travellers joined on this active adventure.</p>
+                <div class="d-flex flex-column gap-3">
+                    {% for tm in joined_members %}
+                    <div class="p-3 bg-light rounded-4 border shadow-sm">
+                        <!-- Primary Member Card -->
+                        <div class="d-flex align-items-center gap-3">
+                            {% if tm.member.image %}
+                            <img src="{{ tm.member.image.url }}" class="rounded-circle shadow-sm" style="width: 48px; height: 48px; object-fit: cover; border: 2px solid var(--color-primary, #f8951e);">
+                            {% else %}
+                            <div class="bg-primary bg-opacity-10 text-primary rounded-circle d-flex justify-content-center align-items-center fw-bold text-uppercase shadow-sm" style="width: 48px; height: 48px; font-size: 1.2rem; border: 2px solid var(--color-primary, #f8951e);">
+                                {{ tm.member.user.username|first }}
+                            </div>
+                            {% endif %}
+                            <div>
+                                <h6 class="fw-bold mb-0 text-dark">{{ tm.member.user.get_full_name|default:tm.member.user.username }}</h6>
+                                <span class="badge bg-success bg-opacity-10 text-success border border-success-subtle rounded-pill" style="font-size: 0.7rem;">Primary Traveler</span>
+                            </div>
+                        </div>
+
+                        <!-- Co-Travellers Section -->
+                        {% if tm.co_travellers_list %}
+                        <div class="mt-3 pt-3 border-top" style="border-top-style: dashed !important; border-top-color: #dee2e6 !important;">
+                            <small class="text-muted fw-bold d-block mb-2 text-uppercase" style="font-size: 0.68rem; letter-spacing: 0.5px;">Co-Travellers ({{ tm.co_travellers_list.count }})</small>
+                            <div class="d-flex flex-column gap-2 ps-2">
+                                {% for co in tm.co_travellers_list %}
+                                <div class="d-flex align-items-center gap-2.5">
+                                    <div class="bg-secondary bg-opacity-10 text-secondary rounded-circle d-flex justify-content-center align-items-center fw-bold text-uppercase" style="width: 28px; height: 28px; font-size: 0.72rem;">
+                                        {{ co.name|first }}
+                                    </div>
+                                    <div>
+                                        <span class="fw-semibold text-dark small">{{ co.name }}</span>
+                                        <span class="badge bg-light text-secondary border rounded-pill ms-1.5" style="font-size: 0.6rem;">{{ co.member_type.name|default:"Adult"|title }}</span>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% empty %}
+                    <div class="text-center py-4">
+                        <i class="fas fa-users-slash text-muted fs-3 mb-2 opacity-50"></i>
+                        <p class="text-muted small m-0">No companions have officially joined yet.</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="modal-footer border-top-0 pt-0 p-4">
+                <button type="button" class="btn btn-primary rounded-pill w-100 py-2 fw-semibold" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
 {% endif %}
 
 {% endblock %}
