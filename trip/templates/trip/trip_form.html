@@ -264,7 +264,7 @@
                             <hr class="my-5 custom-divider">
 
                                     <div class="d-flex flex-column flex-md-row justify-content-end gap-3 mt-4">
-                                        <a href="{% url 'trip_list' %}"
+                                        <a href="{% if cancel_url %}{{ cancel_url }}{% else %}{% url 'trip_list' %}{% endif %}"
                                             class="btn btn-light btn-lg px-5 fw-semibold action-btn cancel-btn">
                                             <i class="fas fa-times me-2"></i> Cancel
                                         </a>

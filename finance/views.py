@@ -19,6 +19,7 @@ class ExpenseCreateView(LoginRequiredMixin, CreateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['form_title'] = "Add Trip Expense"
+        context['cancel_url'] = reverse('trip_detail', kwargs={'pk': self.kwargs['trip_id']}) + '?tab=details'
         return context
 
     def form_valid(self, form):
@@ -33,7 +34,7 @@ class ExpenseCreateView(LoginRequiredMixin, CreateView):
         return super().form_valid(form)
         
     def get_success_url(self):
-        return reverse('trip_detail', kwargs={'pk': self.kwargs['trip_id']})
+        return reverse('trip_detail', kwargs={'pk': self.kwargs['trip_id']}) + '?tab=details'
 
 class ExpenseDeleteView(LoginRequiredMixin, DeleteView):
     model = Expenses
@@ -112,7 +113,7 @@ def approve_reimbursement(request, expense_id):
         
     if expense.approval_status != 'PENDING':
         messages.error(request, "This reimbursement request has already been processed.")
-        return redirect('trip_detail', pk=trip.pk)
+        return redirect(reverse('trip_detail', kwargs={'pk': trip.pk}) + '?tab=details')
         
     with transaction.atomic():
         expense.approval_status = 'APPROVED'
@@ -134,7 +135,7 @@ def approve_reimbursement(request, expense_id):
             pass
             
     messages.success(request, f"Successfully approved reimbursement request for '{expense.title}'.")
-    return redirect('trip_detail', pk=trip.pk)
+    return redirect(reverse('trip_detail', kwargs={'pk': trip.pk}) + '?tab=details')
 
 
 @login_required
@@ -153,7 +154,7 @@ def reject_reimbursement(request, expense_id):
         
     if expense.approval_status != 'PENDING':
         messages.error(request, "This reimbursement request has already been processed.")
-        return redirect('trip_detail', pk=trip.pk)
+        return redirect(reverse('trip_detail', kwargs={'pk': trip.pk}) + '?tab=details')
         
     with transaction.atomic():
         expense.approval_status = 'REJECTED'
@@ -172,7 +173,7 @@ def reject_reimbursement(request, expense_id):
             pass
             
     messages.warning(request, f"Reimbursement request for '{expense.title}' has been rejected.")
-    return redirect('trip_detail', pk=trip.pk)
+    return redirect(reverse('trip_detail', kwargs={'pk': trip.pk}) + '?tab=details')
 
 
 @login_required
@@ -191,7 +192,7 @@ def pay_reimbursement(request, expense_id):
         
     if expense.approval_status != 'APPROVED' or expense.reimbursement_status != 'PAYMENT_PENDING':
         messages.error(request, "This reimbursement is not in a payment pending state.")
-        return redirect('trip_detail', pk=trip.pk)
+        return redirect(reverse('trip_detail', kwargs={'pk': trip.pk}) + '?tab=details')
         
     if request.method == 'POST':
         payment_reference = request.POST.get('payment_reference', '').strip()
@@ -199,7 +200,7 @@ def pay_reimbursement(request, expense_id):
         
         if not payment_reference:
             messages.error(request, "Payment Reference is required.")
-            return redirect('trip_detail', pk=trip.pk)
+            return redirect(reverse('trip_detail', kwargs={'pk': trip.pk}) + '?tab=details')
             
         with transaction.atomic():
             expense.reimbursement_status = 'PAID'
@@ -225,5 +226,5 @@ def pay_reimbursement(request, expense_id):
                 
         messages.success(request, f"Successfully marked reimbursement for '{expense.title}' as paid.")
         
-    return redirect('trip_detail', pk=trip.pk)
+    return redirect(reverse('trip_detail', kwargs={'pk': trip.pk}) + '?tab=details')
 

@@ -169,16 +169,26 @@ class TripDetailsCreateView(CreateView):
         form.instance.trip = trip
         return super().form_valid(form)
         
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['cancel_url'] = reverse('trip_detail', kwargs={'pk': self.kwargs['trip_id']}) + '?tab=details'
+        return context
+        
     def get_success_url(self):
-        return reverse('trip_detail', kwargs={'pk': self.kwargs['trip_id']})
+        return reverse('trip_detail', kwargs={'pk': self.kwargs['trip_id']}) + '?tab=details'
 
 class TripDetailsUpdateView(UpdateView):
     model = Trip_Details
     form_class = TripDetailsForm
     template_name = 'trip/trip_form.html'
     
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['cancel_url'] = reverse('trip_detail', kwargs={'pk': self.object.trip.pk}) + '?tab=details'
+        return context
+        
     def get_success_url(self):
-        return reverse('trip_detail', kwargs={'pk': self.object.trip.pk})
+        return reverse('trip_detail', kwargs={'pk': self.object.trip.pk}) + '?tab=details'
 
 class TripMembersCreateView(CreateView):
     model = Trip_Members
@@ -199,6 +209,7 @@ class TripMembersCreateView(CreateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         trip = get_object_or_404(Trip, pk=self.kwargs['trip_id'])
+        context['cancel_url'] = reverse('trip_detail', kwargs={'pk': self.kwargs['trip_id']}) + '?tab=members'
         try:
             trip_details = Trip_Details.objects.get(trip=trip)
             context['per_head_cost'] = trip_details.per_head_cost
@@ -228,7 +239,7 @@ class TripMembersCreateView(CreateView):
         return super().form_valid(form)
         
     def get_success_url(self):
-        return reverse('trip_detail', kwargs={'pk': self.kwargs['trip_id']})
+        return reverse('trip_detail', kwargs={'pk': self.kwargs['trip_id']}) + '?tab=members'
 
 class TripMembersUpdateView(UpdateView):
     model = Trip_Members
@@ -238,6 +249,7 @@ class TripMembersUpdateView(UpdateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['form_title'] = "Update Trip Member Details"
+        context['cancel_url'] = reverse('trip_detail', kwargs={'pk': self.object.trip.pk}) + '?tab=members'
         
         # Inject co-travellers for the member of this trip
         from .models import CoTraveller
@@ -268,7 +280,7 @@ class TripMembersUpdateView(UpdateView):
         return super().form_valid(form)
         
     def get_success_url(self):
-        return reverse('trip_detail', kwargs={'pk': self.object.trip.pk})
+        return reverse('trip_detail', kwargs={'pk': self.object.trip.pk}) + '?tab=members'
 
 class TripDayCreateView(CreateView):
     model = Trip_Day
@@ -293,8 +305,14 @@ class ItineraryCreateView(CreateView):
         form.instance.trip_day = day
         return super().form_valid(form)
         
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        day = get_object_or_404(Trip_Day, pk=self.kwargs['day_id'])
+        context['cancel_url'] = reverse('trip_detail', kwargs={'pk': day.trip.pk}) + '?tab=itinerary'
+        return context
+        
     def get_success_url(self):
-        return reverse('trip_detail', kwargs={'pk': self.object.trip_day.trip.pk})
+        return reverse('trip_detail', kwargs={'pk': self.object.trip_day.trip.pk}) + '?tab=itinerary'
 
 class TripCreateView(CreateView):
     model = Trip
@@ -306,7 +324,14 @@ class TripUpdateView(UpdateView):
     model = Trip
     form_class = TripForm
     template_name = 'trip/trip_form.html'
-    success_url = reverse_lazy('trip_list')
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['cancel_url'] = reverse('trip_detail', kwargs={'pk': self.object.pk})
+        return context
+        
+    def get_success_url(self):
+        return reverse('trip_detail', kwargs={'pk': self.object.pk})
 
 class TripDeleteView(DeleteView):
     model = Trip
