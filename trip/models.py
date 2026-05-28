@@ -83,10 +83,12 @@ class Trip(models.Model):
             return
 
         from finance.models import Expenses
-        from django.db.models import Sum
+        from django.db.models import Sum, Q
         from .models import Trip_Members
 
-        total_expenses = Expenses.objects.filter(trip=self).aggregate(Sum('amount'))['amount__sum'] or 0.0
+        total_expenses = Expenses.objects.filter(trip=self).filter(
+            Q(expense_type='NORMAL_EXPENSE') | Q(expense_type='MEMBER_REIMBURSEMENT', approval_status='APPROVED')
+        ).aggregate(Sum('amount'))['amount__sum'] or 0.0
 
         # joined_members status=1 means Joined
         joined_members = Trip_Members.objects.filter(trip=self, status=1)

@@ -113,9 +113,11 @@ class TripDetailView(DetailView):
         actual_collection = trip_members.aggregate(Sum('paid_amount'))['paid_amount__sum'] or 0.0
         context['actual_collection'] = actual_collection
         
-        # Total expenses = sum of amount of all expenses related to this trip
+        # Total expenses = sum of active expenses (NORMAL_EXPENSE or APPROVED MEMBER_REIMBURSEMENT)
         expenses = Expenses.objects.filter(trip=trip).order_by('-id')
-        total_expenses = expenses.aggregate(Sum('amount'))['amount__sum'] or 0.0
+        total_expenses = expenses.filter(
+            Q(expense_type='NORMAL_EXPENSE') | Q(expense_type='MEMBER_REIMBURSEMENT', approval_status='APPROVED')
+        ).aggregate(Sum('amount'))['amount__sum'] or 0.0
         context['expenses'] = expenses
         context['total_expenses'] = total_expenses
         

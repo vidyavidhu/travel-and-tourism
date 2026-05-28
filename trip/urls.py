@@ -1,6 +1,6 @@
 from django.urls import path
 from .views import TripListView, TripDetailView, TripCreateView, TripUpdateView, TripDeleteView, TripDetailsCreateView, TripDetailsUpdateView, TripMembersCreateView, TripMembersUpdateView, TripDayCreateView, ItineraryCreateView, ItineraryDetailView, GalleryCreateView, CommentCreateView, CommentLikeView, ReplyCreateView, MyTripsView, TripMemberApproveView, TripFinishView, TripBroadcastCreateView, ItineraryCancelView, ItineraryDismissCancelView, trip_member_detail, export_finance_excel, export_finance_pdf
-from finance.views import ExpenseCreateView, ExpenseDeleteView
+from finance.views import ExpenseCreateView, ExpenseDeleteView, submit_reimbursement, approve_reimbursement, reject_reimbursement, pay_reimbursement
 
 urlpatterns = [
     path('', TripListView.as_view(), name='trip_list'),
@@ -38,4 +38,10 @@ urlpatterns = [
     # Finance Expenses
     path('<int:trip_id>/finance/expense/add/', ExpenseCreateView.as_view(), name='expense_create'),
     path('finance/expense/<int:pk>/delete/', ExpenseDeleteView.as_view(), name='expense_delete'),
+    
+    # Reimbursements
+    path('<int:trip_id>/finance/reimbursement/add/', submit_reimbursement, name='submit_reimbursement'),
+    path('finance/reimbursement/<int:expense_id>/approve/', approve_reimbursement, name='approve_reimbursement'),
+    path('finance/reimbursement/<int:expense_id>/reject/', reject_reimbursement, name='reject_reimbursement'),
+    path('finance/reimbursement/<int:expense_id>/pay/', pay_reimbursement, name='pay_reimbursement'),
 ]

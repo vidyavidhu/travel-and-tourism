@@ -63,10 +63,27 @@ def home_trip_details(request, pk):
         
     joined_count = sum(m.group_size for m in joined_members)
 
-    from finance.models import Expenses
+    from finance.models import Expenses, ExpensesCategory
     from django.db.models import Sum, Q
+    
+    # Base expenses queryset
     expenses = Expenses.objects.filter(trip=trip).order_by('-id')
-    total_expenses = expenses.aggregate(Sum('amount'))['amount__sum'] or 0.0
+    
+    # Calculate active total expenses = NORMAL_EXPENSE or APPROVED MEMBER_REIMBURSEMENT
+    total_expenses = expenses.filter(
+        Q(expense_type='NORMAL_EXPENSE') | Q(expense_type='MEMBER_REIMBURSEMENT', approval_status='APPROVED')
+    ).aggregate(Sum('amount'))['amount__sum'] or 0.0
+
+    # Segregate for display
+    normal_expenses = expenses.filter(expense_type='NORMAL_EXPENSE')
+    my_reimbursements = None
+    group_reimbursements = expenses.filter(expense_type='MEMBER_REIMBURSEMENT', approval_status='APPROVED')
+    categories = ExpensesCategory.objects.all()
+    
+    if request.user.is_authenticated:
+        my_reimbursements = expenses.filter(expense_type='MEMBER_REIMBURSEMENT', created_by=request.user)
+        # Exclude my own reimbursements from group_reimbursements to avoid duplication
+        group_reimbursements = group_reimbursements.exclude(created_by=request.user)
 
     from trip.models import TripBroadcastMessage
     if request.user.is_authenticated:
@@ -93,6 +110,10 @@ def home_trip_details(request, pk):
         'joined_members': joined_members,
         'joined_count': joined_count,
         'expenses': expenses,
+        'normal_expenses': normal_expenses,
+        'my_reimbursements': my_reimbursements,
+        'group_reimbursements': group_reimbursements,
+        'categories': categories,
         'total_expenses': total_expenses,
     }
     return render(request, 'home_trip_details.html', context)
