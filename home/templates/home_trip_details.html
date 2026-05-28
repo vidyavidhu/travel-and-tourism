@@ -484,14 +484,36 @@
                         </li>
                         {% endif %}
 
-                        <li class="d-flex align-items-center pt-3 border-top mt-1">
-                            <div class="detail-icon-box shadow-sm bg-gradient-custom">
-                                <i class="fas fa-user-tie"></i>
+                        <li class="d-flex flex-column pt-3 border-top mt-1 gap-2">
+                            <div class="d-flex align-items-center">
+                                <div class="detail-icon-box shadow-sm bg-gradient-custom">
+                                    <i class="fas fa-user-tie"></i>
+                                </div>
+                                <div>
+                                    <small class="text-muted d-block text-uppercase fw-bold sidebar-label">Coordinator</small>
+                                    <span class="fw-semibold text-dark">
+                                        {{ trip.coordinator.user.get_full_name|default:trip.coordinator.user.username }}
+                                    </span>
+                                </div>
                             </div>
-                            <div>
-                                <small class="text-muted d-block text-uppercase fw-bold sidebar-label">Coordinator</small>
-                                <span class="fw-semibold text-dark">
-                                    {{ trip.coordinator.member.name|default:trip.coordinator }}</span>
+                            <div class="ps-5 small text-secondary d-flex flex-column gap-1">
+                                {% if trip.coordinator.user.email %}
+                                <div>
+                                    <i class="far fa-envelope me-1.5 text-primary" style="font-size: 0.85rem;"></i> 
+                                    <a href="mailto:{{ trip.coordinator.user.email }}" class="text-decoration-none text-secondary hover-primary-link" style="font-size: 0.85rem;">{{ trip.coordinator.user.email }}</a>
+                                </div>
+                                {% endif %}
+                                {% if trip.coordinator.user.member.phone %}
+                                <div>
+                                    <i class="fas fa-phone-alt me-1.5 text-success" style="font-size: 0.85rem;"></i> 
+                                    <a href="tel:{{ trip.coordinator.user.member.phone }}" class="text-decoration-none text-secondary hover-primary-link" style="font-size: 0.85rem;">{{ trip.coordinator.user.member.phone }}</a>
+                                </div>
+                                {% elif trip.coordinator.member.phone %}
+                                <div>
+                                    <i class="fas fa-phone-alt me-1.5 text-success" style="font-size: 0.85rem;"></i> 
+                                    <a href="tel:{{ trip.coordinator.member.phone }}" class="text-decoration-none text-secondary hover-primary-link" style="font-size: 0.85rem;">{{ trip.coordinator.member.phone }}</a>
+                                </div>
+                                {% endif %}
                             </div>
                         </li>
                     </ul>
