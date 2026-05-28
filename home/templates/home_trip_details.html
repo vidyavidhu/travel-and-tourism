@@ -423,9 +423,18 @@
                                 <i class="far fa-calendar-alt"></i>
                             </div>
                             <div>
-                                <small class="text-muted d-block text-uppercase fw-bold sidebar-label">Dates</small>
-                                <span class="fw-semibold text-dark">{{ trip.from_date|date:"M d" }} -
-                                    {{trip.to_date|date:"M d, Y" }}</span>
+                                <small class="text-muted d-block text-uppercase fw-bold sidebar-label">Departure</small>
+                                <span class="fw-semibold text-dark">{{ trip.from_date|date:"M d, Y" }} at {{ trip.from_time|time:"g:i A" }}</span>
+                            </div>
+                        </li>
+
+                        <li class="d-flex align-items-center">
+                            <div class="detail-icon-box shadow-sm text-warning-custom">
+                                <i class="far fa-calendar-check"></i>
+                            </div>
+                            <div>
+                                <small class="text-muted d-block text-uppercase fw-bold sidebar-label">Arrival</small>
+                                <span class="fw-semibold text-dark">{{ trip.to_date|date:"M d, Y" }} at {{ trip.to_time|time:"g:i A" }}</span>
                             </div>
                         </li>
 
@@ -446,26 +455,6 @@
                             <div>
                                 <small class="text-muted d-block text-uppercase fw-bold sidebar-label">Distance</small>
                                 <span class="fw-semibold text-dark">{{ trip.distance }} km</span>
-                            </div>
-                        </li>
-
-                        <li class="d-flex align-items-center">
-                            <div class="detail-icon-box shadow-sm text-warning-custom">
-                                <i class="fas fa-hourglass-start"></i>
-                            </div>
-                            <div>
-                                <small class="text-muted d-block text-uppercase fw-bold sidebar-label">Departure Time</small>
-                                <span class="fw-semibold text-dark">{{ trip.from_time|time:"g:i A" }}</span>
-                            </div>
-                        </li>
-
-                        <li class="d-flex align-items-center">
-                            <div class="detail-icon-box shadow-sm text-warning-custom">
-                                <i class="fas fa-hourglass-end"></i>
-                            </div>
-                            <div>
-                                <small class="text-muted d-block text-uppercase fw-bold sidebar-label">Return Time</small>
-                                <span class="fw-semibold text-dark">{{ trip.to_time|time:"g:i A" }}</span>
                             </div>
                         </li>
 
