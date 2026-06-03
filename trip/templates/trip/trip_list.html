@@ -110,6 +110,8 @@
                     <div class="trip-card-img-container">
                         {% if trip.status == 1 %}
                             <span class="trip-card-badge text-success"><i class="fas fa-check-circle me-1"></i> Active</span>
+                        {% elif trip.status == 2 %}
+                            <span class="trip-card-badge text-info"><i class="fas fa-flag-checkered me-1"></i> Completed</span>
                         {% else %}
                             <span class="trip-card-badge text-danger"><i class="fas fa-times-circle me-1"></i> Inactive</span>
                         {% endif %}

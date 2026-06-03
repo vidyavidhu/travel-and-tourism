@@ -50,7 +50,7 @@ class TripForm(forms.ModelForm):
             'duration': forms.TextInput(attrs={'class': 'form-control', 'id': 'id_duration', 'readonly': 'readonly'}),
             'description': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
             'guidelines': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
-            'status': forms.NumberInput(attrs={'class': 'form-control'}),
+            'status': forms.Select(attrs={'class': 'form-control'}),
             'category': forms.Select(attrs={'class': 'form-control'}),
             'coordinator': forms.Select(attrs={'class': 'form-control'}),
             'image': forms.FileInput(attrs={'class': 'form-control'}),
@@ -62,7 +62,7 @@ class TripFilterForm(forms.Form):
     location_to_name = forms.CharField(required=False, label='Location-Destination', widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Search by Destination location...'}))
     from_date = forms.DateField(required=False, label='From Date (>=)', widget=forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}))
     to_date = forms.DateField(required=False, label='To Date (<=)', widget=forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}))
-    status = forms.ChoiceField(choices=[('', 'All'), (1, 'Active'), (0, 'Inactive')], required=False, widget=forms.Select(attrs={'class': 'form-control'}))
+    status = forms.ChoiceField(choices=[('', 'All'), (1, 'Active'), (0, 'Inactive'), (2, 'Completed')], required=False, widget=forms.Select(attrs={'class': 'form-control'}))
 
 from .models import Trip_Details, Trip_Members, Trip_Day, Itinerary, Gallery, Comments
 
