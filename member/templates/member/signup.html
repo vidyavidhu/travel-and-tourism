@@ -23,20 +23,20 @@
                 <div class="form-row">
                     <div class="form-group">
                         <label for="first_name">First Name</label>
-                        <input type="text" id="first_name" name="first_name" class="form-control" required>
+                        <input type="text" id="first_name" name="first_name" class="form-control" value="{{ first_name|default:'' }}" required>
                     </div>
                     <div class="form-group">
                         <label for="last_name">Last Name</label>
-                        <input type="text" id="last_name" name="last_name" class="form-control" required>
+                        <input type="text" id="last_name" name="last_name" class="form-control" value="{{ last_name|default:'' }}" required>
                     </div>
                 </div>
                 <div class="form-group">
                     <label for="email">Email Address</label>
-                    <input type="email" id="email" name="email" class="form-control" required>
+                    <input type="email" id="email" name="email" class="form-control" value="{{ email|default:'' }}" required>
                 </div>
                 <div class="form-group">
                     <label for="username">Username</label>
-                    <input type="text" id="username" name="username" class="form-control" required>
+                    <input type="text" id="username" name="username" class="form-control" value="{{ username|default:'' }}" required>
                 </div>
                 <div class="form-row">
                     <div class="form-group">
@@ -52,10 +52,10 @@
                     <label class="d-block mb-2">Are you a Coordinator?</label>
                     <div class="radio-options">
                         <label class="radio-label">
-                            <input type="radio" name="is_coordinator" value="True"> Yes
+                            <input type="radio" name="is_coordinator" value="True" {% if is_coordinator == "True" %}checked{% endif %}> Yes
                         </label>
                         <label class="radio-label">
-                            <input type="radio" name="is_coordinator" value="False" checked> No
+                            <input type="radio" name="is_coordinator" value="False" {% if is_coordinator != "True" %}checked{% endif %}> No
                         </label>
                     </div>
                 </div>
