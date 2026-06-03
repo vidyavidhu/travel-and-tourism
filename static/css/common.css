@@ -324,15 +324,6 @@ img {
   margin-left: 10px;
 }
 
-/* Theme Toggle */
-.theme-toggle {
-  background: none;
-  border: none;
-  color: var(--text-primary);
-  font-size: 1.5rem;
-  cursor: pointer;
-  padding: 5px;
-}
 
 /* Responsive Navigation */
 .mobile-menu-btn {
@@ -535,15 +526,6 @@ img {
   margin-left: 10px;
 }
 
-/* Theme Toggle */
-.theme-toggle {
-  background: none;
-  border: none;
-  color: var(--text-primary);
-  font-size: 1.5rem;
-  cursor: pointer;
-  padding: 5px;
-}
 
 /* Responsive Navigation */
 .mobile-menu-btn {
