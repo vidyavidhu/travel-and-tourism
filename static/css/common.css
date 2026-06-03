@@ -313,11 +313,22 @@ img {
   justify-content: center;
   font-weight: bold;
   font-size: 1.1rem;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, outline 0.2s ease;
 }
 
-.profile-name {
+.profile-icon:hover {
+  transform: scale(1.05);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.nav-profile-name {
   font-weight: 500;
   color: var(--text-primary);
+  transition: color 0.2s ease;
+}
+
+.nav-profile-name:hover {
+  color: var(--color-primary);
 }
 
 .nav-logout {
@@ -515,11 +526,22 @@ img {
   justify-content: center;
   font-weight: bold;
   font-size: 1.1rem;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, outline 0.2s ease;
 }
 
-.profile-name {
+.profile-icon:hover {
+  transform: scale(1.05);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.nav-profile-name {
   font-weight: 500;
   color: var(--text-primary);
+  transition: color 0.2s ease;
+}
+
+.nav-profile-name:hover {
+  color: var(--color-primary);
 }
 
 .nav-logout {
