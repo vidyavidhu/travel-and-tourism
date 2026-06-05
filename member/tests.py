@@ -2,6 +2,7 @@ from django.test import TestCase
 from django.urls import reverse
 from django.contrib.auth.models import User
 from django.core import mail
+from member.models import Coordinator
 
 class PasswordResetTests(TestCase):
     def setUp(self):
@@ -218,5 +219,40 @@ class ProfileEditNameValidationTests(TestCase):
         response = self.client.post(url, data)
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Last name should not include numeric or special characters.")
+
+
+class ProfileEditCoordinatorTests(TestCase):
+    def test_profile_edit_shows_pdf_upload_for_coordinator(self):
+        user = User.objects.create_user(
+            username='coorduser',
+            email='coord@example.com',
+            password='password123',
+            first_name='John',
+            last_name='Doe'
+        )
+        Coordinator.objects.create(user=user, is_approved=True)
+        
+        self.client.login(username='coorduser', password='password123')
+        url = reverse('member_profile_edit')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Coordinator Document Updation")
+        self.assertContains(response, "Authorisation PDF")
+
+    def test_profile_edit_hides_pdf_upload_for_non_coordinator(self):
+        user = User.objects.create_user(
+            username='regularuser',
+            email='regular@example.com',
+            password='password123',
+            first_name='John',
+            last_name='Doe'
+        )
+        
+        self.client.login(username='regularuser', password='password123')
+        url = reverse('member_profile_edit')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, "Coordinator Document Updation")
+        self.assertNotContains(response, "Authorisation PDF")
 
 
