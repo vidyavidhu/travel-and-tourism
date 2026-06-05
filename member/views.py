@@ -11,8 +11,8 @@ from django.contrib.auth.tokens import default_token_generator
 def signup_view(request):
     # Backend logic to save data would go here
     if(request.method == 'POST'):
-        first_name = request.POST.get('first_name')
-        last_name = request.POST.get('last_name')
+        first_name = request.POST.get('first_name', '').strip()
+        last_name = request.POST.get('last_name', '').strip()
         email = request.POST.get('email')
         username = request.POST.get('username')
         password = request.POST.get('password')
@@ -29,6 +29,21 @@ def signup_view(request):
         }
         
         is_valid = True
+        import re
+        if not first_name:
+            messages.error(request, "First name is required.")
+            is_valid = False
+        elif not re.match(r'^[a-zA-Z\s]+$', first_name):
+            messages.error(request, "First name should not include numeric or special characters.")
+            is_valid = False
+
+        if not last_name:
+            messages.error(request, "Last name is required.")
+            is_valid = False
+        elif not re.match(r'^[a-zA-Z\s]+$', last_name):
+            messages.error(request, "Last name should not include numeric or special characters.")
+            is_valid = False
+
         if(password != confirm_password):
             messages.error(request, "Passwords do not match")
             is_valid = False
@@ -148,8 +163,8 @@ def profile_edit_view(request):
     }
 
     if request.method == 'POST':
-        first_name = request.POST.get('first_name')
-        last_name = request.POST.get('last_name')
+        first_name = request.POST.get('first_name', '').strip()
+        last_name = request.POST.get('last_name', '').strip()
         dob = request.POST.get('dob')
         address = request.POST.get('address')
         phone = request.POST.get('phone')
@@ -174,10 +189,24 @@ def profile_edit_view(request):
         }
 
         is_valid = True
+        import re
+
+        if not first_name:
+            messages.error(request, "First name is required.")
+            is_valid = False
+        elif not re.match(r'^[a-zA-Z\s]+$', first_name):
+            messages.error(request, "First name should not include numeric or special characters.")
+            is_valid = False
+
+        if not last_name:
+            messages.error(request, "Last name is required.")
+            is_valid = False
+        elif not re.match(r'^[a-zA-Z\s]+$', last_name):
+            messages.error(request, "Last name should not include numeric or special characters.")
+            is_valid = False
         
         # Phone validation: must be unique and 10 digits
         if phone:
-            import re
             if not re.match(r'^\d{10}$', phone):
                 messages.error(request, "Phone number must be exactly 10 digits.")
                 is_valid = False

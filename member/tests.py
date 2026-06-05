@@ -95,3 +95,128 @@ class SignupPasswordValidationTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Password must contain at least one letter.")
 
+
+class SignupNameValidationTests(TestCase):
+    def test_signup_first_name_numeric(self):
+        url = reverse('member_signup')
+        data = {
+            'first_name': 'John123',
+            'last_name': 'User',
+            'email': 'signupuser@example.com',
+            'username': 'signupuser',
+            'password': 'password123',
+            'confirm_password': 'password123',
+            'is_coordinator': 'False'
+        }
+        response = self.client.post(url, data)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "First name should not include numeric or special characters.")
+
+    def test_signup_first_name_special_char(self):
+        url = reverse('member_signup')
+        data = {
+            'first_name': 'John@',
+            'last_name': 'User',
+            'email': 'signupuser@example.com',
+            'username': 'signupuser',
+            'password': 'password123',
+            'confirm_password': 'password123',
+            'is_coordinator': 'False'
+        }
+        response = self.client.post(url, data)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "First name should not include numeric or special characters.")
+
+    def test_signup_last_name_numeric(self):
+        url = reverse('member_signup')
+        data = {
+            'first_name': 'John',
+            'last_name': 'User123',
+            'email': 'signupuser@example.com',
+            'username': 'signupuser',
+            'password': 'password123',
+            'confirm_password': 'password123',
+            'is_coordinator': 'False'
+        }
+        response = self.client.post(url, data)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Last name should not include numeric or special characters.")
+
+    def test_signup_last_name_special_char(self):
+        url = reverse('member_signup')
+        data = {
+            'first_name': 'John',
+            'last_name': 'User#',
+            'email': 'signupuser@example.com',
+            'username': 'signupuser',
+            'password': 'password123',
+            'confirm_password': 'password123',
+            'is_coordinator': 'False'
+        }
+        response = self.client.post(url, data)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Last name should not include numeric or special characters.")
+
+    def test_signup_names_with_spaces_valid(self):
+        url = reverse('member_signup')
+        data = {
+            'first_name': 'Mary Ann',
+            'last_name': 'De Silva',
+            'email': 'signupuser@example.com',
+            'username': 'signupuser',
+            'password': 'password123',
+            'confirm_password': 'password123',
+            'is_coordinator': 'False'
+        }
+        response = self.client.post(url, data)
+        self.assertEqual(response.status_code, 302)  # Redirects on success
+
+
+class ProfileEditNameValidationTests(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(
+            username='profileuser',
+            email='profileuser@example.com',
+            password='password123',
+            first_name='John',
+            last_name='Doe'
+        )
+        self.client.login(username='profileuser', password='password123')
+
+    def test_profile_edit_first_name_numeric(self):
+        url = reverse('member_profile_edit')
+        data = {
+            'first_name': 'John123',
+            'last_name': 'Doe',
+            'dob': '1990-01-01',
+            'gender': 'Male',
+            'phone': '1234567890',
+            'bgroup': 'O+',
+            'address': 'Test Address',
+            'emergency_name': 'Emergency Contact',
+            'emergency_contact': '0987654321',
+            'description': 'About user'
+        }
+        response = self.client.post(url, data)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "First name should not include numeric or special characters.")
+
+    def test_profile_edit_last_name_special_char(self):
+        url = reverse('member_profile_edit')
+        data = {
+            'first_name': 'John',
+            'last_name': 'Doe$',
+            'dob': '1990-01-01',
+            'gender': 'Male',
+            'phone': '1234567890',
+            'bgroup': 'O+',
+            'address': 'Test Address',
+            'emergency_name': 'Emergency Contact',
+            'emergency_contact': '0987654321',
+            'description': 'About user'
+        }
+        response = self.client.post(url, data)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Last name should not include numeric or special characters.")
+
+

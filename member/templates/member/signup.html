@@ -23,11 +23,11 @@
                 <div class="form-row">
                     <div class="form-group">
                         <label for="first_name">First Name</label>
-                        <input type="text" id="first_name" name="first_name" class="form-control" value="{{ first_name|default:'' }}" required>
+                        <input type="text" id="first_name" name="first_name" class="form-control" value="{{ first_name|default:'' }}" pattern="^[A-Za-z\s]+$" title="First name should not include numeric or special characters." required>
                     </div>
                     <div class="form-group">
                         <label for="last_name">Last Name</label>
-                        <input type="text" id="last_name" name="last_name" class="form-control" value="{{ last_name|default:'' }}" required>
+                        <input type="text" id="last_name" name="last_name" class="form-control" value="{{ last_name|default:'' }}" pattern="^[A-Za-z\s]+$" title="Last name should not include numeric or special characters." required>
                     </div>
                 </div>
                 <div class="form-group">

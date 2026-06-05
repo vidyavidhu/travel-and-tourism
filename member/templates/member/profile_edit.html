@@ -58,12 +58,12 @@
                     <div class="form-group">
                         <label for="first_name"><i class="fa-regular fa-address-card"></i> First Name</label>
                         <input type="text" id="first_name" name="first_name" class="form-control"
-                            value="{{ form_data.first_name }}" required>
+                            value="{{ form_data.first_name }}" pattern="^[A-Za-z\s]+$" title="First name should not include numeric or special characters." required>
                     </div>
                     <div class="form-group">
                         <label for="last_name"><i class="fa-regular fa-address-card"></i> Last Name</label>
                         <input type="text" id="last_name" name="last_name" class="form-control"
-                            value="{{ form_data.last_name }}" required>
+                            value="{{ form_data.last_name }}" pattern="^[A-Za-z\s]+$" title="Last name should not include numeric or special characters." required>
                     </div>
                 </div>
 
