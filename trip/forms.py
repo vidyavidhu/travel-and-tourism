@@ -4,32 +4,38 @@ from member.models import Coordinator
 
 class TripForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
+        user = kwargs.pop('user', None)
         super(TripForm, self).__init__(*args, **kwargs)
         if 'coordinator' in self.fields:
-            qs = Coordinator.objects.filter(status=1)
-            
-            from_date = None
-            to_date = None
-            
-            if self.is_bound and self.data:
-                from_date = self.data.get('from_date')
-                to_date = self.data.get('to_date')
-            elif self.instance and self.instance.pk:
-                from_date = self.instance.from_date
-                to_date = self.instance.to_date
+            if user and hasattr(user, 'coordinator') and not user.is_superuser:
+                self.fields['coordinator'].initial = user.coordinator
+                self.fields['coordinator'].widget = forms.HiddenInput()
+                self.fields['coordinator'].required = False
+            else:
+                qs = Coordinator.objects.filter(status=1)
                 
-            if from_date and to_date:
-                from django.db.models import Q
-                overlapping_trips = Trip.objects.filter(
-                    Q(from_date__lte=to_date) & Q(to_date__gte=from_date)
-                )
-                if self.instance and self.instance.pk:
-                    overlapping_trips = overlapping_trips.exclude(pk=self.instance.pk)
+                from_date = None
+                to_date = None
+                
+                if self.is_bound and self.data:
+                    from_date = self.data.get('from_date')
+                    to_date = self.data.get('to_date')
+                elif self.instance and self.instance.pk:
+                    from_date = self.instance.from_date
+                    to_date = self.instance.to_date
                     
-                busy_coordinator_ids = overlapping_trips.values_list('coordinator_id', flat=True)
-                qs = qs.exclude(id__in=busy_coordinator_ids)
-                
-            self.fields['coordinator'].queryset = qs
+                if from_date and to_date:
+                    from django.db.models import Q
+                    overlapping_trips = Trip.objects.filter(
+                        Q(from_date__lte=to_date) & Q(to_date__gte=from_date)
+                    )
+                    if self.instance and self.instance.pk:
+                        overlapping_trips = overlapping_trips.exclude(pk=self.instance.pk)
+                        
+                    busy_coordinator_ids = overlapping_trips.values_list('coordinator_id', flat=True)
+                    qs = qs.exclude(id__in=busy_coordinator_ids)
+                    
+                self.fields['coordinator'].queryset = qs
     class Meta:
         model = Trip
         fields = ['image', 'title', 'category', 'location_from_name', 'location_from_lattitude', 'location_from_longitude', 'location_to_name', 'location_to_lattitude', 'location_to_longitude', 'distance', 'from_date', 'from_time', 'to_date', 'to_time', 'duration', 'description', 'coordinator', 'guidelines', 'status']
@@ -50,7 +56,7 @@ class TripForm(forms.ModelForm):
             'duration': forms.TextInput(attrs={'class': 'form-control', 'id': 'id_duration', 'readonly': 'readonly'}),
             'description': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
             'guidelines': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
-            'status': forms.NumberInput(attrs={'class': 'form-control'}),
+            'status': forms.Select(attrs={'class': 'form-control'}),
             'category': forms.Select(attrs={'class': 'form-control'}),
             'coordinator': forms.Select(attrs={'class': 'form-control'}),
             'image': forms.FileInput(attrs={'class': 'form-control'}),
@@ -62,7 +68,7 @@ class TripFilterForm(forms.Form):
     location_to_name = forms.CharField(required=False, label='Location-Destination', widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Search by Destination location...'}))
     from_date = forms.DateField(required=False, label='From Date (>=)', widget=forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}))
     to_date = forms.DateField(required=False, label='To Date (<=)', widget=forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}))
-    status = forms.ChoiceField(choices=[('', 'All'), (1, 'Active'), (0, 'Inactive')], required=False, widget=forms.Select(attrs={'class': 'form-control'}))
+    status = forms.ChoiceField(choices=[('', 'All'), (1, 'Active'), (0, 'Inactive'), (2, 'Completed')], required=False, widget=forms.Select(attrs={'class': 'form-control'}))
 
 from .models import Trip_Details, Trip_Members, Trip_Day, Itinerary, Gallery, Comments
 

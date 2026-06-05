@@ -77,6 +77,12 @@
                             </span>
                             Active
                         </span>
+                        {% elif trip.status == 2 %}
+                        <span
+                            class="badge bg-info bg-opacity-10 text-info px-3 py-2 rounded-3 fw-bold d-flex align-items-center gap-2 status-badge">
+                            <span class="rounded-full h-2 w-2 bg-info pulse-dot"></span>
+                            Completed
+                        </span>
                         {% else %}
                         <span
                             class="badge bg-danger bg-opacity-10 text-danger px-3 py-2 rounded-3 fw-bold d-flex align-items-center gap-2 status-badge">

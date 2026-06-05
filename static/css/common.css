@@ -187,7 +187,7 @@ img {
   background-color: var(--color-primary-dark);
   border-color: var(--color-primary-dark);
   color: #ffffff;
-  transform: translateY(-2px);
+  transform: scale(1.1);
   box-shadow: 0 4px 8px rgba(74, 34, 52, 0.3);
 }
 
@@ -201,7 +201,7 @@ img {
   background-color: #5a6268;
   border-color: #545b62;
   color: #ffffff;
-  transform: translateY(-2px);
+  transform: scale(1.1);
 }
 
 .btn-success {
@@ -214,7 +214,7 @@ img {
   background-color: #059669;
   border-color: #059669;
   color: #ffffff;
-  transform: translateY(-2px);
+  transform: scale(1.1);
 }
 
 .btn-danger {
@@ -227,7 +227,7 @@ img {
   background-color: #dc2626;
   border-color: #dc2626;
   color: #ffffff;
-  transform: translateY(-2px);
+  transform: scale(1.1);
 }
 
 .btn-outline {
@@ -239,7 +239,7 @@ img {
 .btn-outline:hover:not(:disabled) {
   background-color: var(--color-primary);
   color: #ffffff;
-  transform: translateY(-2px);
+  transform: scale(1.1);
 }
 
 /* Button Sizes */
@@ -313,26 +313,28 @@ img {
   justify-content: center;
   font-weight: bold;
   font-size: 1.1rem;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, outline 0.2s ease;
 }
 
-.profile-name {
+.profile-icon:hover {
+  transform: scale(1.05);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.nav-profile-name {
   font-weight: 500;
   color: var(--text-primary);
+  transition: color 0.2s ease;
+}
+
+.nav-profile-name:hover {
+  color: var(--color-primary);
 }
 
 .nav-logout {
   margin-left: 10px;
 }
 
-/* Theme Toggle */
-.theme-toggle {
-  background: none;
-  border: none;
-  color: var(--text-primary);
-  font-size: 1.5rem;
-  cursor: pointer;
-  padding: 5px;
-}
 
 /* Responsive Navigation */
 .mobile-menu-btn {
@@ -524,26 +526,28 @@ img {
   justify-content: center;
   font-weight: bold;
   font-size: 1.1rem;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, outline 0.2s ease;
 }
 
-.profile-name {
+.profile-icon:hover {
+  transform: scale(1.05);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.nav-profile-name {
   font-weight: 500;
   color: var(--text-primary);
+  transition: color 0.2s ease;
+}
+
+.nav-profile-name:hover {
+  color: var(--color-primary);
 }
 
 .nav-logout {
   margin-left: 10px;
 }
 
-/* Theme Toggle */
-.theme-toggle {
-  background: none;
-  border: none;
-  color: var(--text-primary);
-  font-size: 1.5rem;
-  cursor: pointer;
-  padding: 5px;
-}
 
 /* Responsive Navigation */
 .mobile-menu-btn {

@@ -318,16 +318,31 @@ class ItineraryCreateView(CreateView):
     def get_success_url(self):
         return reverse('trip_detail', kwargs={'pk': self.object.trip_day.trip.pk}) + '?tab=itinerary'
 
-class TripCreateView(CreateView):
+class TripCreateView(LoginRequiredMixin, CreateView):
     model = Trip
     form_class = TripForm
     template_name = 'trip/trip_form.html'
     success_url = reverse_lazy('trip_list')
 
-class TripUpdateView(UpdateView):
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['user'] = self.request.user
+        return kwargs
+
+    def form_valid(self, form):
+        if hasattr(self.request.user, 'coordinator') and not self.request.user.is_superuser:
+            form.instance.coordinator = self.request.user.coordinator
+        return super().form_valid(form)
+
+class TripUpdateView(LoginRequiredMixin, UpdateView):
     model = Trip
     form_class = TripForm
     template_name = 'trip/trip_form.html'
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['user'] = self.request.user
+        return kwargs
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -337,7 +352,7 @@ class TripUpdateView(UpdateView):
     def get_success_url(self):
         return reverse('trip_detail', kwargs={'pk': self.object.pk})
 
-class TripDeleteView(DeleteView):
+class TripDeleteView(LoginRequiredMixin, DeleteView):
     model = Trip
     template_name = 'trip/trip_confirm_delete.html'
     success_url = reverse_lazy('trip_list')

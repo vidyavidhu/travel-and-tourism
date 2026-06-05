@@ -15,16 +15,30 @@ def signup_view(request):
         confirm_password = request.POST.get('confirm_password')
         is_coordinator = request.POST.get('is_coordinator')
         print(first_name, last_name, email, username, password, confirm_password, is_coordinator)
+        
+        context = {
+            'first_name': first_name,
+            'last_name': last_name,
+            'email': email,
+            'username': username,
+            'is_coordinator': is_coordinator,
+        }
+        
         is_valid = True
         if(password != confirm_password):
             messages.error(request, "Passwords do not match")
             is_valid = False
-        elif(User.objects.filter(email=email).exists()):
+        
+        if(User.objects.filter(email=email).exists()):
             messages.error(request, "Email already exists")
             is_valid = False
-        elif(User.objects.filter(username=username).exists()):
+            context['email'] = ''
+            
+        if(User.objects.filter(username=username).exists()):
             messages.error(request, "Username already exists")
             is_valid = False
+            context['username'] = ''
+            
         if(is_valid):
             #create user
             user = User.objects.create_user(first_name = first_name,last_name=last_name,username=username, email=email, password=password)
@@ -43,7 +57,7 @@ def signup_view(request):
             else:
                 return redirect('/member/login')
         else:
-            return render(request, 'member/signup.html')
+            return render(request, 'member/signup.html', context)
     else:
         return render(request, 'member/signup.html')
   
@@ -105,13 +119,23 @@ def profile_edit_view(request):
     print("coordinator profile_edit_view ",coordinator)
     next_url = request.POST.get('next') or request.GET.get('next') or ''
 
-    if request.method == 'POST':
-        # Update User data
-        request.user.first_name = request.POST.get('first_name', request.user.first_name)
-        request.user.last_name = request.POST.get('last_name', request.user.last_name)
-        request.user.save()
+    # Prefill form data from database on GET
+    form_data = {
+        'first_name': request.user.first_name,
+        'last_name': request.user.last_name,
+        'dob': member.dob.strftime('%Y-%m-%d') if (member and member.dob) else '',
+        'gender': member.gender if member else '',
+        'phone': member.phone if member else '',
+        'bgroup': member.bgroup if member else '',
+        'address': member.address if member else '',
+        'emergency_name': member.emergency_name if member else '',
+        'emergency_contact': member.emergency_contact if member else '',
+        'description': member.description if member else '',
+    }
 
-        # Update or Create Member data
+    if request.method == 'POST':
+        first_name = request.POST.get('first_name')
+        last_name = request.POST.get('last_name')
         dob = request.POST.get('dob')
         address = request.POST.get('address')
         phone = request.POST.get('phone')
@@ -120,42 +144,78 @@ def profile_edit_view(request):
         emergency_contact = request.POST.get('emergency_contact')
         emergency_name = request.POST.get('emergency_name')
         description = request.POST.get('description')
+
+        # Update form_data with submitted values
+        form_data = {
+            'first_name': first_name,
+            'last_name': last_name,
+            'dob': dob,
+            'gender': gender,
+            'phone': phone,
+            'bgroup': bgroup,
+            'address': address,
+            'emergency_name': emergency_name,
+            'emergency_contact': emergency_contact,
+            'description': description,
+        }
+
+        is_valid = True
         
-        if not member:
-            member = Member(user=request.user)
-            # Sync coordinator status if they signed up as one
-        if coordinator:
-            member.is_coordinator = True
-            if 'authorised_pdf' in request.FILES:
-                coordinator.authorised_pdf = request.FILES['authorised_pdf']
-            coordinator.save()
-            print("coordinator",coordinator)
-        else:
-            member.is_coordinator = False
+        # Phone validation: must be unique and 10 digits
+        if phone:
+            import re
+            if not re.match(r'^\d{10}$', phone):
+                messages.error(request, "Phone number must be exactly 10 digits.")
+                is_valid = False
+                form_data['phone'] = ''
+            elif Member.objects.filter(phone=phone).exclude(user=request.user).exists():
+                messages.error(request, "Phone number is already in use by another member.")
+                is_valid = False
+                form_data['phone'] = ''
+
+        if is_valid:
+            # Update User data
+            request.user.first_name = first_name
+            request.user.last_name = last_name
+            request.user.save()
+
+            if not member:
+                member = Member(user=request.user)
+
+            if coordinator:
+                member.is_coordinator = True
+                if 'authorised_pdf' in request.FILES:
+                    coordinator.authorised_pdf = request.FILES['authorised_pdf']
+                coordinator.save()
+            else:
+                member.is_coordinator = False
+                
+            if dob: 
+                member.dob = dob
+            else:
+                member.dob = None
+            member.address = address
+            member.phone = phone
+            member.gender = gender
+            member.bgroup = bgroup
+            member.emergency_contact = emergency_contact
+            member.emergency_name = emergency_name
+            member.description = description
+           
+            if 'image' in request.FILES:
+                member.image = request.FILES['image']
             
-        if dob: member.dob = dob
-        member.address = address
-        member.phone = phone
-        member.gender = gender
-        member.bgroup = bgroup
-        member.emergency_contact = emergency_contact
-        member.emergency_name = emergency_name
-        member.description = description
-       
-        if 'image' in request.FILES:
-            member.image = request.FILES['image']
-       
-      
-        
-        member.save()
-        print("member2",member)
-        
-        messages.success(request, "Profile updated successfully.")
-        if next_url:
-            return redirect(next_url)
-        return redirect('/member/profile')
-        
-    return render(request, 'member/profile_edit.html', {'next': next_url})
+            member.save()
+            print("member2",member)
+            
+            messages.success(request, "Profile updated successfully.")
+            if next_url:
+                return redirect(next_url)
+            return redirect('/member/profile')
+        else:
+            return render(request, 'member/profile_edit.html', {'next': next_url, 'form_data': form_data})
+
+    return render(request, 'member/profile_edit.html', {'next': next_url, 'form_data': form_data})
 
 
 # --- Admin Dashboard & Coordinator Management Views ---

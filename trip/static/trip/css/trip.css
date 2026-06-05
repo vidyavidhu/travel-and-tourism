@@ -255,6 +255,7 @@
     background-color: #ffffff !important;
     box-shadow: 0 0 0 4px var(--input-focus) !important;
     transform: translateY(-2px);
+
 }
 
 .premium-input::placeholder {
@@ -370,7 +371,7 @@ input[type="file"].premium-input::file-selector-button:hover {
 .cancel-btn:hover {
     background-color: #e9ecef !important;
     color: #495057 !important;
-    transform: translateY(-2px);
+    transform: scale(1.1);
 }
 
 .icon-btn {
@@ -466,6 +467,6 @@ input[type="file"].premium-input::file-selector-button:hover {
 .trip-grid-card .icon-btn.btn-light:hover {
     background-color: var(--primary-color) !important;
     color: white !important;
-    transform: translateY(-2px);
+    transform: scale(1.1);
     box-shadow: 0 4px 10px rgba(212, 99, 67, 0.25) !important;
 }

@@ -55,7 +55,12 @@ class Trip(models.Model):
     description = models.TextField(null=True, blank=True)  
     coordinator = models.ForeignKey(Coordinator, on_delete=models.CASCADE)
     guidelines = models.TextField(null=True, blank=True)
-    status = models.IntegerField(default=1)  
+    STATUS_CHOICES = [
+        (1, 'Active'),
+        (0, 'Inactive'),
+        (2, 'Completed'),
+    ]
+    status = models.IntegerField(default=1, choices=STATUS_CHOICES)  
     finish_reason = models.TextField(null=True, blank=True)
     @property
     def total_duration_days(self):
