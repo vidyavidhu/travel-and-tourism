@@ -111,6 +111,20 @@
     font-size: 0.95rem;
 }
 
+.forgot-link {
+    font-size: 0.85rem;
+    color: var(--color-primary);
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.2s ease, text-decoration 0.2s ease;
+}
+
+.forgot-link:hover {
+    color: var(--primary-color, #d46343);
+    text-decoration: underline;
+}
+
+
 @media (max-width: 600px) {
     .auth-card {
         padding: 30px 20px;
@@ -220,3 +234,98 @@ select.form-control {
     background-position: right 1rem center;
     background-size: 1em;
 }
+
+/* Password Help Text UX Enhancements */
+.auth-form ul.helptext {
+    list-style: none;
+    padding: 12px 14px;
+    margin: 10px 0;
+    background-color: rgba(74, 34, 52, 0.04);
+    border-left: 3px solid var(--color-primary);
+    border-radius: 4px;
+}
+.auth-form ul.helptext li {
+    position: relative;
+    padding-left: 20px;
+    font-size: 0.8rem;
+    color: var(--text-secondary, #6c757d);
+    margin-bottom: 6px;
+    line-height: 1.4;
+    text-align: left;
+}
+.auth-form ul.helptext li:last-child {
+    margin-bottom: 0;
+}
+.auth-form ul.helptext li::before {
+    content: "\f05a";
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+    position: absolute;
+    left: 0;
+    top: 1px;
+    color: var(--color-primary);
+    font-size: 0.85rem;
+}
+
+.form-help-text {
+    display: block;
+    margin-top: 6px;
+    font-size: 0.8rem;
+    color: var(--text-secondary, #6c757d);
+    text-align: left;
+}
+
+.password-requirements {
+    background-color: var(--bg-color, #f8f9fa);
+    border: 1px solid var(--border-color, #e9ecef);
+    border-radius: 8px;
+    padding: 14px 16px;
+    margin-top: 10px;
+}
+
+.requirements-title {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--color-primary);
+    margin-top: 0;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    text-align: left;
+}
+
+.requirements-list {
+    list-style: none;
+    padding-left: 0 !important;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.req-item {
+    font-size: 0.8rem;
+    color: var(--text-secondary, #6c757d);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    text-align: left;
+    transition: color 0.2s ease;
+}
+
+.req-item i {
+    font-size: 0.85rem;
+    color: var(--text-secondary, #6c757d);
+    transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.req-item.valid {
+    color: #6e821f !important;
+}
+
+.req-item.valid i {
+    color: #6e821f !important;
+}
+
+

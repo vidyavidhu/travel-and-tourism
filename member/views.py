@@ -2,6 +2,10 @@ from member.models import Member,Coordinator
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.contrib.auth.models import User
+from django.utils.http import urlsafe_base64_decode
+from django.contrib.auth.forms import SetPasswordForm
+from django.contrib.auth.tokens import default_token_generator
+
 # Create your views here.
 
 def signup_view(request):
@@ -27,6 +31,16 @@ def signup_view(request):
         is_valid = True
         if(password != confirm_password):
             messages.error(request, "Passwords do not match")
+            is_valid = False
+        
+        if len(password) < 8:
+            messages.error(request, "Password must be at least 8 characters long.")
+            is_valid = False
+        elif password.isdigit():
+            messages.error(request, "Password cannot be entirely numeric.")
+            is_valid = False
+        elif not any(char.isalpha() for char in password):
+            messages.error(request, "Password must contain at least one letter.")
             is_valid = False
         
         if(User.objects.filter(email=email).exists()):
@@ -358,4 +372,61 @@ def mark_trip_broadcast_read_view(request, pk):
             messages.error(request, "Profile not found.")
             
     return redirect(request.META.get('HTTP_REFERER', '/'))
+
+
+# --- Password Reset Function Views ---
+
+def password_reset_view(request):
+    from django.contrib.auth.forms import PasswordResetForm
+    if request.method == 'POST':
+        form = PasswordResetForm(request.POST)
+        if form.is_valid():
+            form.save(
+                request=request,
+                use_https=request.is_secure(),
+                subject_template_name='member/password_reset_subject.txt',
+                email_template_name='member/password_reset_email.txt',
+                html_email_template_name='member/password_reset_email.html',
+                from_email=None
+            )
+            return redirect('password_reset_done')
+    else:
+        form = PasswordResetForm()
+    return render(request, 'member/password_reset_form.html', {'form': form})
+
+
+def password_reset_done_view(request):
+    return render(request, 'member/password_reset_done.html')
+
+
+def password_reset_confirm_view(request, uidb64, token):
+   
+    try:
+        uid = urlsafe_base64_decode(uidb64).decode()
+        user = User.objects.get(pk=uid)
+    except (TypeError, ValueError, OverflowError, User.DoesNotExist):
+        user = None
+
+    if user is not None and default_token_generator.check_token(user, token):
+        validlink = True
+        if request.method == 'POST':
+            form = SetPasswordForm(user, request.POST)
+            if form.is_valid():
+                form.save()
+                return redirect('password_reset_complete')
+        else:
+            form = SetPasswordForm(user)
+    else:
+        validlink = False
+        form = None
+
+    return render(request, 'member/password_reset_confirm.html', {
+        'form': form,
+        'validlink': validlink,
+    })
+
+
+def password_reset_complete_view(request):
+    return render(request, 'member/password_reset_complete.html')
+
 

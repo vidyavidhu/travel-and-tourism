@@ -48,6 +48,14 @@
                         <input type="password" id="confirm_password" name="confirm_password" class="form-control" required>
                     </div>
                 </div>
+                <div class="password-requirements" style="margin-top: 10px; margin-bottom: 20px;">
+                    <p class="requirements-title"><i class="fas fa-shield-halved"></i> Password Security Requirements</p>
+                    <ul class="requirements-list">
+                        <li id="req-length" class="req-item"><i class="fas fa-circle-dot" id="icon-length"></i> At least 8 characters long</li>
+                        <li id="req-numeric" class="req-item"><i class="fas fa-circle-dot" id="icon-numeric"></i> Not entirely numeric</li>
+                        <li id="req-complex" class="req-item"><i class="fas fa-circle-dot" id="icon-complex"></i> Secure and not commonly used</li>
+                    </ul>
+                </div>
                 <div class="form-group role-group">
                     <label class="d-block mb-2">Are you a Coordinator?</label>
                     <div class="radio-options">
@@ -66,3 +74,51 @@
     </div>
 </section>
 {% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const passwordInput = document.getElementById('password');
+        if (passwordInput) {
+            passwordInput.addEventListener('input', function() {
+                const val = this.value;
+                
+                // 1. Length Check
+                const reqLength = document.getElementById('req-length');
+                const iconLength = document.getElementById('icon-length');
+                if (val.length >= 8) {
+                    reqLength.classList.add('valid');
+                    iconLength.className = 'fas fa-circle-check';
+                } else {
+                    reqLength.classList.remove('valid');
+                    iconLength.className = 'fas fa-circle-dot';
+                }
+                
+                // 2. Numeric Check
+                const reqNumeric = document.getElementById('req-numeric');
+                const iconNumeric = document.getElementById('icon-numeric');
+                const isAllNumeric = val.length > 0 && /^\d+$/.test(val);
+                if (val.length > 0 && !isAllNumeric) {
+                    reqNumeric.classList.add('valid');
+                    iconNumeric.className = 'fas fa-circle-check';
+                } else {
+                    reqNumeric.classList.remove('valid');
+                    iconNumeric.className = 'fas fa-circle-dot';
+                }
+
+                // 3. Complexity Check
+                const reqComplex = document.getElementById('req-complex');
+                const iconComplex = document.getElementById('icon-complex');
+                if (val.length >= 8 && /[a-zA-Z]/.test(val)) {
+                    reqComplex.classList.add('valid');
+                    iconComplex.className = 'fas fa-circle-check';
+                } else {
+                    reqComplex.classList.remove('valid');
+                    iconComplex.className = 'fas fa-circle-dot';
+                }
+            });
+        }
+    });
+</script>
+{% endblock %}
+

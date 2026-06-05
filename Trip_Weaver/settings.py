@@ -133,3 +133,14 @@ MEDIA_ROOT = BASE_DIR / 'media'
 LOGIN_URL = '/member/login'
 LOGIN_REDIRECT_URL = '/home'
 LOGOUT_REDIRECT_URL = '/home'
+
+# Email backend configuration using Gmail SMTP
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'tripweaver4u@gmail.com'
+EMAIL_HOST_PASSWORD = 'jmaihifqjofkznzh'
+DEFAULT_FROM_EMAIL = 'Trip Weaver <tripweaver4u@gmail.com>'
+
+
