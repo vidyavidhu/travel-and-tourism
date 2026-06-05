@@ -298,6 +298,70 @@
         const toLatInput = document.getElementById('id_location_to_lattitude');
         const toLngInput = document.getElementById('id_location_to_longitude');
 
+        // Dynamic date & time constraints validation
+        const fromDateInput = document.getElementById('id_from_date');
+        const toDateInput = document.getElementById('id_to_date');
+        const fromTimeInput = document.getElementById('id_from_time');
+        const toTimeInput = document.getElementById('id_to_time');
+
+        function updateDateConstraints() {
+            if (fromDateInput && toDateInput) {
+                if (fromDateInput.value) {
+                    toDateInput.min = fromDateInput.value;
+                } else {
+                    toDateInput.removeAttribute('min');
+                }
+
+                if (toDateInput.value) {
+                    fromDateInput.max = toDateInput.value;
+                } else {
+                    fromDateInput.removeAttribute('max');
+                }
+            }
+        }
+
+        function validateTimes() {
+            if (fromDateInput && toDateInput && fromTimeInput && toTimeInput) {
+                if (fromDateInput.value && toDateInput.value && fromDateInput.value === toDateInput.value) {
+                    if (fromTimeInput.value) {
+                        toTimeInput.min = fromTimeInput.value;
+                    } else {
+                        toTimeInput.removeAttribute('min');
+                    }
+                    if (toTimeInput.value) {
+                        fromTimeInput.max = toTimeInput.value;
+                    } else {
+                        fromTimeInput.removeAttribute('max');
+                    }
+                } else {
+                    toTimeInput.removeAttribute('min');
+                    fromTimeInput.removeAttribute('max');
+                }
+            }
+        }
+
+        if (fromDateInput) {
+            fromDateInput.addEventListener('change', function() {
+                updateDateConstraints();
+                validateTimes();
+            });
+        }
+        if (toDateInput) {
+            toDateInput.addEventListener('change', function() {
+                updateDateConstraints();
+                validateTimes();
+            });
+        }
+        if (fromTimeInput) {
+            fromTimeInput.addEventListener('change', validateTimes);
+        }
+        if (toTimeInput) {
+            toTimeInput.addEventListener('change', validateTimes);
+        }
+
+        updateDateConstraints();
+        validateTimes();
+
         // Define robust lookup with fallback to name attribute
         const getDistanceInput = () => document.getElementById('id_distance') || document.getElementsByName('distance')[0];
         const getDurationInput = () => document.getElementById('id_duration') || document.getElementsByName('duration')[0];

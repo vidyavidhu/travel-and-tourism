@@ -531,7 +531,16 @@ class MyTripsView(LoginRequiredMixin, ListView):
         except Coordinator.DoesNotExist:
             coordinator = None
             
-        queryset = Trip.objects.filter( Q(trip_members__member=member) | Q(coordinator=coordinator)).distinct() 
+        conditions = Q()
+        if member is not None:
+            conditions |= Q(trip_members__member=member)
+        if coordinator is not None:
+            conditions |= Q(coordinator=coordinator)
+
+        if member is None and coordinator is None:
+            queryset = Trip.objects.none()
+        else:
+            queryset = Trip.objects.filter(conditions).distinct() 
 
         self.filter_form = TripFilterForm(self.request.GET)
         if self.filter_form.is_valid():

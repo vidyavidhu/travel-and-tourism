@@ -36,6 +36,23 @@ class TripForm(forms.ModelForm):
                     qs = qs.exclude(id__in=busy_coordinator_ids)
                     
                 self.fields['coordinator'].queryset = qs
+
+    def clean(self):
+        cleaned_data = super().clean()
+        from_date = cleaned_data.get('from_date')
+        to_date = cleaned_data.get('to_date')
+        from_time = cleaned_data.get('from_time')
+        to_time = cleaned_data.get('to_time')
+
+        if from_date and to_date:
+            if from_date > to_date:
+                self.add_error('to_date', "To date must be on or after the From date.")
+            elif from_date == to_date:
+                if from_time and to_time and from_time > to_time:
+                    self.add_error('to_time', "To time must be on or after the From time when the dates are the same.")
+
+        return cleaned_data
+
     class Meta:
         model = Trip
         fields = ['image', 'title', 'category', 'location_from_name', 'location_from_lattitude', 'location_from_longitude', 'location_to_name', 'location_to_lattitude', 'location_to_longitude', 'distance', 'from_date', 'from_time', 'to_date', 'to_time', 'duration', 'description', 'coordinator', 'guidelines', 'status']
