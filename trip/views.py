@@ -113,6 +113,10 @@ class TripDetailView(DetailView):
         actual_collection = trip_members.aggregate(Sum('paid_amount'))['paid_amount__sum'] or 0.0
         context['actual_collection'] = actual_collection
         
+        # Pending collection = sum of unpaid_amount of all joined trip members (status=1)
+        pending_collection = trip_members.filter(status=1).aggregate(Sum('unpaid_amount'))['unpaid_amount__sum'] or 0.0
+        context['pending_collection'] = pending_collection
+        
         # Total expenses = sum of active expenses (NORMAL_EXPENSE or APPROVED MEMBER_REIMBURSEMENT)
         expenses = Expenses.objects.filter(trip=trip).order_by('-id')
         total_expenses = expenses.filter(
@@ -787,7 +791,7 @@ def export_finance_excel(request, pk):
     expenses_qs = Expenses.objects.filter(trip=trip).order_by('-id')
     total_expenses = expenses_qs.aggregate(Sum('amount'))['amount__sum'] or 0.0
     pending_money = actual_collection - total_expenses
-    outstanding_unpaid = trip_members.aggregate(Sum('unpaid_amount'))['unpaid_amount__sum'] or 0.0
+    outstanding_unpaid = trip_members.filter(status=1).aggregate(Sum('unpaid_amount'))['unpaid_amount__sum'] or 0.0
     total_expected = estimated_cost  # Base expected collection
     
     # Initialize Workbook
@@ -1020,7 +1024,7 @@ def export_finance_pdf(request, pk):
     expenses = Expenses.objects.filter(trip=trip).order_by('-id')
     total_expenses = expenses.aggregate(Sum('amount'))['amount__sum'] or 0.0
     pending_money = actual_collection - total_expenses
-    outstanding_unpaid = trip_members.aggregate(Sum('unpaid_amount'))['unpaid_amount__sum'] or 0.0
+    outstanding_unpaid = trip_members.filter(status=1).aggregate(Sum('unpaid_amount'))['unpaid_amount__sum'] or 0.0
     
     context = {
         'trip': trip,

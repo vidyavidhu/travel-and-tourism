@@ -249,17 +249,17 @@
                                 </div>
                                 <div class="row g-3 mb-4">
                                     <div class="col-md-6 col-lg-3">
-                                        <div class="py-2 px-3 border rounded-3 bg-white shadow-sm border-start border-4 border-primary h-100">
-                                            <small class="text-muted text-uppercase fw-bold" style="font-size: 0.72rem;"><i class="fas fa-wallet me-1 text-primary"></i> Expected Collection</small>
-                                            <hr class="my-1" style="opacity: 0.15;">
-                                            <h5 class="mb-0 fw-bold text-dark fs-5">₹{{ estimated_cost|floatformat:2 }}</h5>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6 col-lg-3">
                                         <div class="py-2 px-3 border rounded-3 bg-white shadow-sm border-start border-4 border-success h-100">
                                             <small class="text-muted text-uppercase fw-bold" style="font-size: 0.72rem;"><i class="fas fa-hand-holding-usd me-1 text-success"></i> Actual Collection</small>
                                             <hr class="my-1" style="opacity: 0.15;">
                                             <h5 class="mb-0 fw-bold text-success fs-5">₹{{ actual_collection|floatformat:2 }}</h5>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 col-lg-3">
+                                        <div class="py-2 px-3 border rounded-3 bg-white shadow-sm border-start border-4 border-warning h-100">
+                                            <small class="text-muted text-uppercase fw-bold" style="font-size: 0.72rem;"><i class="fas fa-clock me-1 text-warning"></i> Pending Collection</small>
+                                            <hr class="my-1" style="opacity: 0.15;">
+                                            <h5 class="mb-0 fw-bold text-warning fs-5">₹{{ pending_collection|floatformat:2 }}</h5>
                                         </div>
                                     </div>
                                     <div class="col-md-6 col-lg-3">
