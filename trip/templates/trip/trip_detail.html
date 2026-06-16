@@ -736,7 +736,7 @@
                                                         <th class="text-center">Group Size</th>
                                                         <th>Payment Status</th>
                                                         <th class="text-end">Paid Amount</th>
-                                                        <th class="text-end">Unpaid Amount</th>
+                                                        <th class="text-center">Refund Info</th>
                                                         <th>Notes</th>
                                                         <th class="text-end">Actions</th>
                                                     </tr>
@@ -756,15 +756,39 @@
                                                             <span class="badge bg-light text-secondary">Cancelled</span>
                                                         </td>
                                                         <td class="text-end text-muted">₹{{ tm.paid_amount|floatformat:2 }}</td>
-                                                        <td class="text-end text-muted">₹{{ tm.unpaid_amount|floatformat:2 }}</td>
+                                                        <td class="text-center">
+                                                            {% if tm.refund_status == 'PENDING' %}
+                                                                <span class="badge bg-warning text-dark px-2.5 py-1.5 rounded-pill" style="font-size: 0.75rem;">
+                                                                    <i class="fas fa-clock me-1"></i> Pending (₹{{ tm.refund_amount|floatformat:2 }})
+                                                                </span>
+                                                            {% elif tm.refund_status == 'REFUNDED' %}
+                                                                <span class="badge bg-success px-2.5 py-1.5 rounded-pill" style="font-size: 0.75rem;">
+                                                                    <i class="fas fa-check-circle me-1"></i> Refunded (₹{{ tm.refund_amount|floatformat:2 }})
+                                                                </span>
+                                                            {% else %}
+                                                                <span class="badge bg-light text-secondary border px-2.5 py-1.5 rounded-pill" style="font-size: 0.75rem;">
+                                                                    No Refund
+                                                                </span>
+                                                            {% endif %}
+                                                        </td>
                                                         <td class="text-muted small">{{ tm.description|default:"-"|truncatechars:30 }}</td>
                                                         <td class="text-end">
-                                                            <a href="{% url 'trip_members_update' tm.pk %}" 
-                                                               class="btn btn-outline-warning btn-sm rounded-circle shadow-sm"
-                                                               style="width: 32px; height: 32px; padding:0; display:inline-flex; align-items:center; justify-content:center;"
-                                                               title="Edit Member">
-                                                                <i class="fas fa-edit"></i>
-                                                            </a>
+                                                            <div class="d-inline-flex align-items-center gap-1.5">
+                                                                {% if tm.refund_status == 'PENDING' %}
+                                                                <form action="{% url 'process_refund' tm.id %}" method="POST" class="d-inline" onsubmit="return confirm('Are you sure you want to process this refund of ₹{{ tm.refund_amount|floatformat:2 }} for {{ tm.member.user.get_full_name }}?');">
+                                                                    {% csrf_token %}
+                                                                    <button type="submit" class="btn btn-success btn-sm px-3 rounded-pill fw-semibold shadow-xs" style="font-size: 0.75rem; background-color: #28a745 !important; border-color: #28a745 !important;">
+                                                                        <i class="fas fa-hand-holding-usd me-1"></i> Process Refund
+                                                                    </button>
+                                                                </form>
+                                                                {% endif %}
+                                                                <a href="{% url 'trip_members_update' tm.pk %}" 
+                                                                   class="btn btn-outline-warning btn-sm rounded-circle shadow-sm"
+                                                                   style="width: 32px; height: 32px; padding:0; display:inline-flex; align-items:center; justify-content:center;"
+                                                                   title="Edit Member">
+                                                                    <i class="fas fa-edit"></i>
+                                                                </a>
+                                                            </div>
                                                         </td>
                                                     </tr>
                                                     {% endfor %}

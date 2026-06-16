@@ -298,3 +298,56 @@ def join_trip(request, trip_id):
             return redirect('home_trip_details', pk=trip.id)
         
     return render(request, 'join_trip.html', context)
+
+@login_required
+def cancel_booking(request, booking_id):
+    booking = get_object_or_404(Trip_Members, pk=booking_id, member__user=request.user)
+    trip = booking.trip
+    
+    if trip.is_started or trip.status == 2:
+        messages.error(request, "This trip has already commenced or finished. You cannot cancel your booking.")
+        return redirect('home_trip_details', pk=trip.id)
+        
+    if booking.status == 2:
+        messages.info(request, "Your booking is already cancelled.")
+        return redirect('home_trip_details', pk=trip.id)
+
+    from datetime import date
+    days_until_departure = (trip.from_date - date.today()).days
+    
+    is_refundable = False
+    if trip.cancellation_policy > 0:
+        is_refundable = days_until_departure >= trip.cancellation_policy
+        
+    if request.method == 'POST':
+        booking.status = 2  # Cancelled
+        if is_refundable and booking.paid_amount > 0:
+            booking.refund_amount = booking.paid_amount
+            booking.refund_status = 'PENDING'
+            messages.success(request, f"Your booking has been cancelled. A refund of ₹{booking.refund_amount:.2f} is pending.")
+        else:
+            booking.refund_amount = 0.0
+            booking.refund_status = 'NONE'
+            if booking.paid_amount > 0:
+                messages.success(request, f"Your booking has been cancelled. As per policy, your payment of ₹{booking.paid_amount:.2f} is non-refundable.")
+            else:
+                messages.success(request, "Your booking request has been cancelled.")
+                
+        # Free up capacity by deleting associated co-traveller records
+        CoTraveller.objects.filter(trip=trip, user=request.user).delete()
+        
+        booking.save()
+        
+        # Trigger trip finance recalculation
+        trip.recalculate_finance()
+        
+        return redirect('home_trip_details', pk=trip.id)
+        
+    context = {
+        'booking': booking,
+        'trip': trip,
+        'days_until_departure': days_until_departure,
+        'is_refundable': is_refundable,
+        'paid_amount': booking.paid_amount,
+    }
+    return render(request, 'cancel_booking.html', context)

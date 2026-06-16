@@ -651,6 +651,24 @@ class TripFinishView(LoginRequiredMixin, View):
         messages.success(request, f"Trip '{trip.title}' has been successfully finished!")
         return redirect(reverse('trip_detail', kwargs={'pk': trip.pk}))
 
+class ProcessRefundView(LoginRequiredMixin, View):
+    def post(self, request, booking_id):
+        booking = get_object_or_404(Trip_Members, pk=booking_id)
+        trip = booking.trip
+        
+        if not (request.user.is_superuser or request.user.is_staff or trip.coordinator.user == request.user):
+            messages.error(request, "You do not have permission to process refunds for this trip.")
+            return redirect(reverse('trip_detail', kwargs={'pk': trip.pk}))
+            
+        if booking.refund_status != 'PENDING':
+            messages.error(request, "This booking does not have a pending refund.")
+            return redirect(reverse('trip_detail', kwargs={'pk': trip.pk}))
+            
+        booking.refund_status = 'REFUNDED'
+        booking.save()
+        messages.success(request, f"Refund of ₹{booking.refund_amount:.2f} for {booking.member.user.get_full_name()} has been successfully processed.")
+        return redirect(reverse('trip_detail', kwargs={'pk': trip.pk}))
+
 class TripBroadcastCreateView(LoginRequiredMixin, View):
     def post(self, request, trip_id):
         trip = get_object_or_404(Trip, pk=trip_id)

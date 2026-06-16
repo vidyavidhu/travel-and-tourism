@@ -78,7 +78,7 @@ class TripForm(forms.ModelForm):
 
     class Meta:
         model = Trip
-        fields = ['image', 'title', 'category', 'max_members', 'location_from_name', 'location_from_lattitude', 'location_from_longitude', 'location_to_name', 'location_to_lattitude', 'location_to_longitude', 'distance', 'from_date', 'from_time', 'to_date', 'to_time', 'duration', 'description', 'coordinator', 'guidelines', 'status', 'approval_required']
+        fields = ['image', 'title', 'category', 'max_members', 'location_from_name', 'location_from_lattitude', 'location_from_longitude', 'location_to_name', 'location_to_lattitude', 'location_to_longitude', 'distance', 'from_date', 'from_time', 'to_date', 'to_time', 'duration', 'description', 'coordinator', 'guidelines', 'status', 'approval_required', 'cancellation_policy']
         exclude = []
         widgets = {
             'from_date': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
@@ -102,6 +102,7 @@ class TripForm(forms.ModelForm):
             'coordinator': forms.Select(attrs={'class': 'form-control'}),
             'image': forms.FileInput(attrs={'class': 'form-control'}),
             'approval_required': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+            'cancellation_policy': forms.Select(attrs={'class': 'form-select'}),
         }
 
 class TripFilterForm(forms.Form):

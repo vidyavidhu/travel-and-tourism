@@ -64,6 +64,15 @@ class Trip(models.Model):
     finish_reason = models.TextField(null=True, blank=True)
     approval_required = models.BooleanField(default=True)
     max_members = models.IntegerField(default=0)
+    CANCELLATION_POLICY_CHOICES = [
+        (0, 'No Refund'),
+        (1, 'Refundable before 1 day'),
+        (2, 'Refundable before 2 days'),
+        (3, 'Refundable before 3 days'),
+        (4, 'Refundable before 4 days'),
+        (5, '5 Days and Above'),
+    ]
+    cancellation_policy = models.IntegerField(default=0, choices=CANCELLATION_POLICY_CHOICES)
 
     def clean(self):
         super().clean()
@@ -210,6 +219,13 @@ class Trip_Members(models.Model):
     paid_amount = models.FloatField(default=0.0)
     unpaid_amount = models.FloatField(default=0.0)
     description = models.TextField(null=True, blank=True) 
+    REFUND_STATUS_CHOICES = [
+        ('NONE', 'No Refund'),
+        ('PENDING', 'Refund Pending'),
+        ('REFUNDED', 'Refunded'),
+    ]
+    refund_amount = models.FloatField(default=0.0)
+    refund_status = models.CharField(max_length=20, choices=REFUND_STATUS_CHOICES, default='NONE') 
 
     @property
     def group_size(self):

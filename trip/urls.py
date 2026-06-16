@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import TripListView, TripDetailView, TripCreateView, TripUpdateView, TripDeleteView, TripDetailsCreateView, TripDetailsUpdateView, TripMembersCreateView, TripMembersUpdateView, TripDayCreateView, ItineraryCreateView, ItineraryDetailView, GalleryCreateView, CommentCreateView, CommentLikeView, ReplyCreateView, MyTripsView, TripMemberApproveView, TripFinishView, TripBroadcastCreateView, ItineraryCancelView, ItineraryDismissCancelView, trip_member_detail, export_finance_excel, export_finance_pdf, rate_trip, rate_itinerary
+from .views import TripListView, TripDetailView, TripCreateView, TripUpdateView, TripDeleteView, TripDetailsCreateView, TripDetailsUpdateView, TripMembersCreateView, TripMembersUpdateView, TripDayCreateView, ItineraryCreateView, ItineraryDetailView, GalleryCreateView, CommentCreateView, CommentLikeView, ReplyCreateView, MyTripsView, TripMemberApproveView, TripFinishView, TripBroadcastCreateView, ItineraryCancelView, ItineraryDismissCancelView, trip_member_detail, export_finance_excel, export_finance_pdf, rate_trip, rate_itinerary, ProcessRefundView
 from finance.views import ExpenseCreateView, ExpenseDeleteView, submit_reimbursement, approve_reimbursement, reject_reimbursement, pay_reimbursement
 
 urlpatterns = [
@@ -25,6 +25,7 @@ urlpatterns = [
     path('members/<int:pk>/update/', TripMembersUpdateView.as_view(), name='trip_members_update'),
     path('members/<int:pk>/approve/', TripMemberApproveView.as_view(), name='trip_member_approve'),
     path('members/<int:tm_id>/detail/', trip_member_detail, name='trip_member_detail'),
+    path('booking/<int:booking_id>/process-refund/', ProcessRefundView.as_view(), name='process_refund'),
     
     # Trip Days & Itinerary
     path('<int:trip_id>/days/add/', TripDayCreateView.as_view(), name='trip_day_create'),
