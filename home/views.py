@@ -9,7 +9,14 @@ from member.models import Member
 def home_view(request):
     today = timezone.localdate()
     trips = Trip.objects.filter(status=1, to_date__gte=today).order_by('-id')
-    return render(request, 'home.html', {'trips': trips})
+    
+    from django.db.models import Q
+    completed_trips = Trip.objects.filter(Q(status=2) | Q(status=1, to_date__lt=today)).order_by('-to_date')
+    
+    return render(request, 'home.html', {
+        'trips': trips,
+        'completed_trips': completed_trips
+    })
 
 def home_trip_details(request, pk):
     trip = get_object_or_404(Trip, pk=pk)
