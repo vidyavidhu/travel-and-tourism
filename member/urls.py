@@ -26,4 +26,10 @@ urlpatterns = [
     path('admin-dashboard/coordinators/notify/', views.admin_coordinator_notify_view, name='admin_coordinator_notify'),
     path('notifications/<int:pk>/mark-read/', views.mark_notification_read_view, name='mark_notification_read'),
     path('trip-broadcasts/<int:pk>/mark-read/', views.mark_trip_broadcast_read_view, name='mark_trip_broadcast_read'),
+    
+    # Member access control routes
+    path('admin-dashboard/members/<int:pk>/toggle-access/', views.admin_member_toggle_access, name='admin_member_toggle_access'),
+    path('admin-dashboard/members/<int:pk>/cancel-trips/', views.admin_member_cancel_trips, name='admin_member_cancel_trips'),
+    path('admin-dashboard/members/<int:pk>/handle-request/<str:action>/', views.admin_member_handle_request, name='admin_member_handle_request'),
+    path('request-access/', views.member_request_access, name='member_request_access'),
 ]+static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

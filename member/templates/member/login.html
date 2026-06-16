@@ -21,6 +21,32 @@
                 <div class="alert alert-{{ message.tags }}">{{ message }}</div>
                 {% endfor %}
                 {% endif %}
+
+                {% if blocked_user %}
+                <div class="alert alert-danger" style="border-radius: 12px; margin-bottom: 20px; border-left: 4px solid #ef4444; color: #842029; background-color: #f8d7da; border-color: #f5c2c7;">
+                    <h5 class="fw-bold mb-2" style="font-size: 1rem;"><i class="fas fa-exclamation-triangle me-1"></i> Account Access Restricted</h5>
+                    <p class="small mb-3" style="font-size: 0.85rem;">Your account access has been restricted by the administrator. You cannot log in at this time.</p>
+                    
+                    {% if request_status == 'none' %}
+                    <form action="{% url 'member_request_access' %}" method="post">
+                        {% csrf_token %}
+                        <input type="hidden" name="username" value="{{ blocked_user }}">
+                        <input type="hidden" name="next" value="{{ next }}">
+                        <button type="submit" class="btn btn-sm btn-danger w-100 fw-semibold" style="border-radius: 8px; font-size: 0.85rem;">
+                            <i class="fas fa-paper-plane me-1"></i> Request to Regain Access
+                        </button>
+                    </form>
+                    {% elif request_status == 'pending' %}
+                    <div class="bg-warning bg-opacity-10 text-dark p-2 rounded small fw-semibold text-center" style="border: 1px solid rgba(255, 193, 7, 0.5); font-size: 0.85rem; background-color: #fff3cd;">
+                        <i class="fas fa-hourglass-half me-1"></i> Regain Access Request Pending Review
+                    </div>
+                    {% elif request_status == 'rejected' %}
+                    <div class="bg-danger bg-opacity-10 text-dark p-2 rounded small fw-semibold text-center" style="border: 1px solid rgba(220, 53, 69, 0.5); font-size: 0.85rem; background-color: #f8d7da;">
+                        <i class="fas fa-times-circle me-1"></i> Request Rejected. Please contact admin.
+                    </div>
+                    {% endif %}
+                </div>
+                {% endif %}
                 <div class="form-group">
                     <label for="username">Username</label>
                     <input type="text" id="username" name="username" class="form-control" required>

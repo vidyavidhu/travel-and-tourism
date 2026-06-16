@@ -15,6 +15,14 @@ class Member(models.Model):
     # emergency_relationship = models.CharField(max_length=100)
     description = models.TextField(null=True, blank=True) 
     is_coordinator = models.BooleanField(default=False)
+    access_denied = models.BooleanField(default=False)
+    access_request = models.CharField(max_length=20, default='none')
+
+    @property
+    def active_trip_count(self):
+        from trip.models import Trip_Members
+        return Trip_Members.objects.filter(member=self).exclude(status=2).count()
+
     def __str__(self):
         return self.user.username
 

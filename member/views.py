@@ -100,6 +100,18 @@ def login_view(request):
         
         user = authenticate(request, username=username, password=password)
         if user is not None:
+            try:
+                member_profile = user.member
+                if member_profile.access_denied:
+                    messages.error(request, "Access Denied by Admin. Please contact admin to regain access.")
+                    return render(request, 'member/login.html', {
+                        'next': next_url,
+                        'blocked_user': user.username,
+                        'request_status': member_profile.access_request
+                    })
+            except Exception:
+                pass
+
             login(request, user)
             if not hasattr(user, 'member'):
                 if next_url:
@@ -288,11 +300,41 @@ def admin_dashboard_view(request):
     total_coordinators = Coordinator.objects.count()
     pending_coordinators = Coordinator.objects.filter(is_approved=False).count()
     
+    # Member list and filtering logic
+    from django.db.models import Q
+    members = Member.objects.all().order_by('-id')
+    total_members = members.count()
+    
+    member_search = request.GET.get('member_search', '').strip()
+    member_status = request.GET.get('member_status', '').strip()
+    
+    if member_search:
+        members = members.filter(
+            Q(user__username__icontains=member_search) |
+            Q(user__first_name__icontains=member_search) |
+            Q(user__last_name__icontains=member_search) |
+            Q(user__email__icontains=member_search)
+        )
+        
+    if member_status == 'active':
+        members = members.filter(access_denied=False)
+    elif member_status == 'blocked':
+        members = members.filter(access_denied=True).exclude(access_request='pending')
+    elif member_status == 'pending':
+        members = members.filter(access_denied=True, access_request='pending')
+        
+    expand_members = bool(request.GET.get('expand_members') or member_search or member_status)
+    
     context = {
         'monthly_trips': dict(monthly_trips),
         'total_trips': total_trips,
         'total_coordinators': total_coordinators,
         'pending_coordinators': pending_coordinators,
+        'members': members,
+        'total_members': total_members,
+        'member_search': member_search,
+        'member_status': member_status,
+        'expand_members': expand_members,
     }
     return render(request, 'member/admin_dashboard.html', context)
 
@@ -457,5 +499,88 @@ def password_reset_confirm_view(request, uidb64, token):
 
 def password_reset_complete_view(request):
     return render(request, 'member/password_reset_complete.html')
+
+from django.views.decorators.http import require_POST
+from django.urls import reverse
+
+@admin_required
+@require_POST
+def admin_member_toggle_access(request, pk):
+    member = get_object_or_404(Member, pk=pk)
+    member.access_denied = not member.access_denied
+    if not member.access_denied:
+        # Reset request status if we unblock the user
+        member.access_request = 'none'
+    member.save()
+    status_str = "blocked" if member.access_denied else "unblocked/allowed"
+    messages.success(request, f"Member '{member.user.username}' access has been {status_str}.")
+    
+    # Preserve filters in redirect
+    query_params = request.GET.urlencode()
+    redirect_url = reverse('admin_dashboard') + '?expand_members=true'
+    if query_params:
+        redirect_url += '&' + query_params
+    return redirect(redirect_url)
+
+@admin_required
+@require_POST
+def admin_member_cancel_trips(request, pk):
+    member = get_object_or_404(Member, pk=pk)
+    from trip.models import Trip_Members
+    
+    # Cancel all active/pending trip memberships
+    active_memberships = Trip_Members.objects.filter(member=member).exclude(status=2)
+    count = active_memberships.count()
+    
+    for tm in active_memberships:
+        tm.status = 2  # Cancelled
+        tm.save()  # Triggers recalculate_finance internally in model save
+        
+    messages.success(request, f"Successfully cancelled all active trip participations ({count}) for member '{member.user.username}'.")
+    
+    # Preserve filters in redirect
+    query_params = request.GET.urlencode()
+    redirect_url = reverse('admin_dashboard') + '?expand_members=true'
+    if query_params:
+        redirect_url += '&' + query_params
+    return redirect(redirect_url)
+
+@admin_required
+@require_POST
+def admin_member_handle_request(request, pk, action):
+    member = get_object_or_404(Member, pk=pk)
+    if action == 'accept':
+        member.access_denied = False
+        member.access_request = 'none'
+        messages.success(request, f"Successfully approved access request and unblocked member '{member.user.username}'.")
+    elif action == 'reject':
+        member.access_request = 'rejected'
+        messages.success(request, f"Rejected regain access request for member '{member.user.username}'. Account remains blocked.")
+    member.save()
+    
+    # Preserve filters in redirect
+    query_params = request.GET.urlencode()
+    redirect_url = reverse('admin_dashboard') + '?expand_members=true'
+    if query_params:
+        redirect_url += '&' + query_params
+    return redirect(redirect_url)
+
+@require_POST
+def member_request_access(request):
+    username = request.POST.get('username')
+    next_url = request.POST.get('next', '')
+    
+    if username:
+        try:
+            user = User.objects.get(username=username)
+            if hasattr(user, 'member') and user.member.access_denied:
+                member = user.member
+                member.access_request = 'pending'
+                member.save()
+                messages.success(request, "Your request to regain access has been sent to the admin. Please wait for approval.")
+        except User.DoesNotExist:
+            messages.error(request, "User not found.")
+            
+    return redirect(reverse('member_login') + f"?next={next_url}")
 
 
