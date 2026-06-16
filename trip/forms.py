@@ -50,12 +50,29 @@ class TripForm(forms.ModelForm):
         from_time = cleaned_data.get('from_time')
         to_time = cleaned_data.get('to_time')
 
-        if from_date and to_date:
-            if from_date > to_date:
-                self.add_error('to_date', "To date must be on or after the From date.")
-            elif from_date == to_date:
-                if from_time and to_time and from_time > to_time:
-                    self.add_error('to_time', "To time must be on or after the From time when the dates are the same.")
+        from django.utils import timezone
+        today = timezone.localdate()
+
+        if from_date and from_date < today:
+            self.add_error('from_date', "From date cannot be in the past.")
+
+        if from_date and from_date == today:
+            # Check from_time is not in the past today
+            current_time = timezone.localtime().time()
+            if from_time and from_time < current_time:
+                self.add_error('from_time', "From time cannot be in the past for today's date.")
+
+        if to_date:
+            if from_date:
+                if to_date < from_date:
+                    self.add_error('to_date', "To date must be on or after the From date.")
+            else:
+                if to_date < today:
+                    self.add_error('to_date', "To date cannot be in the past.")
+
+        if from_date and to_date and from_date == to_date:
+            if from_time and to_time and from_time >= to_time:
+                self.add_error('to_time', "To time must be after the From time when the dates are the same.")
 
         return cleaned_data
 

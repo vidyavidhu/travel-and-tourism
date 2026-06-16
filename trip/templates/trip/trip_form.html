@@ -82,6 +82,7 @@
                                                         <div class="form-floating-custom position-relative">
                                                             <label for="{{ form.from_date.id_for_label }}" class="form-label fw-semibold text-dark mb-2">Date {% if form.from_date.field.required %}<span class="text-danger">*</span>{% endif %}</label>
                                                             {% render_field form.from_date class="form-control premium-input" %}
+                                                            <div id="from_date_client_error" class="invalid-feedback fw-medium mt-1"><i class="fas fa-info-circle me-1"></i>From date cannot be in the past.</div>
                                                             {% if form.from_date.errors %}
                                                                 <div class="invalid-feedback d-block fw-medium mt-1">{% for error in form.from_date.errors %}<i class="fas fa-info-circle me-1"></i>{{ error }}{% endfor %}</div>
                                                             {% endif %}
@@ -93,6 +94,7 @@
                                                         <div class="form-floating-custom position-relative">
                                                             <label for="{{ form.from_time.id_for_label }}" class="form-label fw-semibold text-dark mb-2">Time {% if form.from_time.field.required %}<span class="text-danger">*</span>{% endif %}</label>
                                                             {% render_field form.from_time class="form-control premium-input" %}
+                                                            <div id="from_time_client_error" class="invalid-feedback fw-medium mt-1"><i class="fas fa-info-circle me-1"></i>From time cannot be in the past for today's date.</div>
                                                             {% if form.from_time.errors %}
                                                                 <div class="invalid-feedback d-block fw-medium mt-1">{% for error in form.from_time.errors %}<i class="fas fa-info-circle me-1"></i>{{ error }}{% endfor %}</div>
                                                             {% endif %}
@@ -127,6 +129,7 @@
                                                         <div class="form-floating-custom position-relative">
                                                             <label for="{{ form.to_date.id_for_label }}" class="form-label fw-semibold text-dark mb-2">Date {% if form.to_date.field.required %}<span class="text-danger">*</span>{% endif %}</label>
                                                             {% render_field form.to_date class="form-control premium-input" %}
+                                                            <div id="to_date_client_error" class="invalid-feedback fw-medium mt-1"><i class="fas fa-info-circle me-1"></i>To date must be on or after the From date.</div>
                                                             {% if form.to_date.errors %}
                                                                 <div class="invalid-feedback d-block fw-medium mt-1">{% for error in form.to_date.errors %}<i class="fas fa-info-circle me-1"></i>{{ error }}{% endfor %}</div>
                                                             {% endif %}
@@ -138,6 +141,7 @@
                                                         <div class="form-floating-custom position-relative">
                                                             <label for="{{ form.to_time.id_for_label }}" class="form-label fw-semibold text-dark mb-2">Time {% if form.to_time.field.required %}<span class="text-danger">*</span>{% endif %}</label>
                                                             {% render_field form.to_time class="form-control premium-input" %}
+                                                            <div id="to_time_client_error" class="invalid-feedback fw-medium mt-1"><i class="fas fa-info-circle me-1"></i>To time must be after the From time when the dates are the same.</div>
                                                             {% if form.to_time.errors %}
                                                                 <div class="invalid-feedback d-block fw-medium mt-1">{% for error in form.to_time.errors %}<i class="fas fa-info-circle me-1"></i>{{ error }}{% endfor %}</div>
                                                             {% endif %}
@@ -319,12 +323,56 @@
         const fromTimeInput = document.getElementById('id_from_time');
         const toTimeInput = document.getElementById('id_to_time');
 
+        // Helper to add one minute for HTML5 time input 'min' attribute
+        function addOneMinute(timeStr) {
+            if (!timeStr) return "";
+            let [hours, minutes] = timeStr.split(':').map(Number);
+            minutes += 1;
+            if (minutes >= 60) {
+                minutes = 0;
+                hours += 1;
+            }
+            if (hours >= 24) {
+                return "23:59";
+            }
+            const paddedHours = String(hours).padStart(2, '0');
+            const paddedMinutes = String(minutes).padStart(2, '0');
+            return `${paddedHours}:${paddedMinutes}`;
+        }
+
+        // Helper to subtract one minute for HTML5 time input 'max' attribute
+        function subtractOneMinute(timeStr) {
+            if (!timeStr) return "";
+            let [hours, minutes] = timeStr.split(':').map(Number);
+            minutes -= 1;
+            if (minutes < 0) {
+                minutes = 59;
+                hours -= 1;
+            }
+            if (hours < 0) {
+                return "00:00";
+            }
+            const paddedHours = String(hours).padStart(2, '0');
+            const paddedMinutes = String(minutes).padStart(2, '0');
+            return `${paddedHours}:${paddedMinutes}`;
+        }
+
         function updateDateConstraints() {
+            const today = new Date();
+            const yyyy = today.getFullYear();
+            const mm = String(today.getMonth() + 1).padStart(2, '0');
+            const dd = String(today.getDate()).padStart(2, '0');
+            const todayStr = `${yyyy}-${mm}-${dd}`;
+
+            if (fromDateInput) {
+                fromDateInput.min = todayStr;
+            }
+
             if (fromDateInput && toDateInput) {
                 if (fromDateInput.value) {
                     toDateInput.min = fromDateInput.value;
                 } else {
-                    toDateInput.removeAttribute('min');
+                    toDateInput.min = todayStr;
                 }
 
                 if (toDateInput.value) {
@@ -335,46 +383,140 @@
             }
         }
 
+        function validateDates() {
+            let isValid = true;
+            const today = new Date();
+            const yyyy = today.getFullYear();
+            const mm = String(today.getMonth() + 1).padStart(2, '0');
+            const dd = String(today.getDate()).padStart(2, '0');
+            const todayStr = `${yyyy}-${mm}-${dd}`;
+
+            // Make sure constraints are up to date
+            updateDateConstraints();
+
+            if (fromDateInput && fromDateInput.value) {
+                if (fromDateInput.value < todayStr) {
+                    fromDateInput.classList.add('is-invalid');
+                    isValid = false;
+                } else {
+                    fromDateInput.classList.remove('is-invalid');
+                }
+            } else if (fromDateInput) {
+                fromDateInput.classList.remove('is-invalid');
+            }
+
+            if (toDateInput && toDateInput.value) {
+                const minToDate = fromDateInput && fromDateInput.value ? fromDateInput.value : todayStr;
+                if (toDateInput.value < minToDate) {
+                    toDateInput.classList.add('is-invalid');
+                    isValid = false;
+                } else {
+                    toDateInput.classList.remove('is-invalid');
+                }
+            } else if (toDateInput) {
+                toDateInput.classList.remove('is-invalid');
+            }
+
+            return isValid;
+        }
+
         function validateTimes() {
+            let isValid = true;
             if (fromDateInput && toDateInput && fromTimeInput && toTimeInput) {
-                if (fromDateInput.value && toDateInput.value && fromDateInput.value === toDateInput.value) {
+                const today = new Date();
+                const yyyy = today.getFullYear();
+                const mm = String(today.getMonth() + 1).padStart(2, '0');
+                const dd = String(today.getDate()).padStart(2, '0');
+                const todayStr = `${yyyy}-${mm}-${dd}`;
+                
+                const currentHours = String(today.getHours()).padStart(2, '0');
+                const currentMinutes = String(today.getMinutes()).padStart(2, '0');
+                const currentTimeStr = `${currentHours}:${currentMinutes}`;
+
+                const sameDate = fromDateInput.value && toDateInput.value && fromDateInput.value === toDateInput.value;
+                const isToday = fromDateInput.value === todayStr;
+
+                // 1. Validate From Time against Current Time if date is Today
+                if (isToday) {
+                    fromTimeInput.min = currentTimeStr;
+                    if (fromTimeInput.value && fromTimeInput.value < currentTimeStr) {
+                        fromTimeInput.classList.add('is-invalid');
+                        isValid = false;
+                    } else {
+                        fromTimeInput.classList.remove('is-invalid');
+                    }
+                } else {
+                    fromTimeInput.removeAttribute('min');
+                    fromTimeInput.classList.remove('is-invalid');
+                }
+
+                // 2. Validate To Time against From Time on same day
+                if (sameDate) {
                     if (fromTimeInput.value) {
-                        toTimeInput.min = fromTimeInput.value;
+                        toTimeInput.min = addOneMinute(fromTimeInput.value);
                     } else {
                         toTimeInput.removeAttribute('min');
                     }
                     if (toTimeInput.value) {
-                        fromTimeInput.max = toTimeInput.value;
+                        fromTimeInput.max = subtractOneMinute(toTimeInput.value);
                     } else {
-                        fromTimeInput.removeAttribute('max');
+                        if (!isToday) {
+                            fromTimeInput.removeAttribute('max');
+                        }
+                    }
+
+                    // Check if from time is equal to or greater than to time
+                    if (fromTimeInput.value && toTimeInput.value) {
+                        if (fromTimeInput.value >= toTimeInput.value) {
+                            toTimeInput.classList.add('is-invalid');
+                            isValid = false;
+                        } else {
+                            toTimeInput.classList.remove('is-invalid');
+                        }
+                    } else {
+                        toTimeInput.classList.remove('is-invalid');
                     }
                 } else {
                     toTimeInput.removeAttribute('min');
-                    fromTimeInput.removeAttribute('max');
+                    if (!isToday) {
+                        fromTimeInput.removeAttribute('max');
+                    }
+                    toTimeInput.classList.remove('is-invalid');
                 }
             }
+            return isValid;
         }
 
         if (fromDateInput) {
             fromDateInput.addEventListener('change', function() {
-                updateDateConstraints();
+                validateDates();
+                validateTimes();
+            });
+            fromDateInput.addEventListener('input', function() {
+                validateDates();
                 validateTimes();
             });
         }
         if (toDateInput) {
             toDateInput.addEventListener('change', function() {
-                updateDateConstraints();
+                validateDates();
+                validateTimes();
+            });
+            toDateInput.addEventListener('input', function() {
+                validateDates();
                 validateTimes();
             });
         }
         if (fromTimeInput) {
             fromTimeInput.addEventListener('change', validateTimes);
+            fromTimeInput.addEventListener('input', validateTimes);
         }
         if (toTimeInput) {
             toTimeInput.addEventListener('change', validateTimes);
+            toTimeInput.addEventListener('input', validateTimes);
         }
 
-        updateDateConstraints();
+        validateDates();
         validateTimes();
 
         // Define robust lookup with fallback to name attribute
@@ -484,7 +626,23 @@
         // Form Submit Synchronizer to guarantee values are submitted correctly
         const formElement = document.querySelector('form');
         if (formElement) {
-            formElement.addEventListener('submit', function () {
+            formElement.addEventListener('submit', function (e) {
+                // Perform date & time validation checks
+                const datesValid = validateDates();
+                const timesValid = validateTimes();
+                if (!datesValid || !timesValid) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    
+                    // Focus and scroll to the first invalid field
+                    const invalidField = document.querySelector('.premium-input.is-invalid');
+                    if (invalidField) {
+                        invalidField.focus();
+                        invalidField.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }
+                    return;
+                }
+
                 const distIn = getDistanceInput();
                 const durIn = getDurationInput();
 
