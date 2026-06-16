@@ -274,6 +274,11 @@ img {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+  box-sizing: border-box;
 }
 
 .logo-container img {
@@ -475,7 +480,12 @@ img {
   text-align: center;
 }
 
-.main-footer .container {
+.main-footer .footer-container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+  box-sizing: border-box;
   display: flex !important;
   flex-direction: row !important;
   align-items: center !important;
@@ -688,7 +698,12 @@ img {
   text-align: center;
 }
 
-.main-footer .container {
+.main-footer .footer-container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+  box-sizing: border-box;
   display: flex !important;
   flex-direction: row !important;
   align-items: center !important;
