@@ -64,9 +64,11 @@ def home_trip_details(request, pk):
     is_joined_or_coordinator = (membership_status == 1) or is_coordinator
             
     # Fetch joined members and attach their co-travellers
-    joined_members = trip_members.filter(status=1)
+    joined_members = list(trip_members.filter(status=1))
+    co_travellers_count = 0
     for tm in joined_members:
         tm.co_travellers_list = CoTraveller.objects.filter(trip=trip, user=tm.member.user)
+        co_travellers_count += tm.co_travellers_list.count()
         
     joined_count = sum(m.group_size for m in joined_members)
 
@@ -142,6 +144,7 @@ def home_trip_details(request, pk):
         'is_coordinator': is_coordinator,
         'is_joined_or_coordinator': is_joined_or_coordinator,
         'joined_members': joined_members,
+        'co_travellers_count': co_travellers_count,
         'joined_count': joined_count,
         'expenses': expenses,
         'normal_expenses': normal_expenses,

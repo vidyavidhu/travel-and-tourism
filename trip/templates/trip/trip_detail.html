@@ -1122,6 +1122,19 @@
                                     {{ trip.coordinator.member.name|default:trip.coordinator }}</span>
                             </div>
                         </li>
+
+                        <li class="d-flex align-items-center pt-3 border-top mt-1" style="cursor: pointer;" data-bs-toggle="modal" data-bs-target="#tripMembersListModal">
+                            <div class="detail-icon-box shadow-sm" style="background: var(--gradient-start); color: white;">
+                                <i class="fas fa-user-friends"></i>
+                            </div>
+                            <div class="flex-grow-1">
+                                <small class="text-muted d-block text-uppercase fw-bold"
+                                    style="font-size: 0.75rem;">Trip Members</small>
+                                <span class="fw-semibold text-dark">
+                                    {{ joined_members|length }} Member{{ joined_members|length|pluralize }} {% if co_travellers_count > 0 %}(+{{ co_travellers_count }} Co-members){% endif %}</span>
+                            </div>
+                            <i class="fas fa-chevron-right text-muted small ms-auto me-1"></i>
+                        </li>
                     </ul>
 
                     <a href="{% url 'trip_list' %}"
@@ -1625,4 +1638,92 @@
         }
     });
 </script>
+
+<!-- Modal for Trip Members List -->
+<div class="modal fade" id="tripMembersListModal" tabindex="-1" aria-labelledby="tripMembersListModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content border-0 rounded-4 shadow-lg" style="color: var(--dash-text, #212529);">
+            <div class="modal-header border-bottom-0 p-4 pb-0">
+                <h5 class="modal-title fw-bold text-dark" id="tripMembersListModalLabel"><i class="fas fa-users text-primary me-2"></i>Trip Members & Co-Travellers</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4">
+                <div class="table-responsive border rounded-4 overflow-hidden bg-white shadow-sm">
+                    <table class="table table-hover align-middle mb-0" style="font-size: 0.9rem;">
+                        <thead class="table-light text-uppercase font-monospace" style="font-size: 0.75rem;">
+                            <tr>
+                                <th style="padding-left: 20px;">Primary Member</th>
+                                <th>Contact No</th>
+                                <th>Co-Members</th>
+                                <th style="padding-right: 20px; text-align: right;">Group Size</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for tm in joined_members %}
+                            <tr class="align-top border-bottom">
+                                <td style="padding-left: 20px; padding-top: 15px; padding-bottom: 15px;">
+                                    <div class="d-flex align-items-center gap-2">
+                                        <div class="bg-primary bg-opacity-10 text-primary rounded-circle d-flex justify-content-center align-items-center fw-bold text-uppercase" style="width: 38px; height: 38px; font-size: 0.95rem;">
+                                            {{ tm.member.user.first_name|default:tm.member.user.username|first }}
+                                        </div>
+                                        <div>
+                                            <div class="fw-bold text-dark">{{ tm.member.user.first_name }} {{ tm.member.user.last_name }}</div>
+                                            <small class="text-muted">@{{ tm.member.user.username }}</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td style="padding-top: 15px; padding-bottom: 15px;">
+                                    <div class="fw-semibold text-dark">
+                                        {% if tm.member.phone %}
+                                            <a href="tel:{{ tm.member.phone }}" class="text-decoration-none text-dark"><i class="fas fa-phone-alt text-primary me-1.5 small"></i>{{ tm.member.phone }}</a>
+                                        {% else %}
+                                            <span class="text-muted italic small">No Phone</span>
+                                        {% endif %}
+                                    </div>
+                                    <small class="text-muted d-block mt-0.5"><i class="far fa-envelope me-1.5 small"></i>{{ tm.member.user.email }}</small>
+                                </td>
+                                <td style="padding-top: 15px; padding-bottom: 15px;">
+                                    {% if tm.co_travellers_list %}
+                                        <div class="d-flex flex-column gap-2">
+                                            {% for co in tm.co_travellers_list %}
+                                                <div class="bg-light p-2 rounded-3 border-start border-3 border-info" style="font-size: 0.8rem;">
+                                                    <div class="d-flex justify-content-between align-items-center">
+                                                        <span class="fw-bold text-dark">{{ co.name }}</span>
+                                                        <span class="badge bg-info-subtle text-info text-uppercase fw-bold rounded-1" style="font-size: 0.65rem; padding: 2px 5px;">{{ co.member_type.name }}</span>
+                                                    </div>
+                                                    <div class="text-muted mt-1" style="font-size: 0.75rem;">
+                                                        Age: {{ co.age|default:"-" }} | Gen: {{ co.gender|default:"-" }} | Blood: {{ co.bgroup|default:"-" }}
+                                                    </div>
+                                                    {% if co.description %}
+                                                        <div class="text-muted italic mt-0.5" style="font-size: 0.7rem;">"{{ co.description }}"</div>
+                                                    {% endif %}
+                                                </div>
+                                            {% endfor %}
+                                        </div>
+                                    {% else %}
+                                        <span class="text-muted italic small">No Co-Members</span>
+                                    {% endif %}
+                                </td>
+                                <td class="fw-bold text-dark" style="padding-right: 20px; padding-top: 15px; padding-bottom: 15px; text-align: right;">
+                                    {{ tm.group_size }}
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="4" class="text-center py-4 text-muted">
+                                    <i class="fas fa-user-friends mb-2 fs-3" style="opacity: 0.5;"></i>
+                                    <div>No members have joined this trip yet.</div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer border-top-0 p-4 pt-0">
+                <button type="button" class="btn btn-light rounded-3 px-4" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}
