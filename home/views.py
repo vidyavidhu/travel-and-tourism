@@ -134,11 +134,14 @@ def join_trip(request, trip_id):
     member, created = Member.objects.get_or_create(user=request.user)
     trip_member = Trip_Members.objects.filter(trip=trip, member=member).first()
     
-    if trip_member and trip_member.status in [0, 1]:
+    if trip_member and trip_member.status in [0, 1, 3]:
         if trip_member.status == 1:
             messages.info(request, "You are already a member of this trip!")
-        else:
+        elif trip_member.status == 0:
             messages.info(request, "Your request to join this trip is already pending approval.")
+        else:
+            messages.info(request, "Your registration is awaiting advance payment.")
+            return redirect('initiate_payment', booking_id=trip_member.id)
         return redirect('home_trip_details', pk=trip.id)
         
     try:
@@ -195,10 +198,20 @@ def join_trip(request, trip_id):
             messages.error(request, f"You can only add up to {max_co_travellers} adult co-travellers due to trip capacity.")
             return render(request, 'join_trip.html', context)
             
+        advance_required = False
+        if trip_details and getattr(trip_details, 'advance_amount', 0.0) > 0:
+            advance_required = True
+
         if not trip_member:
             trip_member = Trip_Members(trip=trip, member=member)
         
-        trip_member.status = 0  # 0 means Pending (Requested to Join)
+        if advance_required:
+            trip_member.status = 3  # Awaiting Advance Payment
+        else:
+            if getattr(trip, 'approval_required', True):
+                trip_member.status = 0  # Pending Approval
+            else:
+                trip_member.status = 1  # Joined
         
         # Optionally update profile info directly from the form
         phone = request.POST.get('phone')
@@ -238,7 +251,14 @@ def join_trip(request, trip_id):
         trip_member.unpaid_amount = per_head_cost * trip_member.group_size
         trip_member.save()
 
-        messages.success(request, f"Your request to join the '{trip.title}' adventure with {len(co_names)} co-traveller(s) has been successfully submitted and is pending coordinator approval!")
-        return redirect('home_trip_details', pk=trip.id)
+        if advance_required:
+            messages.success(request, f"Your registration is received. Please pay the advance of ₹{trip_details.advance_amount * trip_member.group_size:.2f} to complete your registration.")
+            return redirect('initiate_payment', booking_id=trip_member.id)
+        else:
+            if trip_member.status == 1:
+                messages.success(request, f"You have successfully joined the '{trip.title}' adventure!")
+            else:
+                messages.success(request, f"Your request to join the '{trip.title}' adventure has been successfully submitted and is pending coordinator approval!")
+            return redirect('home_trip_details', pk=trip.id)
         
     return render(request, 'join_trip.html', context)

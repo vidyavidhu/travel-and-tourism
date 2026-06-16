@@ -85,6 +85,7 @@ class TripDetailView(DetailView):
         context['pending_members'] = trip_members.filter(status=0)
         context['joined_members'] = trip_members.filter(status=1)
         context['cancelled_members'] = trip_members.filter(status=2)
+        context['awaiting_advance_members'] = trip_members.filter(status=3)
         
         # Calculate joined members count and left count
         joined_count = 0

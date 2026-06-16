@@ -62,6 +62,8 @@ class Trip(models.Model):
     ]
     status = models.IntegerField(default=1, choices=STATUS_CHOICES)  
     finish_reason = models.TextField(null=True, blank=True)
+    approval_required = models.BooleanField(default=True)
+
     @property
     def total_duration_days(self):
         if self.from_date and self.to_date:
@@ -142,6 +144,7 @@ class Trip_Details(models.Model):
     max_members = models.IntegerField(default=1)
     no_of_members = models.IntegerField(default=1)
     estimated_cost=models.FloatField() 
+    advance_amount = models.FloatField(default=0.0)
     description=models.TextField(null=True, blank=True) 
     
     @property

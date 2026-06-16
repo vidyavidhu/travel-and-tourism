@@ -95,9 +95,27 @@ def verify_payment(payment_id):
 
 def update_booking_status(payment):
     """
-    Updates the booking (Trip_Members) payment_status to Paid (1)
-    and invokes its save method which transfers unpaid balance automatically.
+    Updates the booking (Trip_Members) payment_status and registration status.
+    For advance payments (status=3), calculates remaining balance and sets final status.
     """
     booking = payment.booking
-    booking.payment_status = 1  # 1 represents PAID
+    if booking.status == 3:
+        booking.paid_amount = payment.amount
+        try:
+            per_head_cost = booking.trip.trip_details.per_head_cost
+        except Exception:
+            per_head_cost = 0.0
+        booking.unpaid_amount = max(0.0, (per_head_cost * booking.group_size) - payment.amount)
+        if booking.unpaid_amount <= 0.01:
+            booking.payment_status = 1  # PAID
+        else:
+            booking.payment_status = 0  # UNPAID / PARTIALLY PAID
+            
+        if getattr(booking.trip, 'approval_required', True):
+            booking.status = 0  # Pending Approval
+        else:
+            booking.status = 1  # Joined
+    else:
+        booking.payment_status = 1  # 1 represents PAID
+        
     booking.save()

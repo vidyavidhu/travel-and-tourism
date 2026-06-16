@@ -19,9 +19,21 @@ def initiate_payment(request, booking_id):
         return redirect('home_trip_details', pk=booking.trip.id)
         
     # Check if already paid or has no pending balance
-    if booking.payment_status == 1 or booking.unpaid_amount <= 0:
+    if booking.status != 3 and (booking.payment_status == 1 or booking.unpaid_amount <= 0):
         messages.info(request, "This trip booking is already fully paid!")
         return redirect('home_trip_details', pk=booking.trip.id)
+
+    # Determine amount to pay
+    try:
+        trip_details = booking.trip.trip_details
+        advance_amount = getattr(trip_details, 'advance_amount', 0.0) or 0.0
+    except Exception:
+        advance_amount = 0.0
+
+    if booking.status == 3 and advance_amount > 0:
+        amount_to_pay = advance_amount * booking.group_size
+    else:
+        amount_to_pay = booking.unpaid_amount
 
     if request.method == 'POST':
         payment_method = request.POST.get('payment_method')
@@ -35,7 +47,7 @@ def initiate_payment(request, booking_id):
         payment = payment_service.create_payment(
             user=request.user,
             booking=booking,
-            amount=booking.unpaid_amount,
+            amount=amount_to_pay,
             payment_method=payment_method
         )
         
@@ -46,7 +58,7 @@ def initiate_payment(request, booking_id):
         
     context = {
         'booking': booking,
-        'unpaid_amount': booking.unpaid_amount,
+        'unpaid_amount': amount_to_pay,
     }
     return render(request, 'payment/payment_page.html', context)
 

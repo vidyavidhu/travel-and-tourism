@@ -131,8 +131,8 @@
                         <div class="flex-grow-1">
                             <div class="d-flex flex-wrap align-items-center gap-2 justify-content-center justify-content-sm-start mb-2">
                                 <h3 class="fw-bold text-dark m-0">{{ member.name|default:member.user.get_full_name|default:member.user.username }}</h3>
-                                <span class="badge badge-status {% if tm.status == 1 %}status-active{% elif tm.status == 0 %}status-pending{% else %}status-inactive{% endif %}">
-                                    {% if tm.status == 1 %}Joined{% elif tm.status == 0 %}Pending Approval{% else %}Cancelled{% endif %}
+                                <span class="badge badge-status {% if tm.status == 1 %}status-active{% elif tm.status == 0 %}status-pending{% elif tm.status == 3 %}status-pending{% else %}status-inactive{% endif %}">
+                                    {% if tm.status == 1 %}Joined{% elif tm.status == 0 %}Pending Approval{% elif tm.status == 3 %}Awaiting Advance{% else %}Cancelled{% endif %}
                                 </span>
                             </div>
                             <p class="text-secondary m-0 d-flex flex-wrap justify-content-center justify-content-sm-start align-items-center gap-3" style="font-size: 0.88rem;">

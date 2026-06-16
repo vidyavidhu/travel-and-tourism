@@ -90,6 +90,12 @@
                             Inactive
                         </span>
                         {% endif %}
+                        {% if trip_details %}
+                        <span
+                            class="badge bg-info bg-opacity-10 text-info px-3 py-2 rounded-3 fw-bold d-flex align-items-center gap-1.5 status-badge" style="background-color: rgba(13, 202, 240, 0.1) !important; color: #0dcaf0 !important;">
+                            <i class="fas fa-users me-1"></i> {{ joined_count }} / {{ trip_details.max_members }} Joined
+                        </span>
+                        {% endif %}
                     </div>
                     <h2 class="fw-bold m-0 text-dark trip-main-title">{{ trip.title }}</h2>
                     <p class="text-secondary m-0 mt-2 trip-location-sub d-flex flex-wrap align-items-center gap-3">
@@ -654,6 +660,15 @@
                                 </div>
                             </div>
 
+                            {% elif membership_status == 3 %}
+                            <div class="alert alert-warning border-0 rounded-4 shadow-sm p-3 text-center mb-0" style="background: linear-gradient(135deg, rgba(255, 193, 7, 0.1), rgba(255, 193, 7, 0.15)); border-left: 4px solid #ffc107 !important;">
+                                <i class="fas fa-exclamation-triangle fs-3 text-warning mb-2 d-block" style="animation: pulse 2s infinite;"></i>
+                                <span class="fw-bold d-block text-warning" style="font-size: 1.1rem;">Advance Payment Required!</span>
+                                <small class="text-secondary d-block mt-1 mb-3">Please pay the advance amount of ₹{{ trip_details.advance_amount|floatformat:2 }} per head to complete your registration.</small>
+                                <a href="{% url 'initiate_payment' user_member_detail.id %}" class="btn btn-warning w-100 py-2.5 rounded-3 shadow-sm fw-bold text-dark d-flex align-items-center justify-content-center gap-2" style="background: linear-gradient(135deg, #ffc107, #ffb300); transition: all 0.3s ease; border: none;">
+                                    <i class="fas fa-credit-card"></i> Pay Advance Now
+                                </a>
+                            </div>
                             {% elif membership_status == 0 %}
                             <div class="alert alert-info border-0 rounded-4 shadow-sm p-3 text-center mb-0" style="background: linear-gradient(135deg, rgba(13, 110, 253, 0.1), rgba(13, 110, 253, 0.15)); border-left: 4px solid #0d6efd !important;">
                                 <i class="fas fa-clock fs-3 text-primary mb-2 d-block" style="animation: pulse 2s infinite;"></i>

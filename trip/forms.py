@@ -55,7 +55,7 @@ class TripForm(forms.ModelForm):
 
     class Meta:
         model = Trip
-        fields = ['image', 'title', 'category', 'location_from_name', 'location_from_lattitude', 'location_from_longitude', 'location_to_name', 'location_to_lattitude', 'location_to_longitude', 'distance', 'from_date', 'from_time', 'to_date', 'to_time', 'duration', 'description', 'coordinator', 'guidelines', 'status']
+        fields = ['image', 'title', 'category', 'location_from_name', 'location_from_lattitude', 'location_from_longitude', 'location_to_name', 'location_to_lattitude', 'location_to_longitude', 'distance', 'from_date', 'from_time', 'to_date', 'to_time', 'duration', 'description', 'coordinator', 'guidelines', 'status', 'approval_required']
         exclude = []
         widgets = {
             'from_date': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
@@ -77,6 +77,7 @@ class TripForm(forms.ModelForm):
             'category': forms.Select(attrs={'class': 'form-control'}),
             'coordinator': forms.Select(attrs={'class': 'form-control'}),
             'image': forms.FileInput(attrs={'class': 'form-control'}),
+            'approval_required': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
         }
 
 class TripFilterForm(forms.Form):
@@ -92,7 +93,29 @@ from .models import Trip_Details, Trip_Members, Trip_Day, Itinerary, Gallery, Co
 class TripDetailsForm(forms.ModelForm):
     class Meta:
         model = Trip_Details
-        fields = ['max_members', 'estimated_cost', 'description']
+        fields = ['max_members', 'estimated_cost', 'advance_amount', 'description']
+        widgets = {
+            'max_members': forms.NumberInput(attrs={'class': 'form-control'}),
+            'estimated_cost': forms.NumberInput(attrs={'class': 'form-control'}),
+            'advance_amount': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01'}),
+            'description': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
+        }
+
+    def clean(self):
+        cleaned_data = super().clean()
+        max_members = cleaned_data.get('max_members', 1) or 1
+        estimated_cost = cleaned_data.get('estimated_cost', 0.0) or 0.0
+        advance_amount = cleaned_data.get('advance_amount', 0.0) or 0.0
+
+        if max_members > 0:
+            per_head_cost = estimated_cost / max_members
+        else:
+            per_head_cost = estimated_cost
+
+        if advance_amount > per_head_cost:
+            self.add_error('advance_amount', f"Advance amount (₹{advance_amount:.2f}) cannot be greater than the per-head cost (₹{per_head_cost:.2f}).")
+        
+        return cleaned_data
 
     def save(self, commit=True):
         instance = super().save(commit=False)
@@ -103,7 +126,7 @@ class TripDetailsForm(forms.ModelForm):
 
 class TripMembersForm(forms.ModelForm):
     status = forms.TypedChoiceField(
-        choices=[(0, 'Pending'), (1, 'Joined'), (2, 'Cancelled')],
+        choices=[(0, 'Pending'), (1, 'Joined'), (2, 'Cancelled'), (3, 'Awaiting Advance')],
         coerce=int,
         initial=0,
         required=True,
