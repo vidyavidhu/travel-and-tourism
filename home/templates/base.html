@@ -56,6 +56,65 @@
         .logo-accent {
             color: var(--primary-color, #d46343) !important;
         }
+        .nav-btn-signup {
+            background-color: var(--color-primary) !important;
+            color: #ffffff !important;
+            border: 2px solid var(--color-primary) !important;
+            border-radius: 50px !important;
+            padding: 6px 18px !important;
+            font-weight: 600 !important;
+            font-size: 0.85rem !important;
+            transition: all 0.3s ease !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            text-decoration: none !important;
+            line-height: 1.5 !important;
+        }
+        .nav-btn-signup:hover {
+            background-color: var(--primary-color) !important;
+            border-color: var(--primary-color) !important;
+            color: #ffffff !important;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(212, 99, 67, 0.25);
+        }
+        .nav-btn-login {
+            background-color: transparent !important;
+            color: var(--color-primary) !important;
+            border: 2px solid var(--color-primary) !important;
+            border-radius: 50px !important;
+            padding: 6px 18px !important;
+            font-weight: 600 !important;
+            font-size: 0.85rem !important;
+            transition: all 0.3s ease !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            text-decoration: none !important;
+            line-height: 1.5 !important;
+            margin-left: 8px;
+        }
+        .nav-btn-login:hover {
+            background-color: var(--color-primary) !important;
+            color: #ffffff !important;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(74, 34, 52, 0.15);
+        }
+        [data-theme="dark"] .nav-btn-signup {
+            background-color: var(--primary-color) !important;
+            border-color: var(--primary-color) !important;
+            color: #ffffff !important;
+        }
+        [data-theme="dark"] .nav-btn-signup:hover {
+            background-color: #e87656 !important;
+            border-color: #e87656 !important;
+        }
+        [data-theme="dark"] .nav-btn-login {
+            border-color: var(--text-primary) !important;
+            color: var(--text-primary) !important;
+        }
+        [data-theme="dark"] .nav-btn-login:hover {
+            background-color: var(--text-primary) !important;
+            color: var(--bg-color) !important;
+        }
     </style>
     {% block extra_css %}{% endblock %}
 </head>
@@ -152,7 +211,8 @@
                     <a href="{% url 'member_logout' %}" class="btn btn-sm btn-outline nav-logout">Logout</a>
                 </div>
                 {% else %}
-                <a href="{% url 'member_login' %}" class="btn btn-sm btn-outline nav-logout">Log In</a>
+                <a href="{% url 'member_signup' %}" class="nav-btn-signup">Sign Up</a>
+                <a href="{% url 'member_login' %}" class="nav-btn-login">Log In</a>
                 {% endif %}
                 
             </nav>

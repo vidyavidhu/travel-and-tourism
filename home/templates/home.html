@@ -42,7 +42,38 @@
                 color: var(--color-primary);
                 font-weight: 700;
             }
+            .hero-cta-btn {
+                border-radius: 50px;
+                padding: 12px 36px;
+                background: var(--primary-color, #d46343);
+                color: white !important;
+                font-weight: 700;
+                border: none;
+                transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                box-shadow: 0 4px 15px rgba(212, 99, 67, 0.4);
+                display: inline-flex;
+                align-items: center;
+                gap: 8px;
+                text-decoration: none !important;
+                font-size: 1.05rem;
+            }
+            .hero-cta-btn:hover {
+                background: #e87656;
+                transform: translateY(-2px);
+                box-shadow: 0 8px 25px rgba(212, 99, 67, 0.5);
+                color: white !important;
+            }
+            .hero-cta-btn:active {
+                transform: translateY(1px);
+            }
         </style>
+        {% if not user.is_authenticated %}
+        <div style="margin-top: 2rem; margin-bottom: 1rem;">
+            <a href="{% url 'member_signup' %}" class="hero-cta-btn">
+                <i class="fas fa-rocket"></i> Get Started for Free
+            </a>
+        </div>
+        {% endif %}
         <div class="search-container"
             style="max-width: 600px; margin: 2rem auto 0 auto; background: rgba(255, 255, 255, 0.15); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); padding: 10px; border-radius: 50px; border: 1px solid rgba(255, 255, 255, 0.25); box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1); position: relative;">
             <form action="{% url 'trip_list' %}" method="GET" style="display: flex; align-items: center; width: 100%; position: relative;" autocomplete="off" onsubmit="return false;">
