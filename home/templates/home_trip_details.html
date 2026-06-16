@@ -96,6 +96,17 @@
                             <i class="fas fa-users me-1"></i> {{ joined_count }} / {{ trip_details.max_members }} Joined
                         </span>
                         {% endif %}
+                        {% if trip_rating_avg %}
+                        <span
+                            class="badge bg-warning bg-opacity-10 text-warning px-3 py-2 rounded-3 fw-bold d-flex align-items-center gap-1.5 status-badge" style="background-color: rgba(255, 193, 7, 0.1) !important; color: #ffc107 !important;">
+                            <i class="fas fa-star me-1 text-warning"></i> {{ trip_rating_avg|floatformat:1 }}/5 ({{ trip_rating_count }} Rating{{ trip_rating_count|pluralize }})
+                        </span>
+                        {% else %}
+                        <span
+                            class="badge bg-secondary bg-opacity-10 text-secondary px-3 py-2 rounded-3 fw-bold d-flex align-items-center gap-1.5 status-badge" style="background-color: rgba(108, 117, 125, 0.1) !important; color: #6c757d !important;">
+                            <i class="far fa-star me-1"></i> No ratings yet
+                        </span>
+                        {% endif %}
                     </div>
                     <h2 class="fw-bold m-0 text-dark trip-main-title">{{ trip.title }}</h2>
                     <p class="text-secondary m-0 mt-2 trip-location-sub d-flex flex-wrap align-items-center gap-3">
@@ -197,8 +208,8 @@
 
                                         <!-- Stop Meta Details -->
                                         <div class="row g-3 mb-4 text-secondary small">
-                                            <div class="col-6 col-sm-4">
-                                                <div class="bg-white p-3 rounded-3 shadow-sm d-flex align-items-center gap-2">
+                                            <div class="col-6 col-md-3">
+                                                <div class="bg-white p-3 rounded-3 shadow-sm d-flex align-items-center gap-2 h-100">
                                                     <i class="fas fa-route text-primary fs-5"></i>
                                                     <div>
                                                         <small class="text-muted d-block meta-label">DISTANCE</small>
@@ -206,8 +217,8 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div class="col-6 col-sm-4">
-                                                <div class="bg-white p-3 rounded-3 shadow-sm d-flex align-items-center gap-2">
+                                            <div class="col-6 col-md-3">
+                                                <div class="bg-white p-3 rounded-3 shadow-sm d-flex align-items-center gap-2 h-100">
                                                     <i class="fas fa-hourglass-half text-warning fs-5"></i>
                                                     <div>
                                                         <small class="text-muted d-block meta-label">DURATION</small>
@@ -215,12 +226,27 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div class="col-12 col-sm-4">
-                                                <div class="bg-white p-3 rounded-3 shadow-sm d-flex align-items-center gap-2">
+                                            <div class="col-6 col-md-3">
+                                                <div class="bg-white p-3 rounded-3 shadow-sm d-flex align-items-center gap-2 h-100">
                                                     <i class="fas fa-car text-info fs-5"></i>
                                                     <div>
                                                         <small class="text-muted d-block meta-label">VEHICLE</small>
                                                         <span class="fw-bold text-dark">{{ stop.vehicle.name|default:"Any" }}</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-6 col-md-3">
+                                                <div class="bg-white p-3 rounded-3 shadow-sm d-flex align-items-center gap-2 h-100">
+                                                    <i class="fas fa-star text-warning fs-5"></i>
+                                                    <div>
+                                                        <small class="text-muted d-block meta-label">RATING</small>
+                                                        <span class="fw-bold text-dark">
+                                                            {% if stop.average_rating %}
+                                                                {{ stop.average_rating|floatformat:1 }}/5 ({{ stop.rating_count }})
+                                                            {% else %}
+                                                                No ratings
+                                                            {% endif %}
+                                                        </span>
                                                     </div>
                                                 </div>
                                             </div>
@@ -241,6 +267,37 @@
                                                 <strong>Stop Guidelines:</strong>
                                                 <p class="m-0 mt-1">{{ stop.guidelines|linebreaksbr }}</p>
                                             </div>
+                                        </div>
+                                        {% endif %}
+
+                                        <!-- Stop Rating Form -->
+                                        {% if is_joined_or_coordinator and membership_status == 1 %}
+                                        <div class="mb-4 pt-3 border-top d-flex align-items-center justify-content-between flex-wrap gap-2 animate-fade-in">
+                                            <div class="d-flex align-items-center gap-2">
+                                                <h6 class="fw-bold text-dark mb-0"><i class="fas fa-star text-warning me-2"></i>Rate this Stop:</h6>
+                                                <form action="{% url 'rate_itinerary' stop.id %}" method="POST" class="d-inline-flex gap-1 align-items-center">
+                                                    {% csrf_token %}
+                                                    <input type="hidden" name="next" value="{{ request.path }}">
+                                                    <button type="submit" name="rating" value="1" class="btn p-0 border-0 bg-transparent shadow-none" style="font-size: 1.25rem; color: {% if stop.user_rating >= 1 %}#ffc107{% else %}#ccc{% endif %}; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.2)'" onmouseout="this.style.transform='scale(1)'" title="Rate 1 star">
+                                                        <i class="{% if stop.user_rating >= 1 %}fas{% else %}far{% endif %} fa-star"></i>
+                                                    </button>
+                                                    <button type="submit" name="rating" value="2" class="btn p-0 border-0 bg-transparent shadow-none" style="font-size: 1.25rem; color: {% if stop.user_rating >= 2 %}#ffc107{% else %}#ccc{% endif %}; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.2)'" onmouseout="this.style.transform='scale(1)'" title="Rate 2 stars">
+                                                        <i class="{% if stop.user_rating >= 2 %}fas{% else %}far{% endif %} fa-star"></i>
+                                                    </button>
+                                                    <button type="submit" name="rating" value="3" class="btn p-0 border-0 bg-transparent shadow-none" style="font-size: 1.25rem; color: {% if stop.user_rating >= 3 %}#ffc107{% else %}#ccc{% endif %}; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.2)'" onmouseout="this.style.transform='scale(1)'" title="Rate 3 stars">
+                                                        <i class="{% if stop.user_rating >= 3 %}fas{% else %}far{% endif %} fa-star"></i>
+                                                    </button>
+                                                    <button type="submit" name="rating" value="4" class="btn p-0 border-0 bg-transparent shadow-none" style="font-size: 1.25rem; color: {% if stop.user_rating >= 4 %}#ffc107{% else %}#ccc{% endif %}; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.2)'" onmouseout="this.style.transform='scale(1)'" title="Rate 4 stars">
+                                                        <i class="{% if stop.user_rating >= 4 %}fas{% else %}far{% endif %} fa-star"></i>
+                                                    </button>
+                                                    <button type="submit" name="rating" value="5" class="btn p-0 border-0 bg-transparent shadow-none" style="font-size: 1.25rem; color: {% if stop.user_rating >= 5 %}#ffc107{% else %}#ccc{% endif %}; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.2)'" onmouseout="this.style.transform='scale(1)'" title="Rate 5 stars">
+                                                        <i class="{% if stop.user_rating >= 5 %}fas{% else %}far{% endif %} fa-star"></i>
+                                                    </button>
+                                                </form>
+                                            </div>
+                                            {% if stop.user_rating %}
+                                                <span class="small text-muted">Your rating: <strong>{{ stop.user_rating }}</strong> / 5</span>
+                                            {% endif %}
                                         </div>
                                         {% endif %}
 
@@ -393,10 +450,40 @@
                     <!-- Join Trip Section -->
                     <div class="join-trip-section mb-4 pb-3 border-bottom">
                         {% if membership_status == 1 %}
-                            <div class="alert alert-success border-0 rounded-4 shadow-sm p-3 text-center mb-0" style="background: linear-gradient(135deg, rgba(40, 167, 69, 0.1), rgba(40, 167, 69, 0.15)); border-left: 4px solid #28a745 !important;">
+                            <div class="alert alert-success border-0 rounded-4 shadow-sm p-3 text-center mb-3" style="background: linear-gradient(135deg, rgba(40, 167, 69, 0.1), rgba(40, 167, 69, 0.15)); border-left: 4px solid #28a745 !important;">
                                 <i class="fas fa-check-circle fs-3 text-success mb-2 d-block"></i>
                                 <span class="fw-bold d-block text-success" style="font-size: 1.1rem;">You are Joined!</span>
                                 <small class="text-secondary d-block mt-1">You are a member of this active adventure.</small>
+                            </div>
+                            <!-- Trip Rating Card -->
+                            <div class="card border-0 bg-light rounded-4 p-3 mb-0 shadow-sm">
+                                <h6 class="fw-bold text-dark mb-2 text-center"><i class="fas fa-star text-warning me-1"></i> Rate this Trip</h6>
+                                <form action="{% url 'rate_trip' trip.id %}" method="POST" class="text-center">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="next" value="{{ request.path }}">
+                                    <div class="d-flex justify-content-center gap-2 mb-2">
+                                        <button type="submit" name="rating" value="1" class="btn p-0 border-0 bg-transparent shadow-none" style="font-size: 1.6rem; color: {% if user_trip_rating >= 1 %}#ffc107{% else %}#ccc{% endif %}; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.2)'" onmouseout="this.style.transform='scale(1)'" title="Rate 1 star">
+                                            <i class="{% if user_trip_rating >= 1 %}fas{% else %}far{% endif %} fa-star"></i>
+                                        </button>
+                                        <button type="submit" name="rating" value="2" class="btn p-0 border-0 bg-transparent shadow-none" style="font-size: 1.6rem; color: {% if user_trip_rating >= 2 %}#ffc107{% else %}#ccc{% endif %}; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.2)'" onmouseout="this.style.transform='scale(1)'" title="Rate 2 stars">
+                                            <i class="{% if user_trip_rating >= 2 %}fas{% else %}far{% endif %} fa-star"></i>
+                                        </button>
+                                        <button type="submit" name="rating" value="3" class="btn p-0 border-0 bg-transparent shadow-none" style="font-size: 1.6rem; color: {% if user_trip_rating >= 3 %}#ffc107{% else %}#ccc{% endif %}; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.2)'" onmouseout="this.style.transform='scale(1)'" title="Rate 3 stars">
+                                            <i class="{% if user_trip_rating >= 3 %}fas{% else %}far{% endif %} fa-star"></i>
+                                        </button>
+                                        <button type="submit" name="rating" value="4" class="btn p-0 border-0 bg-transparent shadow-none" style="font-size: 1.6rem; color: {% if user_trip_rating >= 4 %}#ffc107{% else %}#ccc{% endif %}; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.2)'" onmouseout="this.style.transform='scale(1)'" title="Rate 4 stars">
+                                            <i class="{% if user_trip_rating >= 4 %}fas{% else %}far{% endif %} fa-star"></i>
+                                        </button>
+                                        <button type="submit" name="rating" value="5" class="btn p-0 border-0 bg-transparent shadow-none" style="font-size: 1.6rem; color: {% if user_trip_rating >= 5 %}#ffc107{% else %}#ccc{% endif %}; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.2)'" onmouseout="this.style.transform='scale(1)'" title="Rate 5 stars">
+                                            <i class="{% if user_trip_rating >= 5 %}fas{% else %}far{% endif %} fa-star"></i>
+                                        </button>
+                                    </div>
+                                    {% if user_trip_rating %}
+                                        <p class="small text-muted mb-0">Your rating: <strong>{{ user_trip_rating }}</strong> / 5</p>
+                                    {% else %}
+                                        <p class="small text-muted mb-0">You haven't rated this trip yet.</p>
+                                    {% endif %}
+                                </form>
                             </div>
                         {% elif membership_status == 3 %}
                             <div class="alert alert-warning border-0 rounded-4 shadow-sm p-3 text-center mb-0" style="background: linear-gradient(135deg, rgba(255, 193, 7, 0.1), rgba(255, 193, 7, 0.15)); border-left: 4px solid #ffc107 !important;">

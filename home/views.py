@@ -101,6 +101,29 @@ def home_trip_details(request, pk):
     from entertainment.models import EntertainmentPlaylist
     playlists = EntertainmentPlaylist.objects.filter(trip=trip).prefetch_related('media_items').order_by('created_at')
 
+    # Ratings calculations
+    from trip.models import TripRating, Rating
+    from django.db.models import Avg
+    
+    trip_rating_avg = TripRating.objects.filter(trip=trip).aggregate(Avg('rating'))['rating__avg']
+    trip_rating_count = TripRating.objects.filter(trip=trip).count()
+    
+    user_trip_rating = None
+    if request.user.is_authenticated and membership_status == 1:
+        user_trip_rating_obj = TripRating.objects.filter(trip=trip, member=user_member_detail).first()
+        if user_trip_rating_obj:
+            user_trip_rating = user_trip_rating_obj.rating
+            
+    # Attach stop-specific user ratings to itinerary objects
+    for day in trip_days:
+        for stop in day.itinerary_set.all():
+            user_rating = None
+            if request.user.is_authenticated and membership_status == 1:
+                rating_obj = stop.rating_set.filter(member=user_member_detail).first()
+                if rating_obj:
+                    user_rating = rating_obj.rating
+            stop.user_rating = user_rating
+
     context = {
         'trip': trip,
         'trip_details': trip_details,
@@ -120,6 +143,9 @@ def home_trip_details(request, pk):
         'categories': categories,
         'total_expenses': total_expenses,
         'playlists': playlists,
+        'trip_rating_avg': trip_rating_avg,
+        'trip_rating_count': trip_rating_count,
+        'user_trip_rating': user_trip_rating,
     }
     return render(request, 'home_trip_details.html', context)
 

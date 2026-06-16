@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import TripListView, TripDetailView, TripCreateView, TripUpdateView, TripDeleteView, TripDetailsCreateView, TripDetailsUpdateView, TripMembersCreateView, TripMembersUpdateView, TripDayCreateView, ItineraryCreateView, ItineraryDetailView, GalleryCreateView, CommentCreateView, CommentLikeView, ReplyCreateView, MyTripsView, TripMemberApproveView, TripFinishView, TripBroadcastCreateView, ItineraryCancelView, ItineraryDismissCancelView, trip_member_detail, export_finance_excel, export_finance_pdf
+from .views import TripListView, TripDetailView, TripCreateView, TripUpdateView, TripDeleteView, TripDetailsCreateView, TripDetailsUpdateView, TripMembersCreateView, TripMembersUpdateView, TripDayCreateView, ItineraryCreateView, ItineraryDetailView, GalleryCreateView, CommentCreateView, CommentLikeView, ReplyCreateView, MyTripsView, TripMemberApproveView, TripFinishView, TripBroadcastCreateView, ItineraryCancelView, ItineraryDismissCancelView, trip_member_detail, export_finance_excel, export_finance_pdf, rate_trip, rate_itinerary
 from finance.views import ExpenseCreateView, ExpenseDeleteView, submit_reimbursement, approve_reimbursement, reject_reimbursement, pay_reimbursement
 
 urlpatterns = [
@@ -13,6 +13,8 @@ urlpatterns = [
     path('<int:trip_id>/broadcast/send/', TripBroadcastCreateView.as_view(), name='trip_broadcast_send'),
     path('<int:pk>/finance/excel/', export_finance_excel, name='export_finance_excel'),
     path('<int:pk>/finance/pdf/', export_finance_pdf, name='export_finance_pdf'),
+    path('<int:trip_id>/rate/', rate_trip, name='rate_trip'),
+    path('itinerary/<int:itinerary_id>/rate/', rate_itinerary, name='rate_itinerary'),
     
     # Trip Details
     path('<int:trip_id>/details/add/', TripDetailsCreateView.as_view(), name='trip_details_create'),

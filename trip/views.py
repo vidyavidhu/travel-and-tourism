@@ -1055,4 +1055,62 @@ def export_finance_pdf(request, pk):
     }
     return render(request, 'trip/finance_report_pdf.html', context)
 
+from django.contrib.auth.decorators import login_required
+from django.views.decorators.http import require_POST
+from django.shortcuts import redirect, get_object_or_404
+from django.contrib import messages
+from .models import TripRating, Rating
+from member.models import Member
+
+@login_required
+@require_POST
+def rate_trip(request, trip_id):
+    trip = get_object_or_404(Trip, pk=trip_id)
+    member = get_object_or_404(Member, user=request.user)
+    trip_member = get_object_or_404(Trip_Members, trip=trip, member=member, status=1)
+    
+    rating_val = request.POST.get('rating')
+    try:
+        rating_val = int(rating_val)
+        if not (1 <= rating_val <= 5):
+            raise ValueError
+    except (TypeError, ValueError):
+        messages.error(request, "Invalid rating value.")
+        return redirect(request.POST.get('next') or reverse('home_trip_details', kwargs={'pk': trip_id}))
+        
+    TripRating.objects.update_or_create(
+        trip=trip,
+        member=trip_member,
+        defaults={'rating': rating_val}
+    )
+    
+    messages.success(request, f"You successfully rated this trip {rating_val} stars!")
+    return redirect(request.POST.get('next') or reverse('home_trip_details', kwargs={'pk': trip_id}))
+
+@login_required
+@require_POST
+def rate_itinerary(request, itinerary_id):
+    itinerary = get_object_or_404(Itinerary, pk=itinerary_id)
+    trip = itinerary.trip_day.trip
+    member = get_object_or_404(Member, user=request.user)
+    trip_member = get_object_or_404(Trip_Members, trip=trip, member=member, status=1)
+    
+    rating_val = request.POST.get('rating')
+    try:
+        rating_val = int(rating_val)
+        if not (1 <= rating_val <= 5):
+            raise ValueError
+    except (TypeError, ValueError):
+        messages.error(request, "Invalid rating value.")
+        return redirect(request.POST.get('next') or reverse('home_trip_details', kwargs={'pk': trip.id}))
+        
+    Rating.objects.update_or_create(
+        itinerary=itinerary,
+        member=trip_member,
+        defaults={'rating': rating_val}
+    )
+    
+    messages.success(request, f"You successfully rated the stop '{itinerary.title}' {rating_val} stars!")
+    return redirect(request.POST.get('next') or reverse('home_trip_details', kwargs={'pk': trip.id}))
+
 

@@ -98,6 +98,18 @@ class Trip(models.Model):
             return date.today() >= self.from_date
         return False
 
+    @property
+    def average_rating(self):
+        ratings = self.ratings.all()
+        if ratings.exists():
+            from django.db.models import Avg
+            return ratings.aggregate(Avg('rating'))['rating__avg']
+        return None
+
+    @property
+    def rating_count(self):
+        return self.ratings.count()
+
     def __str__(self):
         return self.title
 
@@ -321,6 +333,17 @@ class Itinerary(models.Model):
     is_cancelled = models.BooleanField(default=False)
     cancellation_reason = models.TextField(null=True, blank=True)
 
+    @property
+    def average_rating(self):
+        ratings = self.rating_set.all()
+        if ratings.exists():
+            return sum(r.rating for r in ratings) / ratings.count()
+        return None
+
+    @property
+    def rating_count(self):
+        return self.rating_set.count()
+
     def save(self, *args, **kwargs):
         if not self.location_to_name:
             self.location_to_name = self.location_from_name
@@ -396,6 +419,18 @@ class Rating(models.Model):
     rating=models.IntegerField() 
     def __str__(self):
         return str(self.rating)
+
+class TripRating(models.Model):
+    trip = models.ForeignKey(Trip, on_delete=models.CASCADE, related_name='ratings')
+    member = models.ForeignKey(Trip_Members, on_delete=models.CASCADE)
+    rating = models.IntegerField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('trip', 'member')
+
+    def __str__(self):
+        return f"{self.trip.title} - {self.member.member.user.username}: {self.rating}"
 
 
 class Join_Request(models.Model):
