@@ -46,6 +46,33 @@
                             {{ user.email }}
                         </span>
                     </div>
+                    {% if user.coordinator %}
+                    <div class="profile-status-chips mt-3 d-flex flex-wrap gap-2">
+                        {% if user.coordinator.is_approved %}
+                        <span class="status-badge status-approved">
+                            <i class="fa-solid fa-check"></i>
+                            Approval: Approved
+                        </span>
+                        {% else %}
+                        <span class="status-badge status-pending">
+                            <i class="fa-regular fa-clock"></i>
+                            Approval: Pending Approval
+                        </span>
+                        {% endif %}
+
+                        {% if user.coordinator.is_authorised %}
+                        <span class="status-badge status-approved">
+                            <i class="fa-solid fa-check"></i>
+                            Verification: Verified
+                        </span>
+                        {% else %}
+                        <span class="status-badge status-pending">
+                            <i class="fa-solid fa-xmark"></i>
+                            Verification: Not Verified
+                        </span>
+                        {% endif %}
+                    </div>
+                    {% endif %}
                 </div>
             </div>
         </div>

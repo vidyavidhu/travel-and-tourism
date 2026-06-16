@@ -389,6 +389,49 @@
             <!-- Right Column: Quick Stats -->
             <div class="col-lg-4">
                 <div class="card premium-card border-0 shadow-lg p-4 sticky-top sticky-sidebar">
+                    
+                    <!-- Join Trip Section -->
+                    <div class="join-trip-section mb-4 pb-3 border-bottom">
+                        {% if membership_status == 1 %}
+                            <div class="alert alert-success border-0 rounded-4 shadow-sm p-3 text-center mb-0" style="background: linear-gradient(135deg, rgba(40, 167, 69, 0.1), rgba(40, 167, 69, 0.15)); border-left: 4px solid #28a745 !important;">
+                                <i class="fas fa-check-circle fs-3 text-success mb-2 d-block"></i>
+                                <span class="fw-bold d-block text-success" style="font-size: 1.1rem;">You are Joined!</span>
+                                <small class="text-secondary d-block mt-1">You are a member of this active adventure.</small>
+                            </div>
+                        {% elif membership_status == 3 %}
+                            <div class="alert alert-warning border-0 rounded-4 shadow-sm p-3 text-center mb-0" style="background: linear-gradient(135deg, rgba(255, 193, 7, 0.1), rgba(255, 193, 7, 0.15)); border-left: 4px solid #ffc107 !important;">
+                                <i class="fas fa-exclamation-triangle fs-3 text-warning mb-2 d-block" style="animation: pulse 2s infinite;"></i>
+                                <span class="fw-bold d-block text-warning" style="font-size: 1.1rem;">Advance Payment Required!</span>
+                                <small class="text-secondary d-block mt-1 mb-3">Please pay the advance amount of ₹{{ trip_details.advance_amount|floatformat:2 }} per head to complete your registration.</small>
+                                <a href="{% url 'initiate_payment' user_member_detail.id %}" class="btn btn-warning w-100 py-2.5 rounded-3 shadow-sm fw-bold text-dark d-flex align-items-center justify-content-center gap-2" style="background: linear-gradient(135deg, #ffc107, #ffb300); transition: all 0.3s ease; border: none;">
+                                    <i class="fas fa-credit-card"></i> Pay Advance Now
+                                </a>
+                            </div>
+                        {% elif membership_status == 0 %}
+                            <div class="alert alert-info border-0 rounded-4 shadow-sm p-3 text-center mb-0" style="background: linear-gradient(135deg, rgba(13, 110, 253, 0.1), rgba(13, 110, 253, 0.15)); border-left: 4px solid #0d6efd !important;">
+                                <i class="fas fa-clock fs-3 text-primary mb-2 d-block" style="animation: pulse 2s infinite;"></i>
+                                <span class="fw-bold d-block text-primary" style="font-size: 1.1rem;">Request Pending!</span>
+                                <small class="text-secondary d-block mt-1">Your request to join is pending approval.</small>
+                            </div>
+                        {% elif trip.is_started %}
+                            <div class="alert alert-secondary border-0 rounded-4 shadow-sm p-3 text-center mb-0" style="background: linear-gradient(135deg, rgba(108, 117, 125, 0.1), rgba(108, 117, 125, 0.15)); border-left: 4px solid #6c757d !important;">
+                                <i class="fas fa-calendar-times fs-3 text-secondary mb-2 d-block"></i>
+                                <span class="fw-bold d-block text-secondary" style="font-size: 1.1rem;">Registration Closed</span>
+                                <small class="text-secondary d-block mt-1">This trip has already commenced. You cannot join this adventure.</small>
+                            </div>
+                        {% elif trip_details and joined_count >= trip_details.max_members %}
+                            <div class="alert alert-secondary border-0 rounded-4 shadow-sm p-3 text-center mb-0" style="background: linear-gradient(135deg, rgba(108, 117, 125, 0.1), rgba(108, 117, 125, 0.15)); border-left: 4px solid #6c757d !important;">
+                                <i class="fas fa-users-slash fs-3 text-secondary mb-2 d-block"></i>
+                                <span class="fw-bold d-block text-secondary" style="font-size: 1.1rem;">Adventure Full</span>
+                                <small class="text-secondary d-block mt-1">All available seats for this adventure have been occupied.</small>
+                            </div>
+                        {% else %}
+                            <a href="{% url 'join_trip' trip.id %}" class="btn btn-primary action-btn save-btn w-100 py-3 rounded-4 shadow fw-bold d-flex align-items-center justify-content-center gap-2" style="background: linear-gradient(135deg, #0d6efd, #0b5ed7); transition: all 0.3s ease;">
+                                <i class="fas fa-user-plus"></i> Join this Adventure
+                            </a>
+                        {% endif %}
+                    </div>
+                    
                     <h4 class="fw-bold mb-4 pb-2 border-bottom sidebar-title">Trip Overview</h4>
 
                     <ul class="list-unstyled m-0 d-flex flex-column gap-4">
@@ -498,207 +541,167 @@
                         </li>
                     </ul>
 
-                    <!-- Join Trip Section -->
-                    <div class="join-trip-section mt-4 pt-3 border-top">
-                        {% if membership_status == 1 %}
-                            <div class="alert alert-success border-0 rounded-4 shadow-sm p-3 text-center mb-0" style="background: linear-gradient(135deg, rgba(40, 167, 69, 0.1), rgba(40, 167, 69, 0.15)); border-left: 4px solid #28a745 !important;">
-                                <i class="fas fa-check-circle fs-3 text-success mb-2 d-block"></i>
-                                <span class="fw-bold d-block text-success" style="font-size: 1.1rem;">You are Joined!</span>
-                                <small class="text-secondary d-block mt-1">You are a member of this active adventure.</small>
+                    {% if membership_status == 1 %}
+                    <!-- Member & Expense Details Section -->
+                    <div class="mt-4 pt-3 border-top">
+                        <!-- Collapsible Payment Details drawer -->
+                        <div class="mt-3">
+                            <div class="p-2 border rounded-4 bg-light d-flex justify-content-between align-items-center" style="font-size: 0.8rem; background: rgba(0, 0, 0, 0.02) !important;">
+                                <span class="ps-2 fw-semibold text-secondary">
+                                    <i class="fas fa-receipt me-1 text-primary"></i> Payment: 
+                                    {% if user_member_detail.payment_status == 1 %}
+                                        <span class="badge bg-success bg-opacity-10 text-success ms-1">Paid</span>
+                                    {% else %}
+                                        <span class="badge bg-danger bg-opacity-10 text-danger ms-1">Pending</span>
+                                    {% endif %}
+                                </span>
+                                <button class="btn btn-sm btn-link p-0 text-decoration-none fw-bold me-2" type="button" data-bs-toggle="collapse" data-bs-target="#paymentDetailsCollapse" aria-expanded="false" style="font-size: 0.78rem; color: var(--color-primary); border: none; background: transparent;">
+                                    Details <i class="fas fa-chevron-down ms-0.5" style="font-size: 0.65rem;"></i>
+                                </button>
                             </div>
-                       
-                       
-                            <!-- Collapsible Payment Details drawer -->
-                            <div class="mt-3">
-                                <div class="p-2 border rounded-4 bg-light d-flex justify-content-between align-items-center" style="font-size: 0.8rem; background: rgba(0, 0, 0, 0.02) !important;">
-                                    <span class="ps-2 fw-semibold text-secondary">
-                                        <i class="fas fa-receipt me-1 text-primary"></i> Payment: 
-                                        {% if user_member_detail.payment_status == 1 %}
-                                            <span class="badge bg-success bg-opacity-10 text-success ms-1">Paid</span>
-                                        {% else %}
-                                            <span class="badge bg-danger bg-opacity-10 text-danger ms-1">Pending</span>
-                                        {% endif %}
-                                    </span>
-                                    <button class="btn btn-sm btn-link p-0 text-decoration-none fw-bold me-2" type="button" data-bs-toggle="collapse" data-bs-target="#paymentDetailsCollapse" aria-expanded="false" style="font-size: 0.78rem; color: var(--color-primary); border: none; background: transparent;">
-                                        Details <i class="fas fa-chevron-down ms-0.5" style="font-size: 0.65rem;"></i>
-                                    </button>
-                                </div>
-                                <div class="collapse mt-2 text-start" id="paymentDetailsCollapse">
-                                    <div class="card card-body p-3 border-0 bg-light rounded-4 shadow-xs" style="font-size: 0.8rem;">
-                                        <div class="d-flex justify-content-between mb-2">
-                                            <span class="text-secondary">Amount Paid:</span>
-                                            <strong class="text-dark">₹{{ user_member_detail.paid_amount|floatformat:2 }}</strong>
-                                        </div>
-                                        <div class="d-flex justify-content-between mb-2">
-                                            <span class="text-secondary">Pending Balance:</span>
-                                            <strong class="text-dark">₹{{ user_member_detail.unpaid_amount|floatformat:2 }}</strong>
-                                        </div>
-                                        <hr class="my-2" style="opacity: 0.08;">
-                                        <div class="d-flex justify-content-between">
-                                            <span class="text-secondary">Group Size:</span>
-                                            <strong class="text-dark">{{ user_member_detail.group_size }} traveler{{ user_member_detail.group_size|pluralize }}</strong>
-                                        </div>
+                            <div class="collapse mt-2 text-start" id="paymentDetailsCollapse">
+                                <div class="card card-body p-3 border-0 bg-light rounded-4 shadow-xs" style="font-size: 0.8rem;">
+                                    <div class="d-flex justify-content-between mb-2">
+                                        <span class="text-secondary">Amount Paid:</span>
+                                        <strong class="text-dark">₹{{ user_member_detail.paid_amount|floatformat:2 }}</strong>
+                                    </div>
+                                    <div class="d-flex justify-content-between mb-2">
+                                        <span class="text-secondary">Pending Balance:</span>
+                                        <strong class="text-dark">₹{{ user_member_detail.unpaid_amount|floatformat:2 }}</strong>
+                                    </div>
+                                    <hr class="my-2" style="opacity: 0.08;">
+                                    <div class="d-flex justify-content-between">
+                                        <span class="text-secondary">Group Size:</span>
+                                        <strong class="text-dark">{{ user_member_detail.group_size }} traveler{{ user_member_detail.group_size|pluralize }}</strong>
                                     </div>
                                 </div>
                             </div>
-                            <!-- Collapsible Expense Details drawer -->
-                            <div class="mt-2">
-                                <div class="p-2 border rounded-4 bg-light d-flex justify-content-between align-items-center" style="font-size: 0.8rem; background: rgba(0, 0, 0, 0.02) !important;">
-                                    <span class="ps-2 fw-semibold text-secondary">
-                                        <i class="fas fa-file-invoice-dollar me-1 text-danger"></i> Official Trip Expenses: 
-                                        <span class="badge bg-danger bg-opacity-10 text-danger ms-1">₹{{ total_expenses|floatformat:2 }}</span>
-                                    </span>
-                                    <button class="btn btn-sm btn-link p-0 text-decoration-none fw-bold me-2" type="button" data-bs-toggle="collapse" data-bs-target="#expenseDetailsCollapse" aria-expanded="false" style="font-size: 0.78rem; color: var(--color-primary); border: none; background: transparent;">
-                                        View <i class="fas fa-chevron-down ms-0.5" style="font-size: 0.65rem;"></i>
-                                    </button>
-                                </div>
-                                <div class="collapse mt-2 text-start" id="expenseDetailsCollapse">
-                                    <div class="card card-body p-3 border-0 bg-light rounded-4 shadow-xs" style="font-size: 0.8rem; max-height: 200px; overflow-y: auto;">
-                                        {% if normal_expenses or group_reimbursements %}
-                                            {% if normal_expenses %}
-                                                <h6 class="fw-bold text-secondary mb-2" style="font-size: 0.75rem;">Trip Expenses</h6>
-                                                <div class="table-responsive mb-2">
-                                                    <table class="table table-sm table-hover align-middle mb-0" style="font-size: 0.72rem;">
-                                                        <tbody>
-                                                            {% for expense in normal_expenses %}
-                                                            <tr>
-                                                                <td class="fw-semibold">
-                                                                    <span class="badge bg-secondary p-1" style="font-size: 0.6rem;"><i class="fas fa-tag me-0.5"></i> {{ expense.expense_category.name }}</span>
-                                                                </td>
-                                                                <td class="fw-bold text-danger">₹{{ expense.amount|floatformat:2 }}</td>
-                                                                <td class="text-secondary small">{{ expense.description|default:"-"|truncatechars:15 }}</td>
-                                                            </tr>
-                                                            {% endfor %}
-                                                        </tbody>
-                                                    </table>
-                                                </div>
-                                            {% endif %}
-                                            {% if group_reimbursements %}
-                                                <h6 class="fw-bold text-secondary mb-2" style="font-size: 0.75rem;">Approved Reimbursements</h6>
-                                                <div class="table-responsive">
-                                                    <table class="table table-sm table-hover align-middle mb-0" style="font-size: 0.72rem;">
-                                                        <tbody>
-                                                            {% for expense in group_reimbursements %}
-                                                            <tr>
-                                                                <td class="fw-semibold">
-                                                                    <div class="fw-bold text-dark" style="font-size: 0.7rem;"><i class="far fa-user me-0.5 text-primary"></i>{{ expense.created_by.first_name|default:expense.created_by.username }}</div>
-                                                                    <span class="badge bg-secondary p-1 mt-0.5" style="font-size: 0.58rem;"><i class="fas fa-tag me-0.5"></i> {{ expense.expense_category.name }}</span>
-                                                                </td>
-                                                                <td class="fw-bold text-danger">₹{{ expense.amount|floatformat:2 }}</td>
-                                                                <td class="text-secondary small">{{ expense.title|default:"-"|truncatechars:15 }}</td>
-                                                            </tr>
-                                                            {% endfor %}
-                                                        </tbody>
-                                                    </table>
-                                                </div>
-                                            {% endif %}
-                                        {% else %}
-                                        <div class="text-center py-2 text-muted">
-                                            <small><i class="fas fa-receipt me-1"></i> No active expenses yet.</small>
-                                        </div>
+                        </div>
+                        <!-- Collapsible Expense Details drawer -->
+                        <div class="mt-2">
+                            <div class="p-2 border rounded-4 bg-light d-flex justify-content-between align-items-center" style="font-size: 0.8rem; background: rgba(0, 0, 0, 0.02) !important;">
+                                <span class="ps-2 fw-semibold text-secondary">
+                                    <i class="fas fa-file-invoice-dollar me-1 text-danger"></i> Official Trip Expenses: 
+                                    <span class="badge bg-danger bg-opacity-10 text-danger ms-1">₹{{ total_expenses|floatformat:2 }}</span>
+                                </span>
+                                <button class="btn btn-sm btn-link p-0 text-decoration-none fw-bold me-2" type="button" data-bs-toggle="collapse" data-bs-target="#expenseDetailsCollapse" aria-expanded="false" style="font-size: 0.78rem; color: var(--color-primary); border: none; background: transparent;">
+                                    View <i class="fas fa-chevron-down ms-0.5" style="font-size: 0.65rem;"></i>
+                                </button>
+                            </div>
+                            <div class="collapse mt-2 text-start" id="expenseDetailsCollapse">
+                                <div class="card card-body p-3 border-0 bg-light rounded-4 shadow-xs" style="font-size: 0.8rem; max-height: 200px; overflow-y: auto;">
+                                    {% if normal_expenses or group_reimbursements %}
+                                        {% if normal_expenses %}
+                                            <h6 class="fw-bold text-secondary mb-2" style="font-size: 0.75rem;">Trip Expenses</h6>
+                                            <div class="table-responsive mb-2">
+                                                <table class="table table-sm table-hover align-middle mb-0" style="font-size: 0.72rem;">
+                                                    <tbody>
+                                                        {% for expense in normal_expenses %}
+                                                        <tr>
+                                                            <td class="fw-semibold">
+                                                                <span class="badge bg-secondary p-1" style="font-size: 0.6rem;"><i class="fas fa-tag me-0.5"></i> {{ expense.expense_category.name }}</span>
+                                                            </td>
+                                                            <td class="fw-bold text-danger">₹{{ expense.amount|floatformat:2 }}</td>
+                                                            <td class="text-secondary small">{{ expense.description|default:"-"|truncatechars:15 }}</td>
+                                                        </tr>
+                                                        {% endfor %}
+                                                    </tbody>
+                                                </table>
+                                            </div>
                                         {% endif %}
+                                        {% if group_reimbursements %}
+                                            <h6 class="fw-bold text-secondary mb-2" style="font-size: 0.75rem;">Approved Reimbursements</h6>
+                                            <div class="table-responsive">
+                                                <table class="table table-sm table-hover align-middle mb-0" style="font-size: 0.72rem;">
+                                                    <tbody>
+                                                        {% for expense in group_reimbursements %}
+                                                        <tr>
+                                                            <td class="fw-semibold">
+                                                                <div class="fw-bold text-dark" style="font-size: 0.7rem;"><i class="far fa-user me-0.5 text-primary"></i>{{ expense.created_by.first_name|default:expense.created_by.username }}</div>
+                                                                <span class="badge bg-secondary p-1 mt-0.5" style="font-size: 0.58rem;"><i class="fas fa-tag me-0.5"></i> {{ expense.expense_category.name }}</span>
+                                                            </td>
+                                                            <td class="fw-bold text-danger">₹{{ expense.amount|floatformat:2 }}</td>
+                                                            <td class="text-secondary small">{{ expense.title|default:"-"|truncatechars:15 }}</td>
+                                                        </tr>
+                                                        {% endfor %}
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        {% endif %}
+                                    {% else %}
+                                    <div class="text-center py-2 text-muted">
+                                        <small><i class="fas fa-receipt me-1"></i> No active expenses yet.</small>
                                     </div>
+                                    {% endif %}
                                 </div>
                             </div>
+                        </div>
 
-                            <!-- Member Reimbursements Request Section inside the sidebar -->
-                            <div class="mt-3">
-                                <div class="p-3 border rounded-4 bg-white shadow-xs text-start">
-                                    <div class="d-flex justify-content-between align-items-center mb-2.5">
-                                        <span class="fw-bold text-dark" style="font-size: 0.85rem;">
-                                            <i class="fas fa-hand-holding-usd me-1 text-primary"></i> Reimbursements
-                                        </span>
-                                        <button class="btn btn-sm btn-primary px-2.5 py-1 fw-bold text-white shadow-xs" type="button" data-bs-toggle="modal" data-bs-target="#addReimbursementModal" style="font-size: 0.7rem; border-radius: 6px; background: linear-gradient(135deg, var(--color-primary, #f8951e), #d77c11); border: none;">
-                                            <i class="fas fa-plus"></i> Submit Request
-                                        </button>
-                                    </div>
-                                    
-                                    <div class="reimbursements-drawer" style="max-height: 250px; overflow-y: auto; padding-right: 2px;">
-                                        {% if my_reimbursements %}
-                                            <div class="d-flex flex-column gap-2">
-                                                {% for expense in my_reimbursements %}
-                                                <div class="p-2 border rounded-3 bg-light shadow-2xs position-relative" style="font-size: 0.78rem;">
-                                                    <div class="d-flex justify-content-between align-items-start mb-1">
-                                                        <strong class="text-dark truncate-text" style="max-width: 60%; font-size: 0.78rem;">{{ expense.title|default:"Untitled Request" }}</strong>
-                                                        <span class="fw-bold text-danger">₹{{ expense.amount|floatformat:2 }}</span>
-                                                    </div>
-                                                    <div class="d-flex justify-content-between align-items-center">
-                                                        <span class="text-muted" style="font-size: 0.65rem;">{{ expense.date_of_expense|date:"M d, Y"|default:"-" }}</span>
-                                                        
-                                                        {% if expense.approval_status == 'PENDING' %}
-                                                            <span class="badge bg-warning text-dark px-2 py-0.5 rounded-pill" style="font-size: 0.62rem;"><i class="fas fa-clock me-0.5"></i> Pending</span>
-                                                        {% elif expense.approval_status == 'APPROVED' %}
-                                                            {% if expense.reimbursement_status == 'PAYMENT_PENDING' %}
-                                                                <span class="badge bg-info text-dark px-2 py-0.5 rounded-pill" style="font-size: 0.62rem;"><i class="fas fa-money-bill-wave me-0.5"></i> Approved – Pending Pay</span>
-                                                            {% elif expense.reimbursement_status == 'PAID' %}
-                                                                <span class="badge bg-success px-2 py-0.5 rounded-pill" style="font-size: 0.62rem;"><i class="fas fa-check-double me-0.5"></i> Paid</span>
-                                                            {% endif %}
-                                                        {% elif expense.approval_status == 'REJECTED' %}
-                                                            <span class="badge bg-danger px-2 py-0.5 rounded-pill" style="font-size: 0.62rem;"><i class="fas fa-times-circle me-0.5"></i> Rejected</span>
-                                                        {% endif %}
-                                                    </div>
+                        <!-- Member Reimbursements Request Section inside the sidebar -->
+                        <div class="mt-3">
+                            <div class="p-3 border rounded-4 bg-white shadow-xs text-start">
+                                <div class="d-flex justify-content-between align-items-center mb-2.5">
+                                    <span class="fw-bold text-dark" style="font-size: 0.85rem;">
+                                        <i class="fas fa-hand-holding-usd me-1 text-primary"></i> Reimbursements
+                                    </span>
+                                    <button class="btn btn-sm btn-primary px-2.5 py-1 fw-bold text-white shadow-xs" type="button" data-bs-toggle="modal" data-bs-target="#addReimbursementModal" style="font-size: 0.7rem; border-radius: 6px; background: linear-gradient(135deg, var(--color-primary, #f8951e), #d77c11); border: none;">
+                                        <i class="fas fa-plus"></i> Submit Request
+                                    </button>
+                                </div>
+                                
+                                <div class="reimbursements-drawer" style="max-height: 250px; overflow-y: auto; padding-right: 2px;">
+                                    {% if my_reimbursements %}
+                                        <div class="d-flex flex-column gap-2">
+                                            {% for expense in my_reimbursements %}
+                                            <div class="p-2 border rounded-3 bg-light shadow-2xs position-relative" style="font-size: 0.78rem;">
+                                                <div class="d-flex justify-content-between align-items-start mb-1">
+                                                    <strong class="text-dark truncate-text" style="max-width: 60%; font-size: 0.78rem;">{{ expense.title|default:"Untitled Request" }}</strong>
+                                                    <span class="fw-bold text-danger">₹{{ expense.amount|floatformat:2 }}</span>
+                                                </div>
+                                                <div class="d-flex justify-content-between align-items-center">
+                                                    <span class="text-muted" style="font-size: 0.65rem;">{{ expense.date_of_expense|date:"M d, Y"|default:"-" }}</span>
                                                     
-                                                    <!-- Optional Payment Reference details -->
-                                                    {% if expense.reimbursement_status == 'PAID' and expense.payment_reference %}
-                                                    <div class="mt-1.5 pt-1.5 border-top text-muted" style="font-size: 0.68rem; line-height: 1.3;">
-                                                        <span class="d-block text-dark"><i class="fas fa-check-circle text-success me-1"></i>Ref ID: <strong>{{ expense.payment_reference }}</strong></span>
-                                                        {% if expense.payment_notes %}
-                                                        <span class="d-block text-secondary italic mt-0.5">Notes: {{ expense.payment_notes|truncatechars:35 }}</span>
+                                                    {% if expense.approval_status == 'PENDING' %}
+                                                        <span class="badge bg-warning text-dark px-2 py-0.5 rounded-pill" style="font-size: 0.62rem;"><i class="fas fa-clock me-0.5"></i> Pending</span>
+                                                    {% elif expense.approval_status == 'APPROVED' %}
+                                                        {% if expense.reimbursement_status == 'PAYMENT_PENDING' %}
+                                                            <span class="badge bg-info text-dark px-2 py-0.5 rounded-pill" style="font-size: 0.62rem;"><i class="fas fa-money-bill-wave me-0.5"></i> Approved – Pending Pay</span>
+                                                        {% elif expense.reimbursement_status == 'PAID' %}
+                                                            <span class="badge bg-success px-2 py-0.5 rounded-pill" style="font-size: 0.62rem;"><i class="fas fa-check-double me-0.5"></i> Paid</span>
                                                         {% endif %}
-                                                    </div>
+                                                    {% elif expense.approval_status == 'REJECTED' %}
+                                                        <span class="badge bg-danger px-2 py-0.5 rounded-pill" style="font-size: 0.62rem;"><i class="fas fa-times-circle me-0.5"></i> Rejected</span>
                                                     {% endif %}
                                                 </div>
-                                                {% endfor %}
+                                                
+                                                <!-- Optional Payment Reference details -->
+                                                {% if expense.reimbursement_status == 'PAID' and expense.payment_reference %}
+                                                <div class="mt-1.5 pt-1.5 border-top text-muted" style="font-size: 0.68rem; line-height: 1.3;">
+                                                    <span class="d-block text-dark"><i class="fas fa-check-circle text-success me-1"></i>Ref ID: <strong>{{ expense.payment_reference }}</strong></span>
+                                                    {% if expense.payment_notes %}
+                                                    <span class="d-block text-secondary italic mt-0.5">Notes: {{ expense.payment_notes|truncatechars:35 }}</span>
+                                                    {% endif %}
+                                                </div>
+                                                {% endif %}
                                             </div>
-                                        {% else %}
-                                        <div class="text-center py-3 bg-light rounded-3 text-muted border border-dashed" style="font-size: 0.72rem;">
-                                            <i class="far fa-handshake mb-1 d-block" style="font-size: 1.2rem; opacity: 0.6;"></i>
-                                            <div>You haven't submitted any reimbursement requests yet.</div>
+                                            {% endfor %}
                                         </div>
-                                        {% endif %}
+                                    {% else %}
+                                    <div class="text-center py-3 bg-light rounded-3 text-muted border border-dashed" style="font-size: 0.72rem;">
+                                        <i class="far fa-handshake mb-1 d-block" style="font-size: 1.2rem; opacity: 0.6;"></i>
+                                        <div>You haven't submitted any reimbursement requests yet.</div>
                                     </div>
+                                    {% endif %}
                                 </div>
                             </div>
-
-                            {% elif membership_status == 3 %}
-                            <div class="alert alert-warning border-0 rounded-4 shadow-sm p-3 text-center mb-0" style="background: linear-gradient(135deg, rgba(255, 193, 7, 0.1), rgba(255, 193, 7, 0.15)); border-left: 4px solid #ffc107 !important;">
-                                <i class="fas fa-exclamation-triangle fs-3 text-warning mb-2 d-block" style="animation: pulse 2s infinite;"></i>
-                                <span class="fw-bold d-block text-warning" style="font-size: 1.1rem;">Advance Payment Required!</span>
-                                <small class="text-secondary d-block mt-1 mb-3">Please pay the advance amount of ₹{{ trip_details.advance_amount|floatformat:2 }} per head to complete your registration.</small>
-                                <a href="{% url 'initiate_payment' user_member_detail.id %}" class="btn btn-warning w-100 py-2.5 rounded-3 shadow-sm fw-bold text-dark d-flex align-items-center justify-content-center gap-2" style="background: linear-gradient(135deg, #ffc107, #ffb300); transition: all 0.3s ease; border: none;">
-                                    <i class="fas fa-credit-card"></i> Pay Advance Now
-                                </a>
-                            </div>
-                            {% elif membership_status == 0 %}
-                            <div class="alert alert-info border-0 rounded-4 shadow-sm p-3 text-center mb-0" style="background: linear-gradient(135deg, rgba(13, 110, 253, 0.1), rgba(13, 110, 253, 0.15)); border-left: 4px solid #0d6efd !important;">
-                                <i class="fas fa-clock fs-3 text-primary mb-2 d-block" style="animation: pulse 2s infinite;"></i>
-                                <span class="fw-bold d-block text-primary" style="font-size: 1.1rem;">Request Pending!</span>
-                                <small class="text-secondary d-block mt-1">Your request to join is pending approval.</small>
-                            </div>
-                        {% elif trip.is_started %}
-                            <div class="alert alert-secondary border-0 rounded-4 shadow-sm p-3 text-center mb-0" style="background: linear-gradient(135deg, rgba(108, 117, 125, 0.1), rgba(108, 117, 125, 0.15)); border-left: 4px solid #6c757d !important;">
-                                <i class="fas fa-calendar-times fs-3 text-secondary mb-2 d-block"></i>
-                                <span class="fw-bold d-block text-secondary" style="font-size: 1.1rem;">Registration Closed</span>
-                                <small class="text-secondary d-block mt-1">This trip has already commenced. You cannot join this adventure.</small>
-                            </div>
-                        {% elif trip_details and joined_count >= trip_details.max_members %}
-                            <div class="alert alert-secondary border-0 rounded-4 shadow-sm p-3 text-center mb-0" style="background: linear-gradient(135deg, rgba(108, 117, 125, 0.1), rgba(108, 117, 125, 0.15)); border-left: 4px solid #6c757d !important;">
-                                <i class="fas fa-users-slash fs-3 text-secondary mb-2 d-block"></i>
-                                <span class="fw-bold d-block text-secondary" style="font-size: 1.1rem;">Adventure Full</span>
-                                <small class="text-secondary d-block mt-1">All available seats for this adventure have been occupied.</small>
-                            </div>
-                        {% else %}
-                            <a href="{% url 'join_trip' trip.id %}" class="btn btn-primary action-btn save-btn w-100 py-3 rounded-4 shadow fw-bold d-flex align-items-center justify-content-center gap-2" style="background: linear-gradient(135deg, #0d6efd, #0b5ed7); transition: all 0.3s ease;">
-                                <i class="fas fa-user-plus"></i> Join this Adventure
-                            </a>
-                        {% endif %}
+                        </div>
                     </div>
+                    {% endif %}
 
                     <a href="{% url 'home' %}"
                         class="btn btn-light action-btn cancel-btn w-100 mt-4 py-2 fw-semibold">
                         <i class="fas fa-arrow-left me-2"></i> Back to Trips
                     </a>
-                </div>
             </div>
 
         </div>
