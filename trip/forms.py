@@ -92,7 +92,14 @@ from .models import Trip_Details, Trip_Members, Trip_Day, Itinerary, Gallery, Co
 class TripDetailsForm(forms.ModelForm):
     class Meta:
         model = Trip_Details
-        fields = ['max_members', 'no_of_members', 'estimated_cost', 'description']
+        fields = ['max_members', 'estimated_cost', 'description']
+
+    def save(self, commit=True):
+        instance = super().save(commit=False)
+        instance.no_of_members = instance.max_members
+        if commit:
+            instance.save()
+        return instance
 
 class TripMembersForm(forms.ModelForm):
     status = forms.TypedChoiceField(

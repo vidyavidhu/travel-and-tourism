@@ -274,11 +274,6 @@ img {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  width: 100%;
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 20px;
-  box-sizing: border-box;
 }
 
 .logo-container img {
@@ -480,12 +475,7 @@ img {
   text-align: center;
 }
 
-.main-footer .footer-container {
-  width: 100%;
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 20px;
-  box-sizing: border-box;
+.main-footer .container {
   display: flex !important;
   flex-direction: row !important;
   align-items: center !important;
@@ -698,12 +688,7 @@ img {
   text-align: center;
 }
 
-.main-footer .footer-container {
-  width: 100%;
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 20px;
-  box-sizing: border-box;
+.main-footer .container {
   display: flex !important;
   flex-direction: row !important;
   align-items: center !important;
@@ -1002,4 +987,16 @@ h2, .h2, .trip-main-title, .cta-section h2, .dash-card-title {
 
 #notifDropdownMenu .text-center {
   text-align: center !important;
+}
+
+/* Force consistent container size & padding in header/footer across all pages, with or without Bootstrap */
+.main-header .container,
+.main-footer .container {
+  width: 100% !important;
+  max-width: 1200px !important;
+  margin-right: auto !important;
+  margin-left: auto !important;
+  padding-right: 20px !important;
+  padding-left: 20px !important;
+  box-sizing: border-box !important;
 }
