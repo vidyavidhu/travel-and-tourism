@@ -169,6 +169,12 @@ class TripDetailsCreateView(CreateView):
     form_class = TripDetailsForm
     template_name = 'trip/trip_form.html'
     
+    def get_initial(self):
+        initial = super().get_initial()
+        trip = get_object_or_404(Trip, pk=self.kwargs['trip_id'])
+        initial['max_members'] = trip.max_members
+        return initial
+        
     def form_valid(self, form):
         trip = get_object_or_404(Trip, pk=self.kwargs['trip_id'])
         form.instance.trip = trip

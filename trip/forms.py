@@ -37,6 +37,12 @@ class TripForm(forms.ModelForm):
                     
                 self.fields['coordinator'].queryset = qs
 
+    def clean_max_members(self):
+        max_members = self.cleaned_data.get('max_members')
+        if max_members is not None and max_members < 1:
+            raise forms.ValidationError("There must be a minimum of 1 member to go on a trip.")
+        return max_members
+
     def clean(self):
         cleaned_data = super().clean()
         from_date = cleaned_data.get('from_date')
@@ -55,7 +61,7 @@ class TripForm(forms.ModelForm):
 
     class Meta:
         model = Trip
-        fields = ['image', 'title', 'category', 'location_from_name', 'location_from_lattitude', 'location_from_longitude', 'location_to_name', 'location_to_lattitude', 'location_to_longitude', 'distance', 'from_date', 'from_time', 'to_date', 'to_time', 'duration', 'description', 'coordinator', 'guidelines', 'status', 'approval_required']
+        fields = ['image', 'title', 'category', 'max_members', 'location_from_name', 'location_from_lattitude', 'location_from_longitude', 'location_to_name', 'location_to_lattitude', 'location_to_longitude', 'distance', 'from_date', 'from_time', 'to_date', 'to_time', 'duration', 'description', 'coordinator', 'guidelines', 'status', 'approval_required']
         exclude = []
         widgets = {
             'from_date': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
@@ -71,6 +77,7 @@ class TripForm(forms.ModelForm):
             'location_to_longitude': forms.HiddenInput(attrs={'id': 'id_location_to_longitude'}),
             'distance': forms.NumberInput(attrs={'class': 'form-control', 'id': 'id_distance', 'readonly': 'readonly'}),
             'duration': forms.TextInput(attrs={'class': 'form-control', 'id': 'id_duration', 'readonly': 'readonly'}),
+            'max_members': forms.NumberInput(attrs={'class': 'form-control', 'min': 0}),
             'description': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
             'guidelines': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
             'status': forms.Select(attrs={'class': 'form-control'}),
@@ -95,7 +102,7 @@ class TripDetailsForm(forms.ModelForm):
         model = Trip_Details
         fields = ['max_members', 'estimated_cost', 'advance_amount', 'description']
         widgets = {
-            'max_members': forms.NumberInput(attrs={'class': 'form-control'}),
+            'max_members': forms.NumberInput(attrs={'class': 'form-control', 'min': 0}),
             'estimated_cost': forms.NumberInput(attrs={'class': 'form-control'}),
             'advance_amount': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01'}),
             'description': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
@@ -103,11 +110,15 @@ class TripDetailsForm(forms.ModelForm):
 
     def clean(self):
         cleaned_data = super().clean()
-        max_members = cleaned_data.get('max_members', 1) or 1
+        max_members = cleaned_data.get('max_members')
+        
+        if max_members is not None and max_members < 1:
+            self.add_error('max_members', "There must be a minimum of 1 member to go on a trip.")
+
         estimated_cost = cleaned_data.get('estimated_cost', 0.0) or 0.0
         advance_amount = cleaned_data.get('advance_amount', 0.0) or 0.0
 
-        if max_members > 0:
+        if max_members and max_members > 0:
             per_head_cost = estimated_cost / max_members
         else:
             per_head_cost = estimated_cost

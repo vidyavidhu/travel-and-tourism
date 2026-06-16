@@ -63,6 +63,26 @@ class Trip(models.Model):
     status = models.IntegerField(default=1, choices=STATUS_CHOICES)  
     finish_reason = models.TextField(null=True, blank=True)
     approval_required = models.BooleanField(default=True)
+    max_members = models.IntegerField(default=0)
+
+    def clean(self):
+        super().clean()
+        from django.core.exceptions import ValidationError
+        if self.max_members < 1:
+            raise ValidationError({'max_members': "There must be a minimum of 1 member to go on a trip."})
+
+    def save(self, *args, **kwargs):
+        from django.core.exceptions import ValidationError
+        if self.max_members < 1:
+            raise ValidationError("There must be a minimum of 1 member to go on a trip.")
+        super().save(*args, **kwargs)
+        try:
+            trip_details = self.trip_details
+            if trip_details.max_members != self.max_members:
+                Trip_Details.objects.filter(pk=trip_details.pk).update(max_members=self.max_members)
+                self.recalculate_finance()
+        except Exception:
+            pass
 
     @property
     def total_duration_days(self):
@@ -141,7 +161,7 @@ class Trip(models.Model):
 
 class Trip_Details(models.Model):
     trip=models.OneToOneField(Trip, on_delete=models.CASCADE) 
-    max_members = models.IntegerField(default=1)
+    max_members = models.IntegerField(default=0)
     no_of_members = models.IntegerField(default=1)
     estimated_cost=models.FloatField() 
     advance_amount = models.FloatField(default=0.0)
@@ -152,6 +172,20 @@ class Trip_Details(models.Model):
         if self.max_members > 0:
             return self.estimated_cost / self.max_members
         return self.estimated_cost
+
+    def clean(self):
+        super().clean()
+        from django.core.exceptions import ValidationError
+        if self.max_members < 1:
+            raise ValidationError({'max_members': "There must be a minimum of 1 member to go on a trip."})
+
+    def save(self, *args, **kwargs):
+        from django.core.exceptions import ValidationError
+        if self.max_members < 1:
+            raise ValidationError("There must be a minimum of 1 member to go on a trip.")
+        super().save(*args, **kwargs)
+        if self.trip.max_members != self.max_members:
+            Trip.objects.filter(pk=self.trip.pk).update(max_members=self.max_members)
 
     def __str__(self):
         return self.trip.title
