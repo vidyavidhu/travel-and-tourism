@@ -21,6 +21,16 @@ def home_view(request):
 def home_trip_details(request, pk):
     trip = get_object_or_404(Trip, pk=pk)
     
+    # Secure draft trips: only coordinator or staff/superuser can view
+    if trip.status == 3:
+        is_authorized = False
+        if request.user.is_authenticated:
+            if request.user.is_superuser or request.user.is_staff or (hasattr(request.user, 'coordinator') and trip.coordinator.user == request.user):
+                is_authorized = True
+        if not is_authorized:
+            from django.http import Http404
+            raise Http404("This trip is in draft status and not available to the public.")
+            
     # Try fetching details
     try:
         trip_details = Trip_Details.objects.get(trip=trip)

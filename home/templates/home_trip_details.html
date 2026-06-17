@@ -83,6 +83,12 @@
                             <span class="rounded-full h-2 w-2 bg-info pulse-dot"></span>
                             Completed
                         </span>
+                        {% elif trip.status == 3 %}
+                        <span
+                            class="badge bg-warning bg-opacity-10 text-warning px-3 py-2 rounded-3 fw-bold d-flex align-items-center gap-2 status-badge" style="background-color: rgba(255, 193, 7, 0.1) !important; color: #ffc107 !important;">
+                            <span class="rounded-full h-2 w-2 bg-warning pulse-dot" style="background-color: #ffc107 !important;"></span>
+                            Draft
+                        </span>
                         {% else %}
                         <span
                             class="badge bg-danger bg-opacity-10 text-danger px-3 py-2 rounded-3 fw-bold d-flex align-items-center gap-2 status-badge">

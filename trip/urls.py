@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import TripListView, TripDetailView, TripCreateView, TripUpdateView, TripDeleteView, TripDetailsCreateView, TripDetailsUpdateView, TripMembersCreateView, TripMembersUpdateView, TripDayCreateView, ItineraryCreateView, ItineraryDetailView, GalleryCreateView, CommentCreateView, CommentLikeView, ReplyCreateView, MyTripsView, TripMemberApproveView, TripFinishView, TripBroadcastCreateView, ItineraryCancelView, ItineraryDismissCancelView, trip_member_detail, export_finance_excel, export_finance_pdf, rate_trip, rate_itinerary, ProcessRefundView
+from .views import TripListView, TripDetailView, TripCreateView, TripUpdateView, TripDeleteView, TripDetailsCreateView, TripDetailsUpdateView, TripMembersCreateView, TripMembersUpdateView, TripDayCreateView, ItineraryCreateView, ItineraryDetailView, GalleryCreateView, CommentCreateView, CommentLikeView, ReplyCreateView, MyTripsView, TripMemberApproveView, TripFinishView, TripBroadcastCreateView, ItineraryCancelView, ItineraryDismissCancelView, trip_member_detail, export_finance_excel, export_finance_pdf, rate_trip, rate_itinerary, ProcessRefundView, TripToggleActiveView
 from finance.views import ExpenseCreateView, ExpenseDeleteView, submit_reimbursement, approve_reimbursement, reject_reimbursement, pay_reimbursement
 
 urlpatterns = [
@@ -10,6 +10,7 @@ urlpatterns = [
     path('<int:pk>/update/', TripUpdateView.as_view(), name='trip_update'),
     path('<int:pk>/delete/', TripDeleteView.as_view(), name='trip_delete'),
     path('<int:pk>/finish/', TripFinishView.as_view(), name='trip_finish'),
+    path('<int:pk>/toggle-active/', TripToggleActiveView.as_view(), name='trip_toggle_active'),
     path('<int:trip_id>/broadcast/send/', TripBroadcastCreateView.as_view(), name='trip_broadcast_send'),
     path('<int:pk>/finance/excel/', export_finance_excel, name='export_finance_excel'),
     path('<int:pk>/finance/pdf/', export_finance_pdf, name='export_finance_pdf'),

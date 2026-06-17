@@ -74,6 +74,21 @@ class TripForm(forms.ModelForm):
             if from_time and to_time and from_time >= to_time:
                 self.add_error('to_time', "To time must be after the From time when the dates are the same.")
 
+        status = cleaned_data.get('status')
+        if status == 1:
+            if not self.instance or not self.instance.pk:
+                self.add_error('status', "A new trip must be created in Draft status. You can activate it after adding details (finance and members).")
+            else:
+                from .models import Trip_Details
+                try:
+                    details = self.instance.trip_details
+                    if not details.max_members or details.max_members < 1:
+                        self.add_error('status', "Cannot activate trip. Number of members must be filled in Trip Details (current is 0 or not filled).")
+                    if not details.estimated_cost or details.estimated_cost <= 0:
+                        self.add_error('status', "Cannot activate trip. Estimated cost must be filled in Trip Details.")
+                except Trip_Details.DoesNotExist:
+                    self.add_error('status', "Cannot activate trip. Please fill in the number of members and estimated cost under Trip Details/Finance first.")
+
         return cleaned_data
 
     class Meta:
@@ -111,7 +126,7 @@ class TripFilterForm(forms.Form):
     location_to_name = forms.CharField(required=False, label='Location-Destination', widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Search by Destination location...'}))
     from_date = forms.DateField(required=False, label='From Date (>=)', widget=forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}))
     to_date = forms.DateField(required=False, label='To Date (<=)', widget=forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}))
-    status = forms.ChoiceField(choices=[('', 'All'), (1, 'Active'), (0, 'Inactive'), (2, 'Completed')], required=False, widget=forms.Select(attrs={'class': 'form-control'}))
+    status = forms.ChoiceField(choices=[('', 'All'), (1, 'Active'), (0, 'Inactive'), (2, 'Completed'), (3, 'Draft')], required=False, widget=forms.Select(attrs={'class': 'form-control'}))
 
 from .models import Trip_Details, Trip_Members, Trip_Day, Itinerary, Gallery, Comments
 

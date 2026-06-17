@@ -542,8 +542,12 @@
                                         <div>
                                             {% if trip.status == 1 %}
                                             <span class="badge badge-active px-2.5 py-1.5 small fw-semibold" style="border-radius: 20px;">Active</span>
-                                            {% else %}
+                                            {% elif trip.status == 3 %}
+                                            <span class="badge badge-active px-2.5 py-1.5 small fw-semibold" style="border-radius: 20px; background-color: rgba(245, 158, 11, 0.1); color: #f59e0b;">Draft</span>
+                                            {% elif trip.status == 2 %}
                                             <span class="badge badge-inactive px-2.5 py-1.5 small fw-semibold" style="border-radius: 20px;">Finished</span>
+                                            {% else %}
+                                            <span class="badge badge-inactive px-2.5 py-1.5 small fw-semibold" style="border-radius: 20px; background-color: rgba(220, 53, 69, 0.1); color: #dc3545;">Inactive</span>
                                             {% endif %}
                                         </div>
                                         <div>

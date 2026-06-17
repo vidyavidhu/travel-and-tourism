@@ -56,6 +56,8 @@
                         <i class="fas fa-circle me-2 text-success" style="font-size: 0.5rem;"></i> Active
                         {% elif trip.status == 2 %}
                         <i class="fas fa-circle me-2 text-info" style="font-size: 0.5rem;"></i> Finished
+                        {% elif trip.status == 3 %}
+                        <i class="fas fa-circle me-2 text-warning" style="font-size: 0.5rem;"></i> Draft
                         {% else %}
                         <i class="fas fa-circle me-2 text-danger" style="font-size: 0.5rem;"></i> Inactive
                         {% endif %}
@@ -163,10 +165,20 @@
                                     {% endif %}
                                 </div>
 
-                                <div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom">
+                                <div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom flex-wrap gap-2">
                                     <h3 class="fw-bold m-0" style="font-family: 'Poppins', sans-serif;">About the
                                         Journey</h3>
-                                    <div class="d-flex gap-2 align-items-center">
+                                    <div class="d-flex gap-2 align-items-center flex-wrap">
+                                        {% if is_coordinator and trip.status != 2 %}
+                                        <form action="{% url 'trip_toggle_active' trip.pk %}" method="POST" class="d-inline" id="toggle-active-form">
+                                            {% csrf_token %}
+                                            <div class="form-check form-switch d-inline-flex align-items-center gap-2 px-3 py-1 bg-light border border-light-subtle rounded-pill shadow-sm" style="height: 45px; cursor: pointer; padding-left: 2.5rem;">
+                                                <input class="form-check-input" type="checkbox" role="switch" id="tripActiveSwitch" {% if trip.status == 1 %}checked{% endif %} style="cursor: pointer;" onchange="this.form.submit();">
+                                                <label class="form-check-label fw-semibold text-secondary" style="font-size: 0.9rem; cursor: pointer;" for="tripActiveSwitch">Active Status</label>
+                                            </div>
+                                        </form>
+                                        {% endif %}
+                                        
                                         {% if trip.status == 1 and request.user.is_authenticated and trip.coordinator.user == request.user %}
                                         <button type="button" class="btn btn-outline-success action-btn px-3 py-2 fw-semibold" style="height: 45px; display: flex; align-items: center; justify-content: center; gap: 6px; border-radius: 25px;" data-bs-toggle="modal" data-bs-target="#finishTripModal">
                                             <i class="fas fa-flag-checkered"></i> Finish Trip

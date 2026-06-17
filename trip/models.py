@@ -59,8 +59,9 @@ class Trip(models.Model):
         (1, 'Active'),
         (0, 'Inactive'),
         (2, 'Completed'),
+        (3, 'Draft'),
     ]
-    status = models.IntegerField(default=1, choices=STATUS_CHOICES)  
+    status = models.IntegerField(default=3, choices=STATUS_CHOICES)  
     finish_reason = models.TextField(null=True, blank=True)
     approval_required = models.BooleanField(default=True)
     max_members = models.IntegerField(default=0)

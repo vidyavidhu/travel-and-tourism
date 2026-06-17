@@ -16,6 +16,15 @@ class TripListView(ListView):
 
     def get_queryset(self):
         queryset = super().get_queryset()
+        
+        # Exclude draft/inactive trips for regular users.
+        # Coordinators can see their own drafts, and staff/superusers can see everything.
+        if not (self.request.user.is_authenticated and (self.request.user.is_superuser or self.request.user.is_staff)):
+            if self.request.user.is_authenticated and hasattr(self.request.user, 'coordinator'):
+                queryset = queryset.filter(Q(status__in=[0, 1, 2]) | Q(status=3, coordinator__user=self.request.user))
+            else:
+                queryset = queryset.filter(status=1)
+                
         self.filter_form = TripFilterForm(self.request.GET)
         
         if self.filter_form.is_valid():
@@ -1140,5 +1149,44 @@ def rate_itinerary(request, itinerary_id):
     
     messages.success(request, f"You successfully rated the stop '{itinerary.title}' {rating_val} stars!")
     return redirect(request.POST.get('next') or reverse('home_trip_details', kwargs={'pk': trip.id}))
+
+
+class TripToggleActiveView(LoginRequiredMixin, View):
+    def post(self, request, pk):
+        trip = get_object_or_404(Trip, pk=pk)
+        
+        # Verify permissions: must be coordinator of this trip or staff/superuser
+        if not (request.user.is_superuser or request.user.is_staff or (trip.coordinator and trip.coordinator.user == request.user)):
+            messages.error(request, "You do not have permission to change this trip's status.")
+            return redirect(reverse('trip_detail', kwargs={'pk': pk}))
+            
+        if trip.status == 1:
+            # Toggle Active to Draft (3)
+            trip.status = 3
+            trip.save()
+            messages.success(request, f"Trip '{trip.title}' is now in Draft status.")
+        else:
+            # Toggle Draft/Inactive -> Active
+            # Check if details are filled
+            try:
+                details = trip.trip_details
+            except Trip_Details.DoesNotExist:
+                messages.error(request, "Cannot activate trip. Please add Finance/Details (estimated cost and max members) first.")
+                return redirect(reverse('trip_detail', kwargs={'pk': pk}) + '?tab=details')
+                
+            if not details.max_members or details.max_members < 1:
+                messages.error(request, "Cannot activate trip. Please specify a valid number of members (at least 1) in Finance/Details.")
+                return redirect(reverse('trip_detail', kwargs={'pk': pk}) + '?tab=details')
+                
+            if not details.estimated_cost or details.estimated_cost <= 0:
+                messages.error(request, "Cannot activate trip. Please specify estimated cost in Finance/Details.")
+                return redirect(reverse('trip_detail', kwargs={'pk': pk}) + '?tab=details')
+                
+            trip.status = 1
+            trip.save()
+            messages.success(request, f"Trip '{trip.title}' has been successfully activated!")
+            
+        return redirect(reverse('trip_detail', kwargs={'pk': pk}))
+
 
 

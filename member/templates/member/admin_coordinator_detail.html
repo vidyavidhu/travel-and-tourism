@@ -293,8 +293,12 @@
                         <div class="d-flex align-items-center gap-3">
                             {% if trip.status == 1 %}
                             <span class="badge-approved"><i class="fas fa-check-circle me-1"></i> Active</span>
-                            {% else %}
+                            {% elif trip.status == 3 %}
+                            <span class="badge-pending" style="background-color: rgba(245, 158, 11, 0.1); color: #f59e0b;"><i class="fas fa-clock me-1"></i> Draft</span>
+                            {% elif trip.status == 2 %}
                             <span class="badge-pending" style="background-color: rgba(108, 117, 125, 0.1); color: #6c757d;"><i class="fas fa-flag-checkered me-1"></i> Finished</span>
+                            {% else %}
+                            <span class="badge-pending" style="background-color: rgba(220, 53, 69, 0.1); color: #dc3545;"><i class="fas fa-times-circle me-1"></i> Inactive</span>
                             {% endif %}
                             <a href="{% url 'trip_detail' trip.pk %}" class="btn btn-sm btn-light px-3" style="border-radius: 6px;">View Details</a>
                         </div>
